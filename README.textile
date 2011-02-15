@@ -1,0 +1,215 @@
+h1. Rails3-Application-Templates
+
+These application generator templates give you a Rails 3 skeleton or starter app you can deploy in minutes.
+
+The templates combine "Mongoid":http://mongoid.org/ with "Devise":http://github.com/plataformatec/devise. Mongoid is a datastore that gives you quick development without schemas or migrations. Devise gives you ready-made authentication and user management.
+
+The templates are based on the following projects:
+"fortuity/rails3-mongoid-devise":http://github.com/fortuity/rails3-mongoid-devise/
+"fortuity/rails3-subdomain-devise":http://github.com/fortuity/rails3-subdomain-devise/
+
+There are detailed tutorials to show how each app is built:
+"Tutorial for fortuity/rails3-mongoid-devise":http://github.com/fortuity/rails3-mongoid-devise/wiki/Tutorial-%28Walkthrough%29
+"Tutorial for fortuity/rails3-subdomain-devise":http://github.com/fortuity/rails3-subdomain-devise/wiki/Tutorial-%28Walkthrough%29
+
+h2. Help and More Information
+
+Are the templates useful to you? Follow me on Twitter:
+"http://twitter.com/yaxdotcom":http://twitter.com/yaxdotcom
+and tweet some praise. I'd love to know you were helped out by what I've put together.
+
+Any issues? Please create an "Issue":http://github.com/fortuity/rails3-application-templates/issues on GitHub.
+
+h2. What You'll Get
+
+Both templates provide:
+
+* Mongoid for the MongoDB datastore
+* Devise for authentication and user management
+* Haml or ERB for a templating engine
+* jQuery or Prototype for a Javascript framework
+* Remove unneeded files (such as "public/index.html")
+* Prevent logging of passwords (in "config/application.rb")
+* Application layout (with flash notices/alerts)
+* Home controller and view
+* User model, controller and view
+* Database seed file with default user
+* Heroku for deployment and hosting (optional)
+* Git for source control with ".gitignore", init and commit
+
+The @rails3-subdomain-devise-template@ adds:
+
+* subdomains
+
+h2. Similar Projects
+
+There are many similar projects. To my knowledge, these are the only application templates that combine "Mongoid":http://mongoid.org/ with "Devise":http://github.com/plataformatec/devise.
+
+h3. Rails template-generating applications
+
+Visit these websites to select components and generate an application template.
+
+* "Rails Wizard":http://railswizard.org/
+
+bq. Devise or OmniAuth, Mongoid or MongoMapper or ActiveRecord, RSpec or TestUnit, Cucumber or Steak, jQuery or Prototype or MooTools, ERB or Haml or Slim, Sass or Less CSS.
+
+* "RailsGen":http://railsgen.com/
+
+bq. In development as of February 2011.
+
+h3. Rails application-generating gems
+
+Install this gem and then choose components and generate an application.
+
+* "kfaustino/rails-templater":https://github.com/kfaustino/rails-templater
+
+bq. Mongoid or ActiveRecord, RSpec or TestUnit, FactoryGirl, Cucumber, jQuery or Prototype, ERB or Haml or Slim, Sass, Compass.
+
+h3. Rails application templates
+
+Use these scripts with the @"rails new app_name -m"@ command to generate an application.
+
+These projects were updated in 2011 and use Devise:
+
+* "greendog99/greendog-rails-template":https://github.com/greendog99/greendog-rails-template
+
+bq. Devise, RSpec, Factory Girl, jQuery, Haml, Sass, Compass, Git, rvm, HTML5 Boilerplate, plus a layout. Uses subtemplates for easy customizing.
+
+* "dcrec1/rails3_template":https://github.com/dcrec1/rails3_template
+
+bq. Devise (with Cucumber steps), Cucumber, RSpec, Factory Girl, Haml, Compass, jQuery, Git, Formtastic, a layout, and much more. Uses subtemplates for easy customizing.
+
+* "aentos/rails3-templates":https://github.com/aentos/rails3-templates
+
+bq. Devise or Authlogic or OmniAuth, Cucumber, Capybara, RSpec, Factory Girl, Shoulda, jQuery, Haml, Compass, 960 grid or Blueprint, Capistrano or Heroku or Inploy, Git, plus a layout. Uses subtemplates for easy customizing.
+
+* "rubyx/rails3_template":https://github.com/rubyx/rails3_template
+
+bq. PostgreSQL, Devise, Cucumber with Selenium and Capybara, RSpec with Machinist and Faker, JQuery, Simple Form, Haml, SASS, Git, rvm, Google analytics (optional), Hoptoad for issue tracking (optional), TellThemWhen for downtime notifications (optional). With a description of the recipe in the README.
+
+These projects were updated in 2010 and use Devise:
+
+* "kenton/rails3-templates":https://github.com/kenton/rails3-templates
+
+bq. Devise, RSpec, Cucumber with Capybara, Factory Girl, jQuery, Simple Form, Git, rvm. Uses subtemplates for easy customizing.
+
+* "graemenelson/rails3-template":https://github.com/graemenelson/rails3-template
+
+bq. Devise, Cucumber, Shoulda with Factory Girl and Mocha, Haml, Sass, Formtastic, jQuery, Git, rvm.
+
+This project was updated in 2010 and uses Mongoid:
+
+* "madebydna/rails-templater":https://github.com/madebydna/rails-templater
+
+bq. Mongoid or ActiveRecord, RSpec, FactoryGirl, Cucumber (with Mongoid steps), jQuery, Haml, Sass, Compass.  Uses subtemplates for easy customizing.
+
+These projects were updated in 2011 and do not use Devise or Mongoid:
+
+* "perfectline/template-bucket":https://github.com/perfectline/template-bucket
+
+bq. Cucumber, RSpec, jQuery, Haml or Jammit, Capistrano, Git, rvm, plus a layout. Uses subtemplates for easy customizing.
+
+* "leshill/rails3-app":https://github.com/leshill/rails3-app
+
+bq. Cucumber, RSpec, Factory Girl or Fabrication, Haml, jQuery, Git, rvm.
+
+* "shawn/shawns-rails3-template":https://github.com/shawn/shawns-rails3-template/
+
+bq. Haml, Sass, Git, plus a layout.
+
+These Rails 2.3 projects were once popular but haven't been updated since 2009 or 2010:
+
+* "jm/rails-templates":https://github.com/jm/rails-templates
+* "ffmike/BigOldRailsTemplate":https://github.com/ffmike/BigOldRailsTemplate
+
+bq. For a ranking by popularity, see:
+"The Ruby Toolbox: Rails App Templates":http://ruby-toolbox.com/categories/rails_app_templates.html
+
+h2. Dependencies
+
+Before generating your application, you will need:
+
+* The Ruby language (version 1.8.7 or 1.9.2)
+* Rails (version 3.0.4)
+
+bq. You MUST be using Rails 3.0.4. Generating a Rails application from an "HTTPS" URL does not work in Rails 3.0.3 and earlier versions.
+
+I recommend installing rvm, the "Ruby Version Manager":http://rvm.beginrescueend.com/, to manage multiple versions of Rails.
+
+If you are using rvm, you can see a list of the Ruby versions currently installed:
+@$ rvm list@
+
+Check that appropriate versions of Ruby and Rails are installed in your development environment:
+@$ ruby -v@
+@$ rails -v@
+
+You will also need:
+
+* A working installation of "MongoDB":http://www.mongodb.org/ (version 1.6.0 or newer)
+
+If you don't have MongoDB installed on your computer, you'll need to install it and set it up to be always running on your computer (run at launch). On Mac OS X, the easiest way to install MongoDB is to install "Homebrew":http://mxcl.github.com/homebrew/ and then run the following:
+
+<pre>
+brew install mongo
+sudo mkdir -p /data/db
+sudo chmod -Rv 777 /data/
+</pre>
+
+h2. Generating the Application
+
+Generate a new Rails application with the command:
+
+@$ rails new app_name -m https://github.com/fortuity/rails3-application-templates/raw/master/rails3-mongoid-devise-template.rb@
+
+or
+
+@$ rails new app_name -m https://github.com/fortuity/rails3-application-templates/raw/master/rails3-subdomain-devise-template.rb@
+
+This creates a new Rails app (with the @app_name@ you provide) on your computer.
+
+The application generator template offers you the following options:
+
+* set up your view files using the Haml templating language
+* use jQuery instead of Prototype
+* install the heroku gem for deployment to Heroku
+
+If you wish to "change the recipe" to generate the app with your own customized options, you can copy and edit the template file.
+
+h2. Documentation and Support
+
+The templates are provided without support or additional documentation.
+
+h3. About Rails Application Templates
+
+"Cooking Up A Custom Rails 3 Template (11 Oct 2010) by Andrea Singh":http://blog.madebydna.com/all/code/2010/10/11/cooking-up-a-custom-rails3-template.html
+"Rails Application Templates (16 Sept 2010) by Collin Schaafsma":http://quickleft.com/blog/rails-application-templates
+"Application templates in Rails 3 (18 Sept 2009) by Ben Scofield":http://benscofield.com/2009/09/application-templates-in-rails-3/
+"Railscasts: App Templates in Rails 2.3 (9 Feb 2009) by Ryan Bates":http://railscasts.com/episodes/148-app-templates-in-rails-2-3
+"Rails templates (4 Dec 2008) by Pratik Naik":http://m.onkey.org/rails-templates
+
+h2. Contributing
+
+If you make improvements to these templates, please share with others.
+
+* Fork the project on GitHub.
+* Make your feature addition or bug fix.
+* Commit with Git.
+* Send the author a pull request.
+
+If you add functionality to this application, create an alternative implementation, or build an application that is similar, please contact me and I'll add a note to the README so that others can find your work.
+
+h2. Credits
+
+Daniel Kehoe ("http://danielkehoe.com/":http://danielkehoe.com/) created these templates.
+
+Are the templates useful to you? Follow me on Twitter:
+"http://twitter.com/yaxdotcom":http://twitter.com/yaxdotcom
+and tweet some praise. I'd love to know you were helped out by what I've put together.
+
+Any issues? Please create an "Issue":http://github.com/fortuity/rails3-application-templates/issues on GitHub.
+
+h2. License
+
+h3. Public Domain Dedication
+
+This work is a compilation and derivation from other previously released works. With the exception of various included works, which may be restricted by other licenses, the author or authors of this code dedicate any and all copyright interest in this code to the public domain. We make this dedication for the benefit of the public at large and to the detriment of our heirs and successors. We intend this dedication to be an overt act of relinquishment in perpetuity of all present and future rights to this code under copyright law.
