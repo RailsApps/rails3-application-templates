@@ -41,6 +41,27 @@ The @rails3-subdomain-devise-template@ adds:
 
 * subdomains
 
+h2. Gems
+
+The templates require these gems:
+
+* "rails":http://rubygems.org/gems/rails
+* "mongoid":http://rubygems.org/gems/mongoid
+* "bson_ext":http://rubygems.org/gems/bson_ext (for Mongoid)
+* "devise":http://rubygems.org/gems/devise
+
+These gems are optional:
+
+* "heroku":https://rubygems.org/gems/heroku
+* "haml":https://rubygems.org/gems/haml
+* "haml-rails":https://rubygems.org/gems/haml-rails (for Haml)
+* "hpricot":https://rubygems.org/gems/hpricot (used to generate Devise views for Haml)
+* "ruby_parser":https://rubygems.org/gems/ruby_parser (used to generate Devise views for Haml)
+
+The @rails3-subdomain-devise-template@ template requires this gem:
+
+* "friendly_id":https://rubygems.org/gems/friendly_id
+
 h2. Similar Projects
 
 There are many similar projects. To my knowledge, these are the only application templates that combine "Mongoid":http://mongoid.org/ with "Devise":http://github.com/plataformatec/devise.
