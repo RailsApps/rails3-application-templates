@@ -37,7 +37,7 @@ Both templates provide:
 * Heroku for deployment and hosting (optional)
 * Git for source control with ".gitignore", init and commit
 
-The @rails3-subdomain-devise-template@ adds:
+The *rails3-subdomain-devise-template* adds:
 
 * subdomains
 
@@ -59,7 +59,7 @@ These gems are optional:
 * "hpricot":https://rubygems.org/gems/hpricot (used to generate Devise views for Haml)
 * "ruby_parser":https://rubygems.org/gems/ruby_parser (used to generate Devise views for Haml)
 
-The @rails3-subdomain-devise-template@ template requires this gem:
+The *rails3-subdomain-devise-template* requires this gem:
 
 * "friendly_id":https://rubygems.org/gems/friendly_id
 
