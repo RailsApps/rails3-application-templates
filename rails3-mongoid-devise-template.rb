@@ -66,7 +66,7 @@ gsub_file 'public/robots.txt', /# Disallow/, 'Disallow'
 #----------------------------------------------------------------------------
 if heroku_flag
   puts "adding Heroku gem to the Gemfile..."
-  gem 'heroku', '1.17.8', :group => :development
+  gem 'heroku', '1.17.13', :group => :development
 end
 
 #----------------------------------------------------------------------------
@@ -86,7 +86,7 @@ end
 # jQuery Option
 #----------------------------------------------------------------------------
 if jquery_flag
-  gem 'jquery-rails', '0.2.6'
+  gem 'jquery-rails', '0.2.7'
 end
 
 #----------------------------------------------------------------------------
@@ -95,8 +95,8 @@ end
 puts "setting up Gemfile for Mongoid..."
 gsub_file 'Gemfile', /gem \'sqlite3-ruby/, '# gem \'sqlite3-ruby'
 append_file 'Gemfile', "\n# Bundle gems needed for Mongoid\n"
-gem "mongoid", "2.0.0.rc.6"
-gem 'bson_ext', '1.2.0'
+gem "mongoid", "2.0.0.rc.7"
+gem 'bson_ext', '1.2.2'
 
 puts "installing Mongoid gems (takes a few minutes!)..."
 run 'bundle install'

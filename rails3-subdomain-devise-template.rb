@@ -72,19 +72,19 @@ gsub_file 'public/robots.txt', /# Disallow/, 'Disallow'
 puts "setting up the Gemfile..."
 run 'rm Gemfile'
 create_file 'Gemfile', "source 'http://rubygems.org'\n"
-gem 'rails', '3.0.3'
+gem 'rails', '3.0.4'
 if !mongoid_flag
   gem 'sqlite3-ruby', :require => 'sqlite3'
-  gem 'friendly_id', '3.1.8'
+  gem 'friendly_id', '3.2.1'
 end
-gem 'devise', '1.1.5'
+gem 'devise', '1.2.rc'
 
 #----------------------------------------------------------------------------
 # Heroku Option
 #----------------------------------------------------------------------------
 if heroku_flag
   puts "adding Heroku gem to the Gemfile..."
-  gem 'heroku', '1.17.5', :group => :development
+  gem 'heroku', '1.17.13', :group => :development
 end
 
 #----------------------------------------------------------------------------
@@ -105,7 +105,7 @@ end
 #----------------------------------------------------------------------------
 if jquery_flag
   puts "setting up Gemfile for jQuery..."
-  gem 'jquery-rails', '0.2.6'
+  gem 'jquery-rails', '0.2.7'
 end
 
 #----------------------------------------------------------------------------
@@ -115,8 +115,8 @@ if mongoid_flag
   puts "setting up Gemfile for Mongoid..."
   gsub_file 'Gemfile', /gem \'sqlite3-ruby/, '# gem \'sqlite3-ruby'
   append_file 'Gemfile', "\n# Bundle gems needed for Mongoid\n"
-  gem "mongoid", "2.0.0.beta.20"
-  gem 'bson_ext', '1.1.5'
+  gem "mongoid", "2.0.0.rc.7"
+  gem 'bson_ext', '1.2.2'
 end
 
 puts "installing gems (takes a few minutes!)..."

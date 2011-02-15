@@ -53,6 +53,7 @@ The templates require these gems:
 These gems are optional:
 
 * "heroku":https://rubygems.org/gems/heroku
+* "jquery-rails":https://rubygems.org/gems/jquery-rails
 * "haml":https://rubygems.org/gems/haml
 * "haml-rails":https://rubygems.org/gems/haml-rails (for Haml)
 * "hpricot":https://rubygems.org/gems/hpricot (used to generate Devise views for Haml)
