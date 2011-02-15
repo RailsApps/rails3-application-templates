@@ -130,9 +130,9 @@ h2. Dependencies
 Before generating your application, you will need:
 
 * The Ruby language (version 1.8.7 or 1.9.2)
-* Rails (version 3.0.4)
+* Rails (version 3.0.4 or newer)
 
-bq. You MUST be using Rails 3.0.4. Generating a Rails application from an "HTTPS" URL does not work in Rails 3.0.3 and earlier versions.
+bq. You MUST be using Rails 3.0.4 or newer. Generating a Rails application from an "HTTPS" URL does not work in Rails 3.0.3 and earlier versions.
 
 I recommend installing rvm, the "Ruby Version Manager":http://rvm.beginrescueend.com/, to manage multiple versions of Rails.
 
@@ -164,6 +164,8 @@ Generate a new Rails application with the command:
 or
 
 @$ rails new app_name -m https://github.com/fortuity/rails3-application-templates/raw/master/rails3-subdomain-devise-template.rb@
+
+bq. You MUST be using Rails 3.0.4 or newer. Generating a Rails application from an "HTTPS" URL does not work in Rails 3.0.3 and earlier versions.
 
 This creates a new Rails app (with the @app_name@ you provide) on your computer.
 
