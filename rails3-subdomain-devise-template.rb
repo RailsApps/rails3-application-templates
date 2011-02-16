@@ -56,9 +56,6 @@ git :commit => "-m 'Initial commit of unmodified new Rails app'"
 # Remove the usual cruft
 #----------------------------------------------------------------------------
 puts "removing unneeded files..."
-if mongoid_flag
-  run 'rm config/database.yml'
-end
 run 'rm public/index.html'
 run 'rm public/favicon.ico'
 run 'rm public/images/rails.png'
@@ -74,7 +71,7 @@ run 'rm Gemfile'
 create_file 'Gemfile', "source 'http://rubygems.org'\n"
 gem 'rails', '3.0.4'
 if !mongoid_flag
-  gem 'sqlite3-ruby', :require => 'sqlite3'
+  gem 'sqlite3'
   gem 'friendly_id', '3.2.1'
 end
 gem 'devise', '1.2.rc'
@@ -151,6 +148,10 @@ require 'active_resource/railtie'
 require 'rails/test_unit/railtie'
 RUBY
   end
+end
+
+if mongoid_flag
+  run 'rm config/database.yml'
 end
 
 #----------------------------------------------------------------------------
