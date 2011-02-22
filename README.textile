@@ -8,15 +8,15 @@ h4. Applications
 
 The templates can be used to build the following complete applications:
 
-* "fortuity/rails3-mongoid-devise":http://github.com/fortuity/rails3-mongoid-devise/
-* "fortuity/rails3-subdomain-devise":http://github.com/fortuity/rails3-subdomain-devise/
+* "rails3-mongoid-devise":http://github.com/fortuity/rails3-mongoid-devise/
+* "rails3-subdomain-devise":http://github.com/fortuity/rails3-subdomain-devise/
 
 h4. Tutorials
 
 There are detailed tutorials to show how each application is built:
 
-* "Tutorial for fortuity/rails3-mongoid-devise":http://github.com/fortuity/rails3-mongoid-devise/wiki/Tutorial-%28Walkthrough%29
-* "Tutorial for fortuity/rails3-subdomain-devise":http://github.com/fortuity/rails3-subdomain-devise/wiki/Tutorial-%28Walkthrough%29
+* "Tutorial for rails3-mongoid-devise":http://github.com/fortuity/rails3-mongoid-devise/wiki/Tutorial-%28Walkthrough%29
+* "Tutorial for rails3-subdomain-devise":http://github.com/fortuity/rails3-subdomain-devise/wiki/Tutorial-%28Walkthrough%29
 
 h4. Template Recipes
 
@@ -24,7 +24,7 @@ These application generator templates are assembled from "recipes".
 
 You can see a collection of useful template recipes:
 
-* "fortuity/rails-template-recipes":https://github.com/fortuity/rails-template-recipes
+* "rails-template-recipes":https://github.com/fortuity/rails-template-recipes
 
 Use the recipes to customize your own application generator templates.
 
