@@ -75,7 +75,7 @@ These gems are optional:
 * "hpricot":https://rubygems.org/gems/hpricot (used to generate Devise views for Haml)
 * "ruby_parser":https://rubygems.org/gems/ruby_parser (used to generate Devise views for Haml)
 
-The *rails3-subdomain-devise-template* requires this gem:
+The rails3-subdomain-devise-template requires this gem:
 
 * "friendly_id":https://rubygems.org/gems/friendly_id
 
@@ -83,7 +83,7 @@ h2. Similar Projects
 
 There are many similar projects. To my knowledge, these are the only application templates that combine "Mongoid":http://mongoid.org/ with "Devise":http://github.com/plataformatec/devise.
 
-h3. Rails template-generating applications
+h4. Rails template-generating applications
 
 Visit these websites to select components and generate an application template.
 
@@ -95,7 +95,7 @@ bq. Devise or OmniAuth, Mongoid or MongoMapper or ActiveRecord, RSpec or TestUni
 
 bq. In development as of February 2011.
 
-h3. Rails application-generating gems
+h4. Rails application-generating gems
 
 Install this gem and then choose components and generate an application.
 
@@ -103,7 +103,7 @@ Install this gem and then choose components and generate an application.
 
 bq. Mongoid or ActiveRecord, RSpec or TestUnit, FactoryGirl, Cucumber, jQuery or Prototype, ERB or Haml or Slim, Sass, Compass.
 
-h3. Rails application templates
+h4. Rails application templates
 
 Use these scripts with the @"rails new app_name -m"@ command to generate an application.
 
