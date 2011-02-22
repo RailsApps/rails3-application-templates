@@ -53,7 +53,7 @@ Both templates provide:
 * Heroku for deployment and hosting (optional)
 * Git for source control with ".gitignore", init and commit
 
-The *rails3-subdomain-devise-template* adds:
+The rails3-subdomain-devise-template adds:
 
 * subdomains
 
