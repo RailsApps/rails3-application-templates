@@ -28,7 +28,7 @@ You can see a collection of useful template recipes:
 
 Use the recipes to customize your own application generator templates.
 
-h2. Help and More Information
+h2. More Information
 
 Are the templates useful to you? Follow me on Twitter:
 "http://twitter.com/yaxdotcom":http://twitter.com/yaxdotcom
@@ -135,7 +135,7 @@ If you wish to "change the recipe" to generate the app with your own customized 
 
 h2. Documentation and Support
 
-The templates are provided without support or additional documentation.
+This is the only documentation.
 
 h4. Writing Recipes
 
@@ -148,6 +148,10 @@ h4. About Rails Application Templates
 "Application templates in Rails 3 (18 Sept 2009) by Ben Scofield":http://benscofield.com/2009/09/application-templates-in-rails-3/
 "Railscasts: App Templates in Rails 2.3 (9 Feb 2009) by Ryan Bates":http://railscasts.com/episodes/148-app-templates-in-rails-2-3
 "Rails templates (4 Dec 2008) by Pratik Naik":http://m.onkey.org/rails-templates
+
+h4. Issues
+
+Any issues? Please create an "Issue":http://github.com/fortuity/rails3-application-templates/issues on GitHub.
 
 h2. Similar Projects
 
