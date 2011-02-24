@@ -197,11 +197,13 @@ h2. Generating the Application
 
 Generate a new Rails application with the command:
 
-@$ rails new app_name -m https://github.com/fortuity/rails3-application-templates/raw/master/rails3-mongoid-devise-template.rb@
+@$ rails new app_name -m https://github.com/fortuity/rails3-application-templates/raw/master/rails3-mongoid-devise-template.rb -T -O -J@
 
 or
 
-@$ rails new app_name -m https://github.com/fortuity/rails3-application-templates/raw/master/rails3-subdomain-devise-template.rb@
+@$ rails new app_name -m https://github.com/fortuity/rails3-application-templates/raw/master/rails3-subdomain-devise-template.rb -T -O -J@
+
+Use the @-T -O -J@ flags to skip Test::Unit files, Active Record files, and Prototype files.
 
 bq. You MUST be using Rails 3.0.4 or newer. Generating a Rails application from an "HTTPS" URL does not work in Rails 3.0.3 and earlier versions.
 
