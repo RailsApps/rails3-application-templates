@@ -9,14 +9,14 @@ h4. Applications
 The templates can be used to build the following complete applications:
 
 * "rails3-mongoid-devise":http://github.com/fortuity/rails3-mongoid-devise/
-* "rails3-subdomain-devise":http://github.com/fortuity/rails3-subdomain-devise/
+* "rails3-subdomain-devise":http://github.com/fortuity/rails3-subdomain-devise/ (older version doesn't use "rails-template-recipes":https://github.com/fortuity/rails-template-recipes)
 
 h4. Tutorials
 
 There are detailed tutorials to show how each application is built:
 
 * "Tutorial for rails3-mongoid-devise":http://github.com/fortuity/rails3-mongoid-devise/wiki/Tutorial-%28Walkthrough%29
-* "Tutorial for rails3-subdomain-devise":http://github.com/fortuity/rails3-subdomain-devise/wiki/Tutorial-%28Walkthrough%29
+* "Tutorial for rails3-subdomain-devise":http://github.com/fortuity/rails3-subdomain-devise/wiki/Tutorial-%28Walkthrough%29 (older version doesn't use "rails-template-recipes":https://github.com/fortuity/rails-template-recipes)
 
 h4. Template Recipes
 
@@ -78,6 +78,76 @@ These gems are optional:
 The rails3-subdomain-devise-template requires this gem:
 
 * "friendly_id":https://rubygems.org/gems/friendly_id
+
+h2. Dependencies
+
+Before generating your application, you will need:
+
+* The Ruby language (version 1.8.7 or 1.9.2)
+* Rails (version 3.0.4 or newer)
+
+bq. You MUST be using Rails 3.0.4 or newer. Generating a Rails application from an "HTTPS" URL does not work in Rails 3.0.3 and earlier versions.
+
+I recommend installing rvm, the "Ruby Version Manager":http://rvm.beginrescueend.com/, to manage multiple versions of Rails.
+
+If you are using rvm, you can see a list of the Ruby versions currently installed:
+@$ rvm list@
+
+Check that appropriate versions of Ruby and Rails are installed in your development environment:
+@$ ruby -v@
+@$ rails -v@
+
+You will also need:
+
+* A working installation of "MongoDB":http://www.mongodb.org/ (version 1.6.0 or newer)
+
+If you don't have MongoDB installed on your computer, you'll need to install it and set it up to be always running on your computer (run at launch). On Mac OS X, the easiest way to install MongoDB is to install "Homebrew":http://mxcl.github.com/homebrew/ and then run the following:
+
+<pre>
+brew install mongo
+sudo mkdir -p /data/db
+sudo chmod -Rv 777 /data/
+</pre>
+
+h2. Generating the Application
+
+Generate a new Rails application with the command:
+
+@$ rails new app_name -m https://github.com/fortuity/rails3-application-templates/raw/master/rails3-mongoid-devise-template.rb -T -O -J@
+
+or
+
+@$ rails new app_name -m https://github.com/fortuity/rails3-application-templates/raw/master/rails3-subdomain-devise-template.rb -T -O -J@
+
+Use the @-T -O -J@ flags to skip Test::Unit files, Active Record files, and Prototype files.
+
+bq. You MUST be using Rails 3.0.4 or newer. Generating a Rails application from an "HTTPS" URL does not work in Rails 3.0.3 and earlier versions.
+
+This creates a new Rails app (with the @app_name@ you provide) on your computer.
+
+The application generator template offers you the following options:
+
+* set up your view files using the Haml templating language
+* use jQuery instead of Prototype
+* install the heroku gem for deployment to Heroku
+
+If you wish to "change the recipe" to generate the app with your own customized options, you can copy and edit the template file.
+
+h2. Documentation and Support
+
+The templates are provided without support or additional documentation.
+
+h4. Writing Recipes
+
+To understand the code in these templates, take a look at "Thor::Actions":http://rdoc.info/github/wycats/thor/master/Thor/Actions. Your recipes can use any methods provided by "Thor::Actions":http://rdoc.info/github/wycats/thor/master/Thor/Actions or "Rails::Generators::Actions":http://github.com/rails/rails/blob/master/railties/lib/rails/generators/actions.rb.
+
+h4. About Rails Application Templates
+
+"Cooking Up A Custom Rails 3 Template (11 Oct 2010) by Andrea Singh":http://blog.madebydna.com/all/code/2010/10/11/cooking-up-a-custom-rails3-template.html
+"Rails Application Templates (16 Sept 2010) by Collin Schaafsma":http://quickleft.com/blog/rails-application-templates
+"Application templates in Rails 3 (18 Sept 2009) by Ben Scofield":http://benscofield.com/2009/09/application-templates-in-rails-3/
+"Railscasts: App Templates in Rails 2.3 (9 Feb 2009) by Ryan Bates":http://railscasts.com/episodes/148-app-templates-in-rails-2-3
+"Rails templates (4 Dec 2008) by Pratik Naik":http://m.onkey.org/rails-templates
 
 h2. Similar Projects
 
@@ -163,72 +233,6 @@ These Rails 2.3 projects were once popular but haven't been updated since 2009 o
 bq. For a ranking by popularity, see:
 "The Ruby Toolbox: Rails App Templates":http://ruby-toolbox.com/categories/rails_app_templates.html
 
-h2. Dependencies
-
-Before generating your application, you will need:
-
-* The Ruby language (version 1.8.7 or 1.9.2)
-* Rails (version 3.0.4 or newer)
-
-bq. You MUST be using Rails 3.0.4 or newer. Generating a Rails application from an "HTTPS" URL does not work in Rails 3.0.3 and earlier versions.
-
-I recommend installing rvm, the "Ruby Version Manager":http://rvm.beginrescueend.com/, to manage multiple versions of Rails.
-
-If you are using rvm, you can see a list of the Ruby versions currently installed:
-@$ rvm list@
-
-Check that appropriate versions of Ruby and Rails are installed in your development environment:
-@$ ruby -v@
-@$ rails -v@
-
-You will also need:
-
-* A working installation of "MongoDB":http://www.mongodb.org/ (version 1.6.0 or newer)
-
-If you don't have MongoDB installed on your computer, you'll need to install it and set it up to be always running on your computer (run at launch). On Mac OS X, the easiest way to install MongoDB is to install "Homebrew":http://mxcl.github.com/homebrew/ and then run the following:
-
-<pre>
-brew install mongo
-sudo mkdir -p /data/db
-sudo chmod -Rv 777 /data/
-</pre>
-
-h2. Generating the Application
-
-Generate a new Rails application with the command:
-
-@$ rails new app_name -m https://github.com/fortuity/rails3-application-templates/raw/master/rails3-mongoid-devise-template.rb -T -O -J@
-
-or
-
-@$ rails new app_name -m https://github.com/fortuity/rails3-application-templates/raw/master/rails3-subdomain-devise-template.rb -T -O -J@
-
-Use the @-T -O -J@ flags to skip Test::Unit files, Active Record files, and Prototype files.
-
-bq. You MUST be using Rails 3.0.4 or newer. Generating a Rails application from an "HTTPS" URL does not work in Rails 3.0.3 and earlier versions.
-
-This creates a new Rails app (with the @app_name@ you provide) on your computer.
-
-The application generator template offers you the following options:
-
-* set up your view files using the Haml templating language
-* use jQuery instead of Prototype
-* install the heroku gem for deployment to Heroku
-
-If you wish to "change the recipe" to generate the app with your own customized options, you can copy and edit the template file.
-
-h2. Documentation and Support
-
-The templates are provided without support or additional documentation.
-
-h3. About Rails Application Templates
-
-"Cooking Up A Custom Rails 3 Template (11 Oct 2010) by Andrea Singh":http://blog.madebydna.com/all/code/2010/10/11/cooking-up-a-custom-rails3-template.html
-"Rails Application Templates (16 Sept 2010) by Collin Schaafsma":http://quickleft.com/blog/rails-application-templates
-"Application templates in Rails 3 (18 Sept 2009) by Ben Scofield":http://benscofield.com/2009/09/application-templates-in-rails-3/
-"Railscasts: App Templates in Rails 2.3 (9 Feb 2009) by Ryan Bates":http://railscasts.com/episodes/148-app-templates-in-rails-2-3
-"Rails templates (4 Dec 2008) by Pratik Naik":http://m.onkey.org/rails-templates
-
 h2. Contributing
 
 If you make improvements to these templates, please share with others.
@@ -252,6 +256,6 @@ Any issues? Please create an "Issue":http://github.com/fortuity/rails3-applicati
 
 h2. License
 
-h3. Public Domain Dedication
+h4. Public Domain Dedication
 
 This work is a compilation and derivation from other previously released works. With the exception of various included works, which may be restricted by other licenses, the author or authors of this code dedicate any and all copyright interest in this code to the public domain. We make this dedication for the benefit of the public at large and to the detriment of our heirs and successors. We intend this dedication to be an overt act of relinquishment in perpetuity of all present and future rights to this code under copyright law.
