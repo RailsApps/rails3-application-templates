@@ -26,24 +26,24 @@ def after_bundler(&block); @after_blocks << block; end
 
 # >--------------------------------[ configure ]---------------------------------<
 
-@recipe_list = %w{ mongoid jquery haml devise heroku }
+recipe_list = %w{ mongoid jquery haml devise heroku }
 
-@extra_recipes = %w{ git 
+extra_recipes = %w{ git 
   action_mailer devise_extras add_user_name 
   home_page home_page_users seed_database users_page 
   css_setup application_layout devise_navigation 
   cleanup ban_spiders }
 
 if no?('Would you like to use the Haml template system? (yes/no)')
-  @recipe_list.delete('haml')
+  recipe_list.delete('haml')
 end
 
 if no?('Would you like to use jQuery instead of Prototype? (yes/no)')
-  @recipe_list.delete('jquery')
+  recipe_list.delete('jquery')
 end
 
 if no?('Do you want to install the Heroku gem so you can deploy to Heroku? (yes/no)')
-  @recipe_list.delete('heroku')
+  recipe_list.delete('heroku')
 end
 
 # >--------------------------------[ git ]---------------------------------<
