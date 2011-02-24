@@ -1,8 +1,12 @@
 # Application Generator Template
 # Modifies a Rails app to use Mongoid and Devise
-# Usage: rails new app_name -m https://github.com/fortuity/rails3-application-templates/raw/master/rails3-mongoid-devise-template.rb
+# Usage: rails new APP_NAME -m https://github.com/fortuity/rails3-application-templates/raw/master/rails3-mongoid-devise-template.rb
 
-# More info: http://github.com/fortuity/rails3-mongoid-devise/
+# Information and a tutorial: 
+# http://github.com/fortuity/rails3-mongoid-devise/
+
+# More application template recipes:
+# https://github.com/fortuity/rails-template-recipes/
 
 # If you are customizing this template, you can use any methods provided by Thor::Actions
 # http://rdoc.info/rdoc/wycats/thor/blob/f939a3e8a854616784cac1dcff04ef4f3ee5f7ff/Thor/Actions.html
@@ -12,163 +16,237 @@
 puts "Modifying a new Rails app to use Mongoid and Devise..."
 puts "Any problems? See http://github.com/fortuity/rails3-mongoid-devise/issues"
 
-#----------------------------------------------------------------------------
-# Configure
-#----------------------------------------------------------------------------
+# >----------------------------[ initial setup ]------------------------------<
 
-if yes?('Would you like to use the Haml template system? (yes/no)')
-  haml_flag = true
-else
-  haml_flag = false
+def say_recipe(name); say "\033[36m" + "recipe".rjust(10) + "\033[0m" + "    Running #{name} recipe..." end
+def say_wizard(text); say "\033[36m" + "wizard".rjust(10) + "\033[0m" + "    #{text}" end
+
+@after_blocks = []
+def after_bundler(&block); @after_blocks << block; end
+
+# >--------------------------------[ configure ]---------------------------------<
+
+@recipe_list = %w{ mongoid jquery haml devise heroku }
+
+@extra_recipes = %w{ git 
+  action_mailer devise_extras add_user_name 
+  home_page home_page_users seed_database users_page 
+  css_setup application_layout devise_navigation 
+  cleanup ban_spiders }
+
+if no?('Would you like to use the Haml template system? (yes/no)')
+  @recipe_list.delete('haml')
 end
 
-if yes?('Would you like to use jQuery instead of Prototype? (yes/no)')
-  jquery_flag = true
-else
-  jquery_flag = false
+if no?('Would you like to use jQuery instead of Prototype? (yes/no)')
+  @recipe_list.delete('jquery')
 end
 
-if yes?('Do you want to install the Heroku gem so you can deploy to Heroku? (yes/no)')
-  heroku_flag = true
-else
-  heroku_flag = false
+if no?('Do you want to install the Heroku gem so you can deploy to Heroku? (yes/no)')
+  @recipe_list.delete('heroku')
 end
 
-#----------------------------------------------------------------------------
-# Set up git
-#----------------------------------------------------------------------------
-puts "setting up source control with 'git'..."
-# specific to Mac OS X
-append_file '.gitignore' do
-  '.DS_Store'
-end
+# >--------------------------------[ git ]---------------------------------<
+
+# Application template recipe. Check for a newer version here:
+# https://github.com/fortuity/rails-template-recipes/blob/master/git.rb
+
+# Set up Git for version control
+say_recipe 'Git'
+
+# Git should ignore some files
+remove_file '.gitignore'
+file '.gitignore', <<-'IGNORES'.gsub(/^ {2}/, '')
+  # bundler state
+  /.bundle
+  /vendor/bundle/
+
+  # minimal Rails specific artifacts
+  db/*.sqlite3
+  /log/*
+  tmp/*
+
+  # various artifacts
+  **.war
+  *.rbc
+  *.sassc
+  .rspec
+  .sass-cache
+  /config/config.yml
+  /config/database.yml
+  /coverage.data
+  /coverage/
+  /db/*.javadb/
+  /db/*.sqlite3-journal
+  /doc/api/
+  /doc/app/
+  /doc/features.html
+  /doc/specs.html
+  /log/*
+  /public/cache
+  /public/stylesheets/compiled
+  /public/system
+  /spec/tmp/*
+  /tmp/*
+  /cache
+  /capybara*
+  /capybara-*.html
+  /gems
+  /rerun.txt
+  /spec/requests
+  /spec/routing
+  /spec/views
+  /specifications
+
+  # scm revert files
+  **.orig
+
+  # mac finder poop
+  .DS_Store
+
+  # netbeans project directory
+  /nbproject/
+
+  # textmate project files
+  /*.tmpproj
+
+  # vim poop
+  **.swp
+IGNORES
+
+# Initialize new Git repo
 git :init
 git :add => '.'
-git :commit => "-m 'Initial commit of unmodified new Rails app'"
+git :commit => "-aqm 'Initial commit of new Rails app'"
 
-#----------------------------------------------------------------------------
-# Remove the usual cruft
-#----------------------------------------------------------------------------
-puts "removing unneeded files..."
-run 'rm config/database.yml'
-run 'rm public/index.html'
-run 'rm public/favicon.ico'
-run 'rm public/images/rails.png'
-run 'rm README'
-run 'touch README'
+# >--------------------------------[ mongoid ]--------------------------------<
 
-puts "banning spiders from your site by changing robots.txt..."
-gsub_file 'public/robots.txt', /# User-Agent/, 'User-Agent'
-gsub_file 'public/robots.txt', /# Disallow/, 'Disallow'
+# Utilize MongoDB with Mongoid as the ORM.
 
-#----------------------------------------------------------------------------
-# Heroku Option
-#----------------------------------------------------------------------------
-if heroku_flag
-  puts "adding Heroku gem to the Gemfile..."
-  gem 'heroku', '1.17.13', :group => :development
+if recipe_list.include? 'mongoid'
+
+  say_recipe 'Mongoid'
+
+  gem 'mongoid', '>= 2.0.0.rc.7'
+  gem 'bson_ext'
+
+  # modifying 'config/application.rb' file to remove ActiveRecord dependency
+  gsub_file 'config/application.rb', /require 'rails\/all'/ do
+  <<-RUBY
+  require 'action_controller/railtie'
+  require 'action_mailer/railtie'
+  require 'active_resource/railtie'
+  require 'rails/test_unit/railtie'
+  RUBY
+  end
+
+  # remove unnecessary 'config/database.yml' file
+  remove_file 'config/database.yml'
+
+  after_bundler do
+    generate 'mongoid:config'
+  end
+
+  if extra_recipes.include? 'git'
+    say_wizard "commiting changes to git"
+    git :add => '.'
+    git :commit => "-am 'Fix config/application.rb file to remove ActiveRecord dependency.'"
+  end
+
 end
 
-#----------------------------------------------------------------------------
-# Haml Option
-#----------------------------------------------------------------------------
-if haml_flag
-  puts "setting up Gemfile for Haml..."
-  append_file 'Gemfile', "\n# Bundle gems needed for Haml\n"
-  gem 'haml', '3.0.25'
-  gem 'haml-rails', '0.3.4', :group => :development
-  # the following gems are used to generate Devise views for Haml
-  gem 'hpricot', '0.8.3', :group => :development
-  gem 'ruby_parser', '2.0.5', :group => :development
+# >--------------------------------[ jQuery ]---------------------------------<
+
+if recipe_list.include? 'jquery'
+  
+  # Adds the latest jQuery and Rails UJS helpers for jQuery.
+  say_recipe 'jQuery'
+
+  inside "public/javascripts" do
+    get "https://github.com/rails/jquery-ujs/raw/master/src/rails.js", "rails.js"
+    get "http://code.jquery.com/jquery-1.5.min.js", "jquery.js"
+  end
+
+  application do
+    "\nconfig.action_view.javascript_expansions[:defaults] = %w(jquery rails)\n"
+  end
+
+  gsub_file "config/application.rb", /        config.action_view.javascript_expansions\[:defaults\] = \%w\(\)\n/, ""
+  
+end 
+
+# >---------------------------------[ Haml ]----------------------------------<
+
+if recipe_list.include? 'haml'
+  
+  # Utilize HAML for templating.
+  say_recipe 'HAML'
+
+  gem 'haml', '>= 3.0.0'
+  gem 'haml-rails'
+
 end
 
-#----------------------------------------------------------------------------
-# jQuery Option
-#----------------------------------------------------------------------------
-if jquery_flag
-  gem 'jquery-rails', '0.2.7'
-end
+# >--------------------------------[ devise ]---------------------------------<
 
-#----------------------------------------------------------------------------
-# Set up Mongoid
-#----------------------------------------------------------------------------
-puts "setting up Gemfile for Mongoid..."
-gsub_file 'Gemfile', /gem \'sqlite3-ruby/, '# gem \'sqlite3-ruby'
-append_file 'Gemfile', "\n# Bundle gems needed for Mongoid\n"
-gem "mongoid", "2.0.0.rc.7"
-gem 'bson_ext', '1.2.2'
+# Application template recipe. Check for a newer version here:
+# https://github.com/fortuity/rails-template-recipes/blob/master/devise_extras.rb
 
-puts "installing Mongoid gems (takes a few minutes!)..."
-run 'bundle install'
+if recipe_list.include? 'devise'
+  
+  # Utilize Devise for authentication, automatically configured for your selected ORM.
+  say_recipe 'Devise'
 
-puts "creating 'config/mongoid.yml' Mongoid configuration file..."
-run 'rails generate mongoid:config'
+  gem "devise", ">= 1.2.rc"
 
-puts "modifying 'config/application.rb' file for Mongoid..."
-gsub_file 'config/application.rb', /require 'rails\/all'/ do
-<<-RUBY
-# If you are deploying to Heroku and MongoHQ,
-# you supply connection information here.
-require 'uri'
-if ENV['MONGOHQ_URL']
-  mongo_uri = URI.parse(ENV['MONGOHQ_URL'])
-  ENV['MONGOID_HOST'] = mongo_uri.host
-  ENV['MONGOID_PORT'] = mongo_uri.port.to_s
-  ENV['MONGOID_USERNAME'] = mongo_uri.user
-  ENV['MONGOID_PASSWORD'] = mongo_uri.password
-  ENV['MONGOID_DATABASE'] = mongo_uri.path.gsub('/', '')
-end
+  after_bundler do
 
-require 'mongoid/railtie'
-require 'action_controller/railtie'
-require 'action_mailer/railtie'
-require 'active_resource/railtie'
-require 'rails/test_unit/railtie'
-RUBY
-end
+    #----------------------------------------------------------------------------
+    # Run the Devise generator
+    #----------------------------------------------------------------------------
+    generate 'devise:install'
 
-#----------------------------------------------------------------------------
-# Tweak config/application.rb for Mongoid
-#----------------------------------------------------------------------------
-gsub_file 'config/application.rb', /# Configure the default encoding used in templates for Ruby 1.9./ do
-<<-RUBY
-config.generators do |g|
-      g.orm             :mongoid
+    if recipe_list.include? 'mongo_mapper'
+      gem 'mm-devise'
+      gsub_file 'config/initializers/devise.rb', 'devise/orm/active_record', 'devise/orm/mongo_mapper_active_model'
+    elsif recipe_list.include? 'mongoid'
+      # Nothing to do (Devise changes its initializer automatically when Mongoid is detected)
+      # gsub_file 'config/initializers/devise.rb', 'devise/orm/active_record', 'devise/orm/mongoid'
+    elsif recipe_list.include? 'active_record'
+      # Nothing to do
+    else
+      # Nothing to do
     end
 
-    # Configure the default encoding used in templates for Ruby 1.9.
-RUBY
+    #----------------------------------------------------------------------------
+    # Prevent logging of password_confirmation
+    #----------------------------------------------------------------------------
+    gsub_file 'config/application.rb', /:password/, ':password, :password_confirmation'
+
+    #----------------------------------------------------------------------------
+    # Generate models and routes for a User
+    #----------------------------------------------------------------------------
+    generate 'devise user'
+
+    if extra_recipes.include? 'git'
+      say_wizard "commiting changes to git"
+      git :add => '.'
+      git :commit => "-am 'Added Devise for authentication'"
+    end
+
+  end
+
 end
 
-puts "prevent logging of passwords"
-gsub_file 'config/application.rb', /:password/, ':password, :password_confirmation'
+# >--------------------------------[ action_mailer ]--------------------------------<
 
-#----------------------------------------------------------------------------
-# Set up jQuery
-#----------------------------------------------------------------------------
-if jquery_flag
-  run 'rm public/javascripts/rails.js'
-  puts "replacing Prototype with jQuery"
-  # "--ui" enables optional jQuery UI
-  run 'rails generate jquery:install --ui'
-end
+# Application template recipe. Check for a newer version here:
+# https://github.com/fortuity/rails-template-recipes/blob/master/action_mailer.rb
 
-#----------------------------------------------------------------------------
-# Set up Devise
-#----------------------------------------------------------------------------
-puts "setting up Gemfile for Devise..."
-append_file 'Gemfile', "\n# Bundle gem needed for Devise\n"
-gem 'devise', '1.2.rc'
+say_recipe 'ActionMailer configuration'
 
-puts "installing Devise gem (takes a few minutes!)..."
-run 'bundle install'
-
-puts "creating 'config/initializers/devise.rb' Devise configuration file..."
-run 'rails generate devise:install'
-run 'rails generate devise:views'
-
-puts "modifying environment configuration files for Devise..."
-gsub_file 'config/environments/development.rb', /# Don't care if the mailer can't send/, '### ActionMailer Config'
+# modifying environment configuration files for ActiveRecord
+gsub_file 'config/environments/development.rb', /# Don't care if the mailer can't send/, '# ActionMailer Config'
 gsub_file 'config/environments/development.rb', /config.action_mailer.raise_delivery_errors = false/ do
 <<-RUBY
 config.action_mailer.default_url_options = { :host => 'localhost:3000' }
@@ -179,12 +257,12 @@ config.action_mailer.default_url_options = { :host => 'localhost:3000' }
   config.action_mailer.default :charset => "utf-8"
 RUBY
 end
-gsub_file 'config/environments/production.rb', /config.i18n.fallbacks = true/ do
+gsub_file 'config/environments/production.rb', /config.active_support.deprecation = :notify/ do
 <<-RUBY
-config.i18n.fallbacks = true
+config.active_support.deprecation = :notify
 
   config.action_mailer.default_url_options = { :host => 'yourhost.com' }
-  ### ActionMailer Config
+  # ActionMailer Config
   # Setup for production - deliveries, no errors raised
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.perform_deliveries = true
@@ -193,141 +271,546 @@ config.i18n.fallbacks = true
 RUBY
 end
 
-puts "creating a User model and modifying routes for Devise..."
-run 'rails generate devise User'
+if extra_recipes.include? 'git'
+  say_wizard "commiting changes to git"
+  git :add => '.'
+  git :commit => "-am 'Set ActionMailer configuration.'"
+end
 
-puts "adding a 'name' attribute to the User model"
-gsub_file 'app/models/user.rb', /end/ do
-<<-RUBY
+# >--------------------------------[ add_user_name ]--------------------------------<
+
+# Application template recipe. Check for a newer version here:
+# https://github.com/fortuity/rails-template-recipes/blob/master/add_user_name.rb
+
+# There is Haml code in this script. Changing the indentation is perilous between HAMLs.
+
+say_recipe 'add_user_name'
+
+if recipe_list.include? 'haml'
+  # the following gems are required to generate Devise views for Haml
+  gem 'hpricot', :group => :development
+  gem 'ruby_parser', :group => :development
+end
+
+after_bundler do
+   
+  #----------------------------------------------------------------------------
+  # Add a 'name' attribute to the User model
+  #----------------------------------------------------------------------------
+  if recipe_list.include? 'mongoid'
+    gsub_file 'app/models/user.rb', /end/ do
+  <<-RUBY
   field :name
   validates_presence_of :name
   validates_uniqueness_of :name, :email, :case_sensitive => false
   attr_accessible :name, :email, :password, :password_confirmation, :remember_me
 end
 RUBY
+    end
+  elsif recipe_list.include? 'mongo_mapper'
+    # Using MongoMapper? Create an issue, suggest some code, and I'll add it
+  elsif recipe_list.include? 'active_record'
+    gsub_file 'app/models/user.rb', /end/ do
+  <<-RUBY
+  validates_presence_of :name
+  validates_uniqueness_of :name, :email, :case_sensitive => false
+  attr_accessible :name, :email, :password, :password_confirmation, :remember_me
 end
+RUBY
+    end
+  else
+    # Placeholder for some other ORM
+  end
 
-#----------------------------------------------------------------------------
-# Modify Devise views
-#----------------------------------------------------------------------------
-puts "modifying the default Devise user registration to add 'name'..."
-if haml_flag
-   inject_into_file "app/views/devise/registrations/edit.html.haml", :after => "= devise_error_messages!\n" do
-<<-RUBY
+  if extra_recipes.include? 'devise_extras'
+    #----------------------------------------------------------------------------
+    # Generate Devise views
+    #----------------------------------------------------------------------------
+    run 'rails generate devise:views'
+
+    #----------------------------------------------------------------------------
+    # Modify Devise views to add 'name'
+    #----------------------------------------------------------------------------
+    if recipe_list.include? 'haml'
+       inject_into_file "app/views/devise/registrations/edit.html.haml", :after => "= devise_error_messages!\n" do
+  <<-HAML
   %p
     = f.label :name
     %br/
     = f.text_field :name
-RUBY
-   end
-else
-   inject_into_file "app/views/devise/registrations/edit.html.erb", :after => "<%= devise_error_messages! %>\n" do
-<<-RUBY
+HAML
+       end
+    else
+       inject_into_file "app/views/devise/registrations/edit.html.erb", :after => "<%= devise_error_messages! %>\n" do
+  <<-ERB
   <p><%= f.label :name %><br />
   <%= f.text_field :name %></p>
-RUBY
-   end
-end
+ERB
+       end
+    end
 
-if haml_flag
-   inject_into_file "app/views/devise/registrations/new.html.haml", :after => "= devise_error_messages!\n" do
-<<-RUBY
+    if recipe_list.include? 'haml'
+       inject_into_file "app/views/devise/registrations/new.html.haml", :after => "= devise_error_messages!\n" do
+  <<-HAML
   %p
     = f.label :name
     %br/
     = f.text_field :name
-RUBY
-   end
-else
-   inject_into_file "app/views/devise/registrations/new.html.erb", :after => "<%= devise_error_messages! %>\n" do
-<<-RUBY
+HAML
+       end
+    else
+       inject_into_file "app/views/devise/registrations/new.html.erb", :after => "<%= devise_error_messages! %>\n" do
+  <<-ERB
   <p><%= f.label :name %><br />
   <%= f.text_field :name %></p>
-RUBY
-   end
+ERB
+       end
+    end
+  end
+
+  if extra_recipes.include? 'git'
+    say_wizard "commiting changes to git"
+    git :add => '.'
+    if extra_recipes.include? 'devise_extras'
+      git :commit => "-am 'Add a name attribute to the User model and modify Devise views.'"
+    else
+      git :commit => "-am 'Add a name attribute to the User model.'"
+    end
+  end
+
 end
 
-#----------------------------------------------------------------------------
-# Create a home page
-#----------------------------------------------------------------------------
-puts "create a home controller and view"
-generate(:controller, "home index")
-gsub_file 'config/routes.rb', /get \"home\/index\"/, 'root :to => "home#index"'
+# >--------------------------------[ home_page ]--------------------------------<
 
-puts "set up a simple demonstration of Devise"
-gsub_file 'app/controllers/home_controller.rb', /def index/ do
-<<-RUBY
+# Application template recipe. Check for a newer version here:
+# https://github.com/fortuity/rails-template-recipes/blob/master/home_page.rb
+
+# There is Haml code in this script. Changing the indentation is perilous between HAMLs.
+
+say_recipe 'Home Page'
+
+after_bundler do
+  
+  # remove the default home page
+  remove_file 'public/index.html'
+  
+  # create a home controller and view
+  generate(:controller, "home index")
+
+  # set up a simple home page (with placeholder content)
+  if recipe_list.include? 'haml'
+    remove_file 'app/views/home/index.html.haml'
+    # we have to use single-quote-style-heredoc to avoid interpolation
+    create_file 'app/views/home/index.html.haml' do 
+    <<-'HAML'
+%h3 Home
+HAML
+    end
+  else
+    remove_file 'app/views/home/index.html.erb'
+    create_file 'app/views/home/index.html.erb' do <<-ERB
+<h3>Home</h3>
+ERB
+    end
+  end
+
+  # set routes
+  gsub_file 'config/routes.rb', /get \"home\/index\"/, 'root :to => "home#index"'
+
+  if extra_recipes.include? 'git'
+    say_wizard "commiting changes to git"
+    git :add => '.'
+    git :commit => "-am 'Create a home controller and view.'"
+  end
+
+end
+
+# >--------------------------------[ home_page_users ]--------------------------------<
+
+# Application template recipe. Check for a newer version here:
+# https://github.com/fortuity/rails-template-recipes/blob/master/home_page_users.rb
+
+# There is Haml code in this script. Changing the indentation is perilous between HAMLs.
+
+say_recipe 'Home Page Showing Users'
+
+after_bundler do
+
+  if extra_recipes.include? 'devise_extras'
+
+    #----------------------------------------------------------------------------
+    # Modify the home controller
+    #----------------------------------------------------------------------------
+    gsub_file 'app/controllers/home_controller.rb', /def index/ do
+    <<-RUBY
 def index
-    @users = User.all
+  @users = User.all
 RUBY
-end
+    end
 
-if haml_flag
-  run 'rm app/views/home/index.html.haml'
-  # we have to use single-quote-style-heredoc to avoid interpolation
-  create_file 'app/views/home/index.html.haml' do 
-<<-'FILE'
+    #----------------------------------------------------------------------------
+    # Replace the home page
+    #----------------------------------------------------------------------------
+    if recipe_list.include? 'haml'
+      remove_file 'app/views/home/index.html.haml'
+      # we have to use single-quote-style-heredoc to avoid interpolation
+      create_file 'app/views/home/index.html.haml' do 
+      <<-'HAML'
+%h3 Home
 - @users.each do |user|
-  %p User: #{link_to user.name, user}
-FILE
-  end
-else
-  append_file 'app/views/home/index.html.erb' do <<-FILE
+  %p User: #{user.name}
+HAML
+      end
+    else
+      append_file 'app/views/home/index.html.erb' do <<-ERB
+<h3>Home</h3>
 <% @users.each do |user| %>
-  <p>User: <%=link_to user.name, user %></p>
+  <p>User: <%= user.name %></p>
 <% end %>
-  FILE
+ERB
+      end
+    end
+
   end
+
+  if extra_recipes.include? 'git'
+    say_wizard "commiting changes to git"
+    git :add => '.'
+    git :commit => "-am 'Added display of users to the home page.'"
+  end
+
 end
 
-#----------------------------------------------------------------------------
-# Create a users page
-#----------------------------------------------------------------------------
-generate(:controller, "users show")
-gsub_file 'config/routes.rb', /get \"users\/show\"/, '#get \"users\/show\"'
-gsub_file 'config/routes.rb', /devise_for :users/ do
-<<-RUBY
-devise_for :users
-  resources :users, :only => :show
-RUBY
+# >--------------------------------[ seed_database ]--------------------------------<
+
+# Application template recipe. Check for a newer version here:
+# https://github.com/fortuity/rails-template-recipes/blob/master/seed_database.rb
+
+say_recipe 'Seed Database'
+
+after_bundler do
+  
+  if extra_recipes.include? 'devise_extras'
+  
+    if recipe_list.include? 'mongoid'
+      # create a default user
+      say_wizard "creating a default user"
+      append_file 'db/seeds.rb' do <<-FILE
+puts 'EMPTY THE MONGODB DATABASE'
+Mongoid.master.collections.reject { |c| c.name =~ /^system/}.each(&:drop)
+puts 'SETTING UP DEFAULT USER LOGIN'
+user = User.create! :name => 'First User', :email => 'user@test.com', :password => 'please', :password_confirmation => 'please'
+puts 'New user created: ' << user.name
+FILE
+      end
+    end
+  
+    run 'rake db:seed'
+  
+  end
+
+  if extra_recipes.include? 'git'
+    say_wizard "commiting changes to git"
+    git :add => '.'
+    git :commit => "-am 'Create a database seed file with a default user.'"
+  end
+
 end
 
-gsub_file 'app/controllers/users_controller.rb', /def show/ do
-<<-RUBY
+# >--------------------------------[ users_page ]--------------------------------<
+
+# Application template recipe. Check for a newer version here:
+# https://github.com/fortuity/rails-template-recipes/blob/master/users_page.rb
+
+# There is Haml code in this script. Changing the indentation is perilous between HAMLs.
+
+say_recipe 'Users Page'
+
+after_bundler do
+
+  if extra_recipes.include? 'devise_extras'
+
+    #----------------------------------------------------------------------------
+    # Create a users controller
+    #----------------------------------------------------------------------------
+    generate(:controller, "users show")
+    gsub_file 'app/controllers/users_controller.rb', /def show/ do
+    <<-RUBY
 before_filter :authenticate_user!
 
   def show
     @user = User.find(params[:id])
 RUBY
-end
+    end
 
-if haml_flag
-  run 'rm app/views/users/show.html.haml'
-  # we have to use single-quote-style-heredoc to avoid interpolation
-  create_file 'app/views/users/show.html.haml' do <<-'FILE'
+    #----------------------------------------------------------------------------
+    # Modify the routes
+    #----------------------------------------------------------------------------
+    # @devise_for :users@ route must be placed above @resources :users, :only => :show@.
+    gsub_file 'config/routes.rb', /get \"users\/show\"/, '#get \"users\/show\"'
+    gsub_file 'config/routes.rb', /devise_for :users/ do
+    <<-RUBY
+devise_for :users
+  resources :users, :only => :show
+RUBY
+    end
+
+    #----------------------------------------------------------------------------
+    # Create a users show page
+    #----------------------------------------------------------------------------
+    if recipe_list.include? 'haml'
+      remove_file 'app/views/users/show.html.haml'
+      # we have to use single-quote-style-heredoc to avoid interpolation
+      create_file 'app/views/users/show.html.haml' do <<-'HAML'
 %p
   User: #{@user.name}
-  FILE
-  end
-else
-  append_file 'app/views/users/show.html.erb' do <<-FILE
+HAML
+      end
+    else
+      append_file 'app/views/users/show.html.erb' do <<-ERB
 <p>User: <%= @user.name %></p>
-  FILE
+ERB
+      end
+    end
+
+    #----------------------------------------------------------------------------
+    # Create a home page containing links to user show pages
+    # (clobbers code from the home_page_users recipe)
+    #----------------------------------------------------------------------------
+    # set up the controller
+    remove_file 'app/controllers/home_controller.rb'
+    create_file 'app/controllers/home_controller.rb' do
+    <<-RUBY
+class HomeController < ApplicationController
+  def index
+    @users = User.all
+  end
+end
+RUBY
+    end
+
+    # modify the home page
+    if recipe_list.include? 'haml'
+      remove_file 'app/views/home/index.html.haml'
+      # we have to use single-quote-style-heredoc to avoid interpolation
+      create_file 'app/views/home/index.html.haml' do
+      <<-'HAML'
+%h3 Home
+- @users.each do |user|
+  %p User: #{link_to user.name, user}
+HAML
+      end
+    else
+      remove_file 'app/views/home/index.html.erb'
+      create_file 'app/views/home/index.html.erb' do <<-ERB
+<h3>Home</h3>
+<% @users.each do |user| %>
+  <p>User: <%=link_to user.name, user %></p>
+<% end %>
+ERB
+      end
+    end
+
+  end
+
+  if extra_recipes.include? 'git'
+    say_wizard "commiting changes to git"
+    git :add => '.'
+    git :commit => "-am 'Add a users controller and user show page with links from the home page.'"
+  end
+
+end
+
+# >--------------------------------[ users_page ]--------------------------------<
+
+# Application template recipe. Check for a newer version here:
+# https://github.com/fortuity/rails-template-recipes/blob/master/users_page.rb
+
+# There is Haml code in this script. Changing the indentation is perilous between HAMLs.
+
+say_recipe 'Users Page'
+
+after_bundler do
+
+  if extra_recipes.include? 'devise_extras'
+
+    #----------------------------------------------------------------------------
+    # Create a users controller
+    #----------------------------------------------------------------------------
+    generate(:controller, "users show")
+    gsub_file 'app/controllers/users_controller.rb', /def show/ do
+    <<-RUBY
+before_filter :authenticate_user!
+
+  def show
+    @user = User.find(params[:id])
+RUBY
+    end
+
+    #----------------------------------------------------------------------------
+    # Modify the routes
+    #----------------------------------------------------------------------------
+    # @devise_for :users@ route must be placed above @resources :users, :only => :show@.
+    gsub_file 'config/routes.rb', /get \"users\/show\"/, '#get \"users\/show\"'
+    gsub_file 'config/routes.rb', /devise_for :users/ do
+    <<-RUBY
+devise_for :users
+  resources :users, :only => :show
+RUBY
+    end
+
+    #----------------------------------------------------------------------------
+    # Create a users show page
+    #----------------------------------------------------------------------------
+    if recipe_list.include? 'haml'
+      remove_file 'app/views/users/show.html.haml'
+      # we have to use single-quote-style-heredoc to avoid interpolation
+      create_file 'app/views/users/show.html.haml' do <<-'HAML'
+%p
+  User: #{@user.name}
+HAML
+      end
+    else
+      append_file 'app/views/users/show.html.erb' do <<-ERB
+<p>User: <%= @user.name %></p>
+ERB
+      end
+    end
+
+    #----------------------------------------------------------------------------
+    # Create a home page containing links to user show pages
+    # (clobbers code from the home_page_users recipe)
+    #----------------------------------------------------------------------------
+    # set up the controller
+    remove_file 'app/controllers/home_controller.rb'
+    create_file 'app/controllers/home_controller.rb' do
+    <<-RUBY
+class HomeController < ApplicationController
+  def index
+    @users = User.all
+  end
+end
+RUBY
+    end
+
+    # modify the home page
+    if recipe_list.include? 'haml'
+      remove_file 'app/views/home/index.html.haml'
+      # we have to use single-quote-style-heredoc to avoid interpolation
+      create_file 'app/views/home/index.html.haml' do
+      <<-'HAML'
+%h3 Home
+- @users.each do |user|
+  %p User: #{link_to user.name, user}
+HAML
+      end
+    else
+      remove_file 'app/views/home/index.html.erb'
+      create_file 'app/views/home/index.html.erb' do <<-ERB
+<h3>Home</h3>
+<% @users.each do |user| %>
+  <p>User: <%=link_to user.name, user %></p>
+<% end %>
+ERB
+      end
+    end
+
+  end
+
+  if extra_recipes.include? 'git'
+    say_wizard "commiting changes to git"
+    git :add => '.'
+    git :commit => "-am 'Add a users controller and user show page with links from the home page.'"
+  end
+
+end
+
+# >--------------------------------[ css_setup ]--------------------------------<
+
+# Application template recipe. Check for a newer version here:
+# https://github.com/fortuity/rails-template-recipes/blob/master/css_setup.rb
+
+say_recipe 'CSS Setup'
+
+after_bundler do
+
+  #----------------------------------------------------------------------------
+  # Add a stylesheet with styles for a horizontal menu and flash messages
+  #----------------------------------------------------------------------------
+  create_file 'public/stylesheets/application.css' do <<-CSS
+ul.hmenu {
+  list-style: none;	
+  margin: 0 0 2em;
+  padding: 0;
+}
+ul.hmenu li {
+  display: inline;  
+}
+#flash_notice, #flash_alert {
+  padding: 5px 8px;
+  margin: 10px 0;
+}
+#flash_notice {
+  background-color: #CFC;
+  border: solid 1px #6C6;
+}
+#flash_alert {
+  background-color: #FCC;
+  border: solid 1px #C66;
+}
+CSS
+  end
+
+end
+
+if recipe_list.include? 'haml'
+  say_recipe 'Application layout (Haml)'
+
+  remove_file 'app/views/layouts/application.html.erb'
+
+  create_file 'app/views/layouts/application.html.haml' do
+    <<-FLASHES.gsub(/^ {6}/, '')
+      !!! 5
+      %html
+        %head
+          %title #{app_name}
+          = stylesheet_link_tag :all
+          = javascript_include_tag :defaults
+          = csrf_meta_tag
+        %body
+          = yield
+    FLASHES
   end
 end
 
-if haml_flag
-  create_file "app/views/devise/menu/_login_items.html.haml" do <<-'FILE'
+# >--------------------------------[ devise_navigation ]--------------------------------<
+
+# Application template recipe. Check for a newer version here:
+# https://github.com/fortuity/rails-template-recipes/blob/master/devise_navigation.rb
+
+# There is Haml code in this script. Changing the indentation is perilous between HAMLs.
+
+say_recipe 'Devise Navigation'
+
+after_bundler do
+
+  if extra_recipes.include? 'devise_extras'
+
+    #----------------------------------------------------------------------------
+    # Create navigation links for Devise
+    #----------------------------------------------------------------------------
+    if recipe_list.include? 'haml'
+      create_file "app/views/devise/menu/_login_items.html.haml" do <<-'HAML'
 - if user_signed_in?
   %li
     = link_to('Logout', destroy_user_session_path)
 - else
   %li
     = link_to('Login', new_user_session_path)
-  FILE
-  end
-else
-  create_file "app/views/devise/menu/_login_items.html.erb" do <<-FILE
+HAML
+      end
+    else
+      create_file "app/views/devise/menu/_login_items.html.erb" do <<-ERB
 <% if user_signed_in? %>
   <li>
   <%= link_to('Logout', destroy_user_session_path) %>        
@@ -337,22 +820,22 @@ else
   <%= link_to('Login', new_user_session_path)  %>  
   </li>
 <% end %>
-  FILE
-  end
-end
+ERB
+      end
+    end
 
-if haml_flag
-  create_file "app/views/devise/menu/_registration_items.html.haml" do <<-'FILE'
+    if recipe_list.include? 'haml'
+      create_file "app/views/devise/menu/_registration_items.html.haml" do <<-'HAML'
 - if user_signed_in?
   %li
     = link_to('Edit account', edit_user_registration_path)
 - else
   %li
     = link_to('Sign up', new_user_registration_path)
-  FILE
-  end
-else
-  create_file "app/views/devise/menu/_registration_items.html.erb" do <<-FILE
+HAML
+      end
+    else
+      create_file "app/views/devise/menu/_registration_items.html.erb" do <<-ERB
 <% if user_signed_in? %>
   <li>
   <%= link_to('Edit account', edit_user_registration_path) %>
@@ -362,80 +845,98 @@ else
   <%= link_to('Sign up', new_user_registration_path)  %>
   </li>
 <% end %>
-  FILE
+ERB
+      end
+    end
+
+    #----------------------------------------------------------------------------
+    # Add navigation links to the default application layout
+    #----------------------------------------------------------------------------
+    if recipe_list.include? 'haml'
+      inject_into_file 'app/views/layouts/application.html.haml', :after => "%body\n" do <<-HAML
+  %ul.hmenu
+    = render 'devise/menu/registration_items'
+    = render 'devise/menu/login_items'
+HAML
+      end
+    else
+      inject_into_file 'app/views/layouts/application.html.erb', :after => "<body>\n" do
+  <<-ERB
+  <ul class="hmenu">
+    <%= render 'devise/menu/registration_items' %>
+    <%= render 'devise/menu/login_items' %>
+  </ul>
+ERB
+      end
+    end
+
+    if extra_recipes.include? 'git'
+      say_wizard "commiting changes to git"
+      git :add => '.'
+      git :commit => "-am 'Add navigation links for Devise.'"
+    end
+
   end
+
 end
 
-#----------------------------------------------------------------------------
-# Generate Application Layout
-#----------------------------------------------------------------------------
-if haml_flag
-  run 'rm app/views/layouts/application.html.erb'
-  create_file 'app/views/layouts/application.html.haml' do <<-FILE
-!!!
-%html
-  %head
-    %title Testapp
-    = stylesheet_link_tag :all
-    = javascript_include_tag :defaults
-    = csrf_meta_tag
-  %body
-    %ul.hmenu
-      = render 'devise/menu/registration_items'
-      = render 'devise/menu/login_items'
-    %p{:style => "color: green"}= notice
-    %p{:style => "color: red"}= alert
-    = yield
-FILE
-  end
-else
-  inject_into_file 'app/views/layouts/application.html.erb', :after => "<body>\n" do
-  <<-RUBY
-<ul class="hmenu">
-  <%= render 'devise/menu/registration_items' %>
-  <%= render 'devise/menu/login_items' %>
-</ul>
-<p style="color: green"><%= notice %></p>
-<p style="color: red"><%= alert %></p>
-RUBY
-  end
+# >--------------------------------[ cleanup ]--------------------------------<
+
+# Application template recipe. Check for a newer version here:
+# https://github.com/fortuity/rails-template-recipes/blob/master/cleanup.rb
+
+say_recipe 'cleanup'
+
+# remove unnecessary files
+%w{
+  README
+  doc/README_FOR_APP
+  public/index.html
+  public/images/rails.png
+}.each { |file| remove_file file }
+
+# remove commented lines from Gemfile
+# thanks to https://github.com/perfectline/template-bucket/blob/master/cleanup.rb
+gsub_file "Gemfile", /#.*\n/, "\n"
+gsub_file "Gemfile", /\n+/, "\n"
+
+if extra_recipes.include? 'git'
+  say_wizard "commiting deletes of unneeded files to git"
+  git :add => '.'
+  git :commit => "-am 'Removed unnecessary files left over from initial app generation.'"
 end
 
-#----------------------------------------------------------------------------
-# Add Stylesheets
-#----------------------------------------------------------------------------
-create_file 'public/stylesheets/application.css' do <<-FILE
-ul.hmenu {
-  list-style: none;	
-  margin: 0 0 2em;
-  padding: 0;
-}
+# >--------------------------------[ ban_spiders ]--------------------------------<
 
-ul.hmenu li {
-  display: inline;  
-}
-FILE
+# Application template recipe. Check for a newer version here:
+# https://github.com/fortuity/rails-template-recipes/blob/master/ban_spiders.rb
+
+say_recipe 'ban spiders'
+
+# ban spiders from your site by changing robots.txt
+say_wizard "banning spiders from your site by changing robots.txt"
+gsub_file 'public/robots.txt', /# User-Agent/, 'User-Agent'
+gsub_file 'public/robots.txt', /# Disallow/, 'Disallow'
+
+if extra_recipes.include? 'git'
+  say_wizard "commiting changes to git"
+  git :add => '.'
+  git :commit => "-am 'Ban spiders from the site by changing robots.txt'"
 end
 
-#----------------------------------------------------------------------------
-# Create a default user
-#----------------------------------------------------------------------------
-puts "creating a default user"
-append_file 'db/seeds.rb' do <<-FILE
-puts 'EMPTY THE MONGODB DATABASE'
-Mongoid.master.collections.reject { |c| c.name == 'system.indexes'}.each(&:drop)
-puts 'SETTING UP DEFAULT USER LOGIN'
-user = User.create! :name => 'First User', :email => 'user@test.com', :password => 'please', :password_confirmation => 'please'
-puts 'New user created: ' << user.name
-FILE
-end
-run 'rake db:seed'
+# >-----------------------------[ Custom Code ]-------------------------------<
 
-#----------------------------------------------------------------------------
-# Finish up
-#----------------------------------------------------------------------------
-puts "checking everything into git..."
-git :add => '.'
-git :commit => "-am 'modified Rails app to use Mongoid and Devise'"
 
+
+# >-----------------------------[ run Bundler ]-------------------------------<
+
+say_wizard "Running Bundler install. This will take a while."
+run 'bundle install'
+
+# >-----------------------------[ call everything that runs after Bundler ]-------------------------------<
+
+say_wizard "Running after Bundler callbacks."
+@after_blocks.each{|b| b.call}
+
+# >-----------------------------[ finish up ]-------------------------------<
 puts "Done setting up your Rails app with Mongoid and Devise."
