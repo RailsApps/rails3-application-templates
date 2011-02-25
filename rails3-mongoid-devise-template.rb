@@ -119,6 +119,7 @@ if recipe_list.include? 'rspec'
 
   gem 'rspec-rails', '>= 2.5', :group => [:development, :test]
 
+# RailsWizard does this but I haven't figured out why it's needed:
 #   # create a generator configuration file (only used for the RSpec recipe)
 #   initializer 'generators.rb', <<-RUBY
 # Rails.application.config.generators do |g|
@@ -131,6 +132,21 @@ if recipe_list.include? 'rspec'
 
   after_bundler do
     generate 'rspec:install'
+    
+    gsub_file spec_helper_path, 'config.fixture_path = "#{::Rails.root}/spec/fixtures"', ''
+    gsub_file spec_helper_path, /(config.use_transactional_fixtures = true)/, '# \1'
+
+    if recipe_list.include? == "mongoid"
+      mongoid_rspec_truncation = <<-MONGOID
+
+        config.before :each do
+          Mongoid.master.collections.select {|c| c.name !~ /system/ }.each(&:drop)
+        end
+
+      MONGOID
+
+      inject_into_file spec_helper_path, mongoid_rspec_truncation, :after => "# config.use_transactional_fixtures = true\n"
+    end
   
     if extra_recipes.include? 'git'
       say_wizard "commiting changes to git"
