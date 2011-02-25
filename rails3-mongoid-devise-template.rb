@@ -18,16 +18,20 @@ puts "Any problems? See http://github.com/fortuity/rails3-mongoid-devise/issues"
 
 # >----------------------------[ initial setup ]------------------------------<
 
+# for pretty printing while the script is running
+def say_recipe(name); say "\033[36m" + "recipe".rjust(10) + "\033[0m" + "    Running #{name} recipe..." end
+def say_wizard(text); say "\033[36m" + "wizard".rjust(10) + "\033[0m" + "    #{text}" end
+
+# implement a script technique that allows recipes to specify gems 
+# and then blocks of code that run only after gems are installed
+@after_blocks = []
+def after_bundler(&block); @after_blocks << block; end
+
+# create a generator configuration file (only used for the RSpec recipe)
 initializer 'generators.rb', <<-RUBY
 Rails.application.config.generators do |g|
 end
 RUBY
-
-def say_recipe(name); say "\033[36m" + "recipe".rjust(10) + "\033[0m" + "    Running #{name} recipe..." end
-def say_wizard(text); say "\033[36m" + "wizard".rjust(10) + "\033[0m" + "    #{text}" end
-
-@after_blocks = []
-def after_bundler(&block); @after_blocks << block; end
 
 # >--------------------------------[ configure ]---------------------------------<
 
