@@ -133,8 +133,8 @@ if recipe_list.include? 'rspec'
   after_bundler do
     generate 'rspec:install'
     
-    gsub_file spec_helper_path, 'config.fixture_path = "#{::Rails.root}/spec/fixtures"', ''
-    gsub_file spec_helper_path, /(config.use_transactional_fixtures = true)/, '# \1'
+    gsub_file 'spec/spec_helper.rb', 'config.fixture_path = "#{::Rails.root}/spec/fixtures"', ''
+    gsub_file 'spec/spec_helper.rb', /(config.use_transactional_fixtures = true)/, '# \1'
 
     if recipe_list.include? == "mongoid"
       mongoid_rspec_truncation = <<-MONGOID
