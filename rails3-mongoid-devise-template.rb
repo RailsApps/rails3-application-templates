@@ -27,15 +27,9 @@ def say_wizard(text); say "\033[36m" + "wizard".rjust(10) + "\033[0m" + "    #{t
 @after_blocks = []
 def after_bundler(&block); @after_blocks << block; end
 
-# create a generator configuration file (only used for the RSpec recipe)
-initializer 'generators.rb', <<-RUBY
-Rails.application.config.generators do |g|
-end
-RUBY
-
 # >--------------------------------[ configure ]---------------------------------<
 
-recipe_list = %w{ mongoid jquery haml devise heroku }
+recipe_list = %w{ mongoid rspec cucumber jquery haml devise heroku }
 
 extra_recipes = %w{ git 
   action_mailer devise_extras add_user_name 
@@ -43,19 +37,27 @@ extra_recipes = %w{ git
   css_setup application_layout devise_navigation 
   cleanup ban_spiders }
 
-if no?('Would you like to use the Haml template system? (yes/no)')
-  recipe_list.delete('haml')
+if no?('Would you like to use RSpec for unit testing (TDD)? (yes/no)')
+  recipe_list.delete('rspec')
+end
+
+if no?('Would you like to use Cucumber for feature specs (BDD)? (yes/no)')
+  recipe_list.delete('cucumber')
 end
 
 if no?('Would you like to use jQuery instead of Prototype? (yes/no)')
   recipe_list.delete('jquery')
 end
 
+if no?('Would you like to use the Haml template system? (yes/no)')
+  recipe_list.delete('haml')
+end
+
 if no?('Do you want to install the Heroku gem so you can deploy to Heroku? (yes/no)')
   recipe_list.delete('heroku')
 end
 
-# >--------------------------------[ git ]---------------------------------<
+# >--------------------------------[ Git ]---------------------------------<
 
 # Application template recipe. Check for a newer version here:
 # https://github.com/fortuity/rails-template-recipes/blob/master/git.rb
@@ -72,7 +74,7 @@ git :init
 git :add => '.'
 git :commit => "-aqm 'Initial commit of new Rails app'"
 
-# >--------------------------------[ mongoid ]--------------------------------<
+# >--------------------------------[ Mongoid ]--------------------------------<
 
 # Utilize MongoDB with Mongoid as the ORM.
 
@@ -104,6 +106,61 @@ if recipe_list.include? 'mongoid'
     say_wizard "commiting changes to git"
     git :add => '.'
     git :commit => "-am 'Fix config/application.rb file to remove ActiveRecord dependency.'"
+  end
+
+end
+
+# >---------------------------------[ RSpec ]---------------------------------<
+
+if recipe_list.include? 'rspec'
+
+  # Use RSpec for unit testing for this Rails app.
+  say_recipe 'RSpec'
+
+  gem 'rspec-rails', '>= 2.0.1', :group => [:development, :test]
+
+  # create a generator configuration file (only used for the RSpec recipe)
+  initializer 'generators.rb', <<-RUBY
+Rails.application.config.generators do |g|
+end
+RUBY
+
+  inject_into_file "config/initializers/generators.rb", :after => "Rails.application.config.generators do |g|\n" do
+    "    g.test_framework = :rspec\n"
+  end
+
+  after_bundler do
+    generate 'rspec:install'
+  
+    if extra_recipes.include? 'git'
+      say_wizard "commiting changes to git"
+      git :add => '.'
+      git :commit => "-am 'Installed RSpec.'"
+    end
+  
+  end
+
+end
+
+# >-------------------------------[ Cucumber ]--------------------------------<
+
+if recipe_list.include? 'cucumber'
+  
+  # Use Cucumber for integration testing with Capybara.
+  say_recipe 'Cucumber'
+
+  gem 'cucumber-rails', :group => :test
+  gem 'capybara', :group => :test
+
+  after_bundler do
+    generate "cucumber:install --capybara#{' --rspec' if recipe_list.include?('rspec')}#{' -D' unless recipe_list.include?('activerecord')}"
+
+    if extra_recipes.include? 'git'
+      say_wizard "commiting changes to git"
+      git :add => '.'
+      git :commit => "-am 'Installed Cucumber.'"
+    end
+
   end
 
 end
@@ -140,7 +197,7 @@ if recipe_list.include? 'haml'
 
 end
 
-# >--------------------------------[ devise ]---------------------------------<
+# >--------------------------------[ Devise ]---------------------------------<
 
 # Application template recipe. Check for a newer version here:
 # https://github.com/fortuity/rails-template-recipes/blob/master/devise_extras.rb
