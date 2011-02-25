@@ -145,7 +145,7 @@ if recipe_list.include? 'rspec'
 
       MONGOID
 
-      inject_into_file spec_helper_path, mongoid_rspec_truncation, :after => "# config.use_transactional_fixtures = true\n"
+      inject_into_file 'spec/spec_helper.rb', mongoid_rspec_truncation, :after => "# config.use_transactional_fixtures = true\n"
     end
   
     if extra_recipes.include? 'git'
