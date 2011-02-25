@@ -117,17 +117,17 @@ if recipe_list.include? 'rspec'
   # Use RSpec for unit testing for this Rails app.
   say_recipe 'RSpec'
 
-  gem 'rspec-rails', '>= 2.0.1', :group => [:development, :test]
+  gem 'rspec-rails', '>= 2.5', :group => [:development, :test]
 
-  # create a generator configuration file (only used for the RSpec recipe)
-  initializer 'generators.rb', <<-RUBY
-Rails.application.config.generators do |g|
-end
-RUBY
-
-  inject_into_file "config/initializers/generators.rb", :after => "Rails.application.config.generators do |g|\n" do
-    "    g.test_framework = :rspec\n"
-  end
+#   # create a generator configuration file (only used for the RSpec recipe)
+#   initializer 'generators.rb', <<-RUBY
+# Rails.application.config.generators do |g|
+# end
+# RUBY
+# 
+#   inject_into_file "config/initializers/generators.rb", :after => "Rails.application.config.generators do |g|\n" do
+#     "    g.test_framework = :rspec\n"
+#   end
 
   after_bundler do
     generate 'rspec:install'
