@@ -177,6 +177,7 @@ if recipe_list.include? 'rspec'
   say_recipe 'RSpec'
 
   gem 'rspec-rails', '>= 2.5', :group => [:development, :test]
+  gem 'database_cleaner', :group => :test
 
 # create a generator configuration file (only used for the RSpec recipe)
   initializer 'generators.rb', <<-RUBY
@@ -196,6 +197,22 @@ RUBY
     # remove ActiveRecord artifacts
     gsub_file 'spec/spec_helper.rb', /config.fixture_path/, '# config.fixture_path'
     gsub_file 'spec/spec_helper.rb', /config.use_transactional_fixtures/, '# config.use_transactional_fixtures'
+
+    # reset your application database to a pristine state during testing
+    inject_into_file 'spec/spec_helper.rb', :before => "\nend" do
+    <<-RUBY
+  # Clean up the database
+  require 'database_cleaner'
+  config.before(:suite) do
+    DatabaseCleaner.strategy = :truncation
+    DatabaseCleaner.orm = "mongoid"
+  end
+
+  config.before(:each) do
+    DatabaseCleaner.clean
+  end
+RUBY
+    end
 
     if extra_recipes.include? 'git'
       git :tag => "rspec_installation"
@@ -220,6 +237,16 @@ if recipe_list.include? 'cucumber'
   after_bundler do
     generate "cucumber:install --capybara#{' --rspec' if recipe_list.include?('rspec')}#{' -D' unless recipe_list.include?('activerecord')}"
 
+    # reset your application database to a pristine state during testing
+    create_file 'features/support/local_env.rb' do 
+    <<-RUBY
+require 'database_cleaner'
+DatabaseCleaner.strategy = :truncation
+DatabaseCleaner.orm = "mongoid"
+Before { DatabaseCleaner.clean }
+RUBY
+    end
+  
     if extra_recipes.include? 'git'
       git :tag => "cucumber_installation"
       git :add => '.'
