@@ -278,7 +278,7 @@ if recipe_list.include? 'cucumber'
       get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/step_definitions/sign_up_steps.rb', 'sign_up_steps.rb'
     end
     remove_file 'features/support/paths.rb'
-    inside 'features/step_definitions' do
+    inside 'features/support' do
       get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/support/paths.rb', 'paths.rb'
     end
     
