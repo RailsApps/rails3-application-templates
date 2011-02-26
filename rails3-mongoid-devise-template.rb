@@ -98,7 +98,7 @@ if recipe_list.include? 'mongoid'
   say_recipe 'Mongoid'
 
   gem 'mongoid', '>= 2.0.0.rc.7'
-  gem 'bson_ext'
+  gem 'bson_ext', '>= 1.2.4'
 
   # modifying 'config/application.rb' file to remove ActiveRecord dependency
   gsub_file 'config/application.rb', /require 'rails\/all'/ do
