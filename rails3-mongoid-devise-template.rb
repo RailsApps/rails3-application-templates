@@ -201,6 +201,7 @@ RUBY
     # reset your application database to a pristine state during testing
     inject_into_file 'spec/spec_helper.rb', :before => "\nend" do
     <<-RUBY
+  \n
   # Clean up the database
   require 'database_cleaner'
   config.before(:suite) do
