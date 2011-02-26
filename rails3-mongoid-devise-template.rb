@@ -335,7 +335,7 @@ end
 
 say_recipe 'ActionMailer configuration'
 
-# modifying environment configuration files for ActiveRecord
+# modifying environment configuration files for ActionMailer
 gsub_file 'config/environments/development.rb', /# Don't care if the mailer can't send/, '# ActionMailer Config'
 gsub_file 'config/environments/development.rb', /config.action_mailer.raise_delivery_errors = false/ do
 <<-RUBY
