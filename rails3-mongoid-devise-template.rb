@@ -181,12 +181,9 @@ if recipe_list.include? 'rspec'
 # create a generator configuration file (only used for the RSpec recipe)
   initializer 'generators.rb', <<-RUBY
 Rails.application.config.generators do |g|
+    g.test_framework = :rspec
 end
 RUBY
-
-  inject_into_file "config/initializers/generators.rb", :after => "Rails.application.config.generators do |g|\n" do
-    "    g.test_framework = :rspec\n"
-  end
 
   gsub_file 'config/application.rb', /require \'rails\/test_unit\/railtie\' ./, ""
   say_wizard "Removing test folder (not needed for RSpec)"
@@ -196,8 +193,9 @@ RUBY
 
     generate 'rspec:install'
 
-    gsub_file 'spec/spec_helper.rb', /config.fixture_path = "#{::Rails.root}/spec/fixtures"/, '# config.fixture_path = "#{::Rails.root}/spec/fixtures"'
-    gsub_file 'spec/spec_helper.rb', /config.use_transactional_fixtures = true/, '# config.use_transactional_fixtures = true'
+    # remove ActiveRecord artifacts
+    gsub_file 'spec/spec_helper.rb', /config.fixture_path/, '# config.fixture_path'
+    gsub_file 'spec/spec_helper.rb', /config.use_transactional_fixtures/, '# config.use_transactional_fixtures'
 
     if extra_recipes.include? 'git'
       git :tag => "rspec_installation"
@@ -458,7 +456,6 @@ ERB
       git :tag => "devise_views"
       git :add => '.'
       git :commit => "-am 'Generate and modify Devise views.'"
-      end
     end
     
   end
