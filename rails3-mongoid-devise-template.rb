@@ -38,7 +38,7 @@ say_wizard "Any problems? See http://github.com/fortuity/rails3-mongoid-devise/i
 recipe_list = %w{ mongoid rspec cucumber jquery haml devise heroku yard }
 
 extra_recipes = %w{ git 
-  action_mailer devise_extras add_user_name 
+  action_mailer devise add_user_name 
   home_page home_page_users seed_database users_page 
   css_setup application_layout devise_navigation 
   cleanup ban_spiders }
@@ -370,7 +370,7 @@ end
 # >--------------------------------[ Devise ]---------------------------------<
 
 # Application template recipe. Check for a newer version here:
-# https://github.com/fortuity/rails-template-recipes/blob/master/devise_extras.rb
+# https://github.com/fortuity/rails-template-recipes/blob/master/devise.rb
 
 if recipe_list.include? 'devise'
   
@@ -469,7 +469,7 @@ RUBY
     git :commit => "-am 'Add a name attribute to the User model.'"
   end
 
-  if extra_recipes.include? 'devise_extras'
+  if extra_recipes.include? 'devise'
     #----------------------------------------------------------------------------
     # Generate Devise views
     #----------------------------------------------------------------------------
@@ -580,7 +580,7 @@ say_recipe 'Home Page Showing Users'
 
 after_bundler do
 
-  if extra_recipes.include? 'devise_extras'
+  if extra_recipes.include? 'devise'
 
     #----------------------------------------------------------------------------
     # Modify the home controller
@@ -634,7 +634,7 @@ say_recipe 'Seed Database'
 
 after_bundler do
   
-  if extra_recipes.include? 'devise_extras'
+  if extra_recipes.include? 'devise'
   
     if recipe_list.include? 'mongoid'
       # create a default user
@@ -672,7 +672,7 @@ say_recipe 'Users Page'
 
 after_bundler do
 
-  if extra_recipes.include? 'devise_extras'
+  if extra_recipes.include? 'devise'
 
     #----------------------------------------------------------------------------
     # Create a users controller
@@ -862,7 +862,7 @@ say_recipe 'Devise Navigation'
 
 after_bundler do
 
-  if extra_recipes.include? 'devise_extras'
+  if extra_recipes.include? 'devise'
 
     #----------------------------------------------------------------------------
     # Create navigation links for Devise
