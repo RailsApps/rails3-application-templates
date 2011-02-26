@@ -8,13 +8,16 @@
 # More application template recipes:
 # https://github.com/fortuity/rails-template-recipes/
 
+# Based on application template recipes by:
+# Michael Bleigh https://github.com/mbleigh
+# Fletcher Nichol https://github.com/fnichol
+# Daniel Kehoe https://github.com/fortuity
+# Ramon Brooker https://github.com/cognition
+
 # If you are customizing this template, you can use any methods provided by Thor::Actions
 # http://rdoc.info/rdoc/wycats/thor/blob/f939a3e8a854616784cac1dcff04ef4f3ee5f7ff/Thor/Actions.html
 # and Rails::Generators::Actions
 # http://github.com/rails/rails/blob/master/railties/lib/rails/generators/actions.rb
-
-puts "Modifying a new Rails app to use Mongoid and Devise..."
-puts "Any problems? See http://github.com/fortuity/rails3-mongoid-devise/issues"
 
 # >----------------------------[ initial setup ]------------------------------<
 
@@ -27,9 +30,12 @@ def say_wizard(text); say "\033[36m" + "wizard".rjust(10) + "\033[0m" + "    #{t
 @after_blocks = []
 def after_bundler(&block); @after_blocks << block; end
 
+say_wizard "Modifying a new Rails app to use Mongoid and Devise..."
+say_wizard "Any problems? See http://github.com/fortuity/rails3-mongoid-devise/issues"
+
 # >--------------------------------[ configure ]---------------------------------<
 
-recipe_list = %w{ mongoid rspec cucumber jquery haml devise heroku }
+recipe_list = %w{ mongoid rspec cucumber jquery haml devise heroku yard }
 
 extra_recipes = %w{ git 
   action_mailer devise_extras add_user_name 
@@ -37,11 +43,11 @@ extra_recipes = %w{ git
   css_setup application_layout devise_navigation 
   cleanup ban_spiders }
 
-if no?('Would you like to use RSpec for unit testing (TDD)? (yes/no)')
+if no?('Would you like to use RSpec instead of TestUnit? (yes/no)')
   recipe_list.delete('rspec')
 end
 
-if no?('Would you like to use Cucumber for feature specs (BDD)? (yes/no)')
+if no?('Would you like to use Cucumber for your BDD? (yes/no)')
   recipe_list.delete('cucumber')
 end
 
@@ -55,6 +61,10 @@ end
 
 if no?('Do you want to install the Heroku gem so you can deploy to Heroku? (yes/no)')
   recipe_list.delete('heroku')
+end
+
+if no?('Would you like to use Yard instead of RDoc? (yes/no)')
+  recipe_list.delete('yard')
 end
 
 # >--------------------------------[ Git ]---------------------------------<
@@ -74,7 +84,12 @@ git :init
 git :add => '.'
 git :commit => "-aqm 'Initial commit of new Rails app'"
 
-# >--------------------------------[ Mongoid ]--------------------------------<
+say_wizard "Creating a git working_branch (to follow the stream of development)."
+git :checkout => ' -b working_branch'
+git :add => '.'
+git :commit => "-m 'Initial commit of working_branch (to establish a clean base line).'"
+
+# >--------------------------------[ mongoid ]--------------------------------<
 
 # Utilize MongoDB with Mongoid as the ORM.
 
@@ -103,80 +118,9 @@ if recipe_list.include? 'mongoid'
   end
 
   if extra_recipes.include? 'git'
-    say_wizard "commiting changes to git"
+    git :tag => "mongoid_installation"
     git :add => '.'
-    git :commit => "-am 'Fix config/application.rb file to remove ActiveRecord dependency.'"
-  end
-
-end
-
-# >---------------------------------[ RSpec ]---------------------------------<
-
-if recipe_list.include? 'rspec'
-
-  # Use RSpec for unit testing for this Rails app.
-  say_recipe 'RSpec'
-
-  gem 'rspec-rails', '>= 2.5', :group => [:development, :test]
-
-# RailsWizard does this but I haven't figured out why it's needed:
-#   # create a generator configuration file (only used for the RSpec recipe)
-#   initializer 'generators.rb', <<-RUBY
-# Rails.application.config.generators do |g|
-# end
-# RUBY
-# 
-#   inject_into_file "config/initializers/generators.rb", :after => "Rails.application.config.generators do |g|\n" do
-#     "    g.test_framework = :rspec\n"
-#   end
-
-  after_bundler do
-    generate 'rspec:install'
-    
-    gsub_file 'spec/spec_helper.rb', 'config.fixture_path = "#{::Rails.root}/spec/fixtures"', ''
-    gsub_file 'spec/spec_helper.rb', /(config.use_transactional_fixtures = true)/, '# \1'
-
-    if recipe_list.include? "mongoid"
-      mongoid_rspec_truncation = <<-MONGOID
-
-        config.before :each do
-          Mongoid.master.collections.select {|c| c.name !~ /system/ }.each(&:drop)
-        end
-
-      MONGOID
-
-      inject_into_file 'spec/spec_helper.rb', mongoid_rspec_truncation, :after => "# config.use_transactional_fixtures = true\n"
-    end
-  
-    if extra_recipes.include? 'git'
-      say_wizard "commiting changes to git"
-      git :add => '.'
-      git :commit => "-am 'Installed RSpec.'"
-    end
-  
-  end
-
-end
-
-# >-------------------------------[ Cucumber ]--------------------------------<
-
-if recipe_list.include? 'cucumber'
-  
-  # Use Cucumber for integration testing with Capybara.
-  say_recipe 'Cucumber'
-
-  gem 'cucumber-rails', :group => :test
-  gem 'capybara', :group => :test
-
-  after_bundler do
-    generate "cucumber:install --capybara#{' --rspec' if recipe_list.include?('rspec')}#{' -D' unless recipe_list.include?('activerecord')}"
-
-    if extra_recipes.include? 'git'
-      say_wizard "commiting changes to git"
-      git :add => '.'
-      git :commit => "-am 'Installed Cucumber.'"
-    end
-
+    git :commit => "-am 'Mongoid installation.'"
   end
 
 end
@@ -199,7 +143,13 @@ if recipe_list.include? 'jquery'
   inject_into_file 'config/application.rb', "config.action_view.javascript_expansions[:defaults] = %w(jquery rails)\n", :after => "config.action_view.javascript_expansions[:defaults] = %w()\n", :verbose => false
   gsub_file "config/application.rb", /config.action_view.javascript_expansions\[:defaults\] = \%w\(\)\n/, ""
   
-end 
+end
+
+if extra_recipes.include? 'git'
+  git :tag => "jquery_installation"
+  git :add => '.'
+  git :commit => "-am 'jQuery installation.'"
+end
 
 # >---------------------------------[ Haml ]----------------------------------<
 
@@ -211,6 +161,150 @@ if recipe_list.include? 'haml'
   gem 'haml', '>= 3.0.0'
   gem 'haml-rails'
 
+  if extra_recipes.include? 'git'
+    git :tag => "haml_installation"
+    git :add => '.'
+    git :commit => "-am 'Haml installation.'"
+  end
+
+end
+
+# >---------------------------------[ RSpec ]---------------------------------<
+
+if recipe_list.include? 'rspec'
+
+  # Use RSpec instead of TestUnit
+  say_recipe 'RSpec'
+
+  gem 'rspec-rails', '>= 2.5', :group => [:development, :test]
+
+# create a generator configuration file (only used for the RSpec recipe)
+  initializer 'generators.rb', <<-RUBY
+Rails.application.config.generators do |g|
+end
+RUBY
+
+  inject_into_file "config/initializers/generators.rb", :after => "Rails.application.config.generators do |g|\n" do
+    "    g.test_framework = :rspec\n"
+  end
+
+  gsub_file 'config/application.rb', /require \'rails\/test_unit\/railtie\' ./, ""
+  say_wizard "Removing test folder (not needed for RSpec)"
+  run 'rm -rf test/'
+
+  after_bundler do
+
+    generate 'rspec:install'
+
+    gsub_file 'spec/spec_helper.rb', /config.fixture_path = "#{::Rails.root}/spec/fixtures"/, '# config.fixture_path = "#{::Rails.root}/spec/fixtures"'
+    gsub_file 'spec/spec_helper.rb', /config.use_transactional_fixtures = true/, '# config.use_transactional_fixtures = true'
+
+    if extra_recipes.include? 'git'
+      git :tag => "rspec_installation"
+      git :add => '.'
+      git :commit => "-am 'Installed RSpec.'"
+    end
+
+  end
+
+end
+
+# >-------------------------------[ Cucumber ]--------------------------------<
+
+if recipe_list.include? 'cucumber'
+  
+  # Use Cucumber for integration testing with Capybara.
+  say_recipe 'Cucumber'
+
+  gem 'cucumber-rails', :group => :test
+  gem 'capybara', :group => :test
+
+  after_bundler do
+    generate "cucumber:install --capybara#{' --rspec' if recipe_list.include?('rspec')}#{' -D' unless recipe_list.include?('activerecord')}"
+
+    if extra_recipes.include? 'git'
+      git :tag => "cucumber_installation"
+      git :add => '.'
+      git :commit => "-am 'Installed Cucumber.'"
+    end
+
+  end
+
+end
+
+# >---------------------------------[ Yard ]----------------------------------<
+
+if recipe_list.include? 'yard'
+  
+  say_recipe 'yard'
+  
+  gem 'yard', :group => [:development, :test] 
+  gem 'yardstick', :group => [:development, :test]
+  
+  run 'rm -rf /doc/'
+  say_wizard "generating a .yardopts file for yardoc configuration"
+  file '.yardopts',<<-RUBY
+## --use-cache
+--title "Rails 3 with Devise on MongoDB"
+app/**/*.rb 
+config/routes.rb 
+lib/**/*.rb 
+README.textile
+spec/
+--exclude README.md --exclude LICENSE
+RUBY
+
+  after_bundler do
+    
+    run 'yardoc'
+    
+    if extra_recipes.include? 'git'
+      git :tag => "yard_installation"
+      git :add => '.'
+      git :commit => "-am 'Installed Yard as an alternative to RDoc.'"
+    end
+    
+  end
+  
+end
+
+# >--------------------------------[ action_mailer ]--------------------------------<
+
+# Application template recipe. Check for a newer version here:
+# https://github.com/fortuity/rails-template-recipes/blob/master/action_mailer.rb
+
+say_recipe 'ActionMailer configuration'
+
+# modifying environment configuration files for ActiveRecord
+gsub_file 'config/environments/development.rb', /# Don't care if the mailer can't send/, '# ActionMailer Config'
+gsub_file 'config/environments/development.rb', /config.action_mailer.raise_delivery_errors = false/ do
+<<-RUBY
+config.action_mailer.default_url_options = { :host => 'localhost:3000' }
+  # A dummy setup for development - no deliveries, but logged
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.perform_deliveries = false
+  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.default :charset => "utf-8"
+RUBY
+end
+gsub_file 'config/environments/production.rb', /config.active_support.deprecation = :notify/ do
+<<-RUBY
+config.active_support.deprecation = :notify
+
+  config.action_mailer.default_url_options = { :host => 'yourhost.com' }
+  # ActionMailer Config
+  # Setup for production - deliveries, no errors raised
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.raise_delivery_errors = false
+  config.action_mailer.default :charset => "utf-8"
+RUBY
+end
+
+if extra_recipes.include? 'git'
+  git :tag => "ActionMailer_config"
+  git :add => '.'
+  git :commit => "-am 'Set ActionMailer configuration.'"
 end
 
 # >--------------------------------[ Devise ]---------------------------------<
@@ -255,52 +349,13 @@ if recipe_list.include? 'devise'
     generate 'devise user'
 
     if extra_recipes.include? 'git'
-      say_wizard "commiting changes to git"
+      git :tag => "devise_installation"
       git :add => '.'
-      git :commit => "-am 'Added Devise for authentication'"
+      git :commit => "-am 'Added Devise for authentication.'"
     end
 
   end
 
-end
-
-# >--------------------------------[ action_mailer ]--------------------------------<
-
-# Application template recipe. Check for a newer version here:
-# https://github.com/fortuity/rails-template-recipes/blob/master/action_mailer.rb
-
-say_recipe 'ActionMailer configuration'
-
-# modifying environment configuration files for ActiveRecord
-gsub_file 'config/environments/development.rb', /# Don't care if the mailer can't send/, '# ActionMailer Config'
-gsub_file 'config/environments/development.rb', /config.action_mailer.raise_delivery_errors = false/ do
-<<-RUBY
-config.action_mailer.default_url_options = { :host => 'localhost:3000' }
-  # A dummy setup for development - no deliveries, but logged
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.perform_deliveries = false
-  config.action_mailer.raise_delivery_errors = true
-  config.action_mailer.default :charset => "utf-8"
-RUBY
-end
-gsub_file 'config/environments/production.rb', /config.active_support.deprecation = :notify/ do
-<<-RUBY
-config.active_support.deprecation = :notify
-
-  config.action_mailer.default_url_options = { :host => 'yourhost.com' }
-  # ActionMailer Config
-  # Setup for production - deliveries, no errors raised
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.perform_deliveries = true
-  config.action_mailer.raise_delivery_errors = false
-  config.action_mailer.default :charset => "utf-8"
-RUBY
-end
-
-if extra_recipes.include? 'git'
-  say_wizard "commiting changes to git"
-  git :add => '.'
-  git :commit => "-am 'Set ActionMailer configuration.'"
 end
 
 # >--------------------------------[ add_user_name ]--------------------------------<
@@ -347,6 +402,12 @@ RUBY
   else
     # Placeholder for some other ORM
   end
+  
+  if extra_recipes.include? 'git'
+    git :tag => "add_user_name"
+    git :add => '.'
+    git :commit => "-am 'Add a name attribute to the User model.'"
+  end
 
   if extra_recipes.include? 'devise_extras'
     #----------------------------------------------------------------------------
@@ -392,18 +453,16 @@ HAML
 ERB
        end
     end
-  end
-
-  if extra_recipes.include? 'git'
-    say_wizard "commiting changes to git"
-    git :add => '.'
-    if extra_recipes.include? 'devise_extras'
-      git :commit => "-am 'Add a name attribute to the User model and modify Devise views.'"
-    else
-      git :commit => "-am 'Add a name attribute to the User model.'"
+    
+    if extra_recipes.include? 'git'
+      git :tag => "devise_views"
+      git :add => '.'
+      git :commit => "-am 'Generate and modify Devise views.'"
+      end
     end
+    
   end
-
+  
 end
 
 # >--------------------------------[ home_page ]--------------------------------<
@@ -444,7 +503,7 @@ ERB
   gsub_file 'config/routes.rb', /get \"home\/index\"/, 'root :to => "home#index"'
 
   if extra_recipes.include? 'git'
-    say_wizard "commiting changes to git"
+    git :tag => "home_page"
     git :add => '.'
     git :commit => "-am 'Create a home controller and view.'"
   end
@@ -500,7 +559,7 @@ ERB
   end
 
   if extra_recipes.include? 'git'
-    say_wizard "commiting changes to git"
+    git :tag => "home_page_with_users"
     git :add => '.'
     git :commit => "-am 'Added display of users to the home page.'"
   end
@@ -536,7 +595,7 @@ FILE
   end
 
   if extra_recipes.include? 'git'
-    say_wizard "commiting changes to git"
+    git :tag => "database_seed"
     git :add => '.'
     git :commit => "-am 'Create a database seed file with a default user.'"
   end
@@ -640,7 +699,7 @@ ERB
   end
 
   if extra_recipes.include? 'git'
-    say_wizard "commiting changes to git"
+    git :tag => "users_page"
     git :add => '.'
     git :commit => "-am 'Add a users controller and user show page with links from the home page.'"
   end
@@ -723,6 +782,12 @@ HAML
   <%- end -%>
 ERB
     end
+  end
+  
+  if extra_recipes.include? 'git'
+    git :tag => "app_layout"
+    git :add => '.'
+    git :commit => "-am 'Add application layout with CSS.'"
   end
 
 end
@@ -815,7 +880,7 @@ ERB
     end
 
     if extra_recipes.include? 'git'
-      say_wizard "commiting changes to git"
+      git :tag => "devise_navlinks"
       git :add => '.'
       git :commit => "-am 'Add navigation links for Devise.'"
     end
@@ -851,7 +916,7 @@ gsub_file "Gemfile", /#.*\n/, "\n"
 gsub_file "Gemfile", /\n+/, "\n"
 
 if extra_recipes.include? 'git'
-  say_wizard "commiting deletes of unneeded files to git"
+  git :tag => "file_cleanup"
   git :add => '.'
   git :commit => "-am 'Removed unnecessary files left over from initial app generation.'"
 end
@@ -869,7 +934,7 @@ gsub_file 'public/robots.txt', /# User-Agent/, 'User-Agent'
 gsub_file 'public/robots.txt', /# Disallow/, 'Disallow'
 
 if extra_recipes.include? 'git'
-  say_wizard "commiting changes to git"
+  git :tag => "ban_spiders"
   git :add => '.'
   git :commit => "-am 'Ban spiders from the site by changing robots.txt'"
 end
@@ -888,5 +953,13 @@ run 'bundle install'
 say_wizard "Running after Bundler callbacks."
 @after_blocks.each{|b| b.call}
 
+# >-----------------------------[ reload Yard for updated documentation ]-------------------------------<
+
+if recipe_list.include? 'yard'
+  gsub_file '.yardopts', '## --use-cache', ' --use-cache'
+  run 'yardoc'
+  say_wizard "see application documentation at http://0.0.0.0:8080"
+end
+
 # >-----------------------------[ finish up ]-------------------------------<
-puts "Done setting up your Rails app with Mongoid and Devise."
+say_wizard "Done setting up your Rails app with Mongoid and Devise."
