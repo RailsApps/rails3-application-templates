@@ -116,7 +116,8 @@ if recipes.include? 'mongoid'
   # Resolve issue 17: https://github.com/fortuity/rails3-mongoid-devise/issues#issue/17
   # Change YAML Engine to accommodate Ruby 1.9.2p180 yaml parser problem.
   # Rubygems 1.5.0 changes the yaml parsing default from syck 
-  # to psych and psych doesn't like the ":<<" in yaml files
+  # to psych and psych doesn't like the ":<<" in yaml files.
+  # This is a workaround until the next version of Ruby is published.
   # http://groups.google.com/group/mongoid/browse_thread/thread/9213a17a73d3c422
   # http://redmine.ruby-lang.org/issues/show/4300
   #----------------------------------------------------------------------------                         
