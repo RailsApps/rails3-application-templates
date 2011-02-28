@@ -35,36 +35,35 @@ say_wizard "Any problems? See http://github.com/fortuity/rails3-mongoid-devise/i
 
 # >--------------------------------[ configure ]---------------------------------<
 
-recipe_list = %w{ mongoid rspec cucumber jquery haml devise heroku yard }
-
-extra_recipes = %w{ git 
-  action_mailer devise add_user_name 
+recipes = %w{ git 
+  mongoid rspec cucumber jquery haml devise heroku yard 
+  action_mailer add_user_name 
   home_page home_page_users seed_database users_page 
   css_setup application_layout devise_navigation 
   cleanup ban_spiders }
 
 if no?('Would you like to use RSpec instead of TestUnit? (yes/no)')
-  recipe_list.delete('rspec')
+  recipes.delete('rspec')
 end
 
 if no?('Would you like to use Cucumber for your BDD? (yes/no)')
-  recipe_list.delete('cucumber')
+  recipes.delete('cucumber')
 end
 
 if no?('Would you like to use jQuery instead of Prototype? (yes/no)')
-  recipe_list.delete('jquery')
+  recipes.delete('jquery')
 end
 
 if no?('Would you like to use the Haml template system? (yes/no)')
-  recipe_list.delete('haml')
+  recipes.delete('haml')
 end
 
 if no?('Do you want to install the Heroku gem so you can deploy to Heroku? (yes/no)')
-  recipe_list.delete('heroku')
+  recipes.delete('heroku')
 end
 
 if no?('Would you like to use Yard instead of RDoc? (yes/no)')
-  recipe_list.delete('yard')
+  recipes.delete('yard')
 end
 
 # >--------------------------------[ Git ]---------------------------------<
@@ -93,7 +92,7 @@ git :commit => "-m 'Initial commit of working_branch (to establish a clean base 
 
 # Utilize MongoDB with Mongoid as the ORM.
 
-if recipe_list.include? 'mongoid'
+if recipes.include? 'mongoid'
 
   say_recipe 'Mongoid'
 
@@ -117,7 +116,7 @@ if recipe_list.include? 'mongoid'
     generate 'mongoid:config'
   end
 
-  if extra_recipes.include? 'git'
+  if recipes.include? 'git'
     git :tag => "mongoid_installation"
     git :add => '.'
     git :commit => "-am 'Mongoid installation.'"
@@ -132,7 +131,7 @@ end
 
 # Utilize the jQuery Javascript framework instead of Protoype.
 
-if extra_recipes.include? 'jquery'
+if recipes.include? 'jquery'
   
   # Adds the latest jQuery and Rails UJS helpers for jQuery.
   say_recipe 'jQuery'
@@ -148,7 +147,7 @@ if extra_recipes.include? 'jquery'
   inject_into_file 'config/application.rb', "config.action_view.javascript_expansions[:defaults] = %w(jquery rails)\n", :after => "config.action_view.javascript_expansions[:defaults] = %w()\n", :verbose => false
   gsub_file "config/application.rb", /config.action_view.javascript_expansions\[:defaults\] = \%w\(\)\n/, ""
   
-  if extra_recipes.include? 'git'
+  if recipes.include? 'git'
     git :tag => "jquery_installation"
     git :add => '.'
     git :commit => "-am 'jQuery installation.'"
@@ -158,7 +157,7 @@ end
 
 # >---------------------------------[ Haml ]----------------------------------<
 
-if recipe_list.include? 'haml'
+if recipes.include? 'haml'
   
   # Utilize HAML for templating.
   say_recipe 'HAML'
@@ -166,7 +165,7 @@ if recipe_list.include? 'haml'
   gem 'haml', '>= 3.0.0'
   gem 'haml-rails'
 
-  if extra_recipes.include? 'git'
+  if recipes.include? 'git'
     git :tag => "haml_installation"
     git :add => '.'
     git :commit => "-am 'Haml installation.'"
@@ -176,7 +175,7 @@ end
 
 # >---------------------------------[ RSpec ]---------------------------------<
 
-if recipe_list.include? 'rspec'
+if recipes.include? 'rspec'
 
   # Use RSpec instead of TestUnit
   say_recipe 'RSpec'
@@ -220,7 +219,7 @@ RUBY
 RUBY
     end
 
-    if extra_recipes.include? 'git'
+    if recipes.include? 'git'
       git :tag => "rspec_installation"
       git :add => '.'
       git :commit => "-am 'Installed RSpec.'"
@@ -232,7 +231,7 @@ end
 
 # >-------------------------------[ Cucumber ]--------------------------------<
 
-if recipe_list.include? 'cucumber'
+if recipes.include? 'cucumber'
   
   # Use Cucumber for integration testing with Capybara.
   say_recipe 'Cucumber'
@@ -241,7 +240,7 @@ if recipe_list.include? 'cucumber'
   gem 'capybara', :group => :test
 
   after_bundler do
-    generate "cucumber:install --capybara#{' --rspec' if recipe_list.include?('rspec')}#{' -D' unless recipe_list.include?('activerecord')}"
+    generate "cucumber:install --capybara#{' --rspec' if recipes.include?('rspec')}#{' -D' unless recipes.include?('activerecord')}"
 
     # reset your application database to a pristine state during testing
     create_file 'features/support/local_env.rb' do 
@@ -253,7 +252,7 @@ Before { DatabaseCleaner.clean }
 RUBY
     end
   
-    if extra_recipes.include? 'git'
+    if recipes.include? 'git'
       git :tag => "cucumber_installation"
       git :add => '.'
       git :commit => "-am 'Installed Cucumber.'"
@@ -265,7 +264,7 @@ end
 
 # >-------------------------------[ Cucumber Scenarios ]--------------------------------<
 
-if recipe_list.include? 'cucumber'
+if recipes.include? 'cucumber'
   
   say_recipe 'Cucumber Scenarios'
 
@@ -287,7 +286,7 @@ if recipe_list.include? 'cucumber'
       get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/support/paths.rb', 'paths.rb'
     end
     
-    if extra_recipes.include? 'git'
+    if recipes.include? 'git'
       git :tag => 'cucumber_scenarios'
       git :add => '.'
       git :commit => "-am 'Installed Cucumber Scenarios.'"
@@ -299,7 +298,7 @@ end
 
 # >---------------------------------[ Yard ]----------------------------------<
 
-if recipe_list.include? 'yard'
+if recipes.include? 'yard'
   
   say_recipe 'yard'
   
@@ -323,7 +322,7 @@ RUBY
     
     run 'yardoc'
     
-    if extra_recipes.include? 'git'
+    if recipes.include? 'git'
       git :tag => "yard_installation"
       git :add => '.'
       git :commit => "-am 'Installed Yard as an alternative to RDoc.'"
@@ -366,7 +365,7 @@ config.active_support.deprecation = :notify
 RUBY
 end
 
-if extra_recipes.include? 'git'
+if recipes.include? 'git'
   git :tag => "ActionMailer_config"
   git :add => '.'
   git :commit => "-am 'Set ActionMailer configuration.'"
@@ -389,13 +388,13 @@ after_bundler do
   #----------------------------------------------------------------------------
   generate 'devise:install'
 
-  if recipe_list.include? 'mongo_mapper'
+  if recipes.include? 'mongo_mapper'
     gem 'mm-devise'
     gsub_file 'config/initializers/devise.rb', 'devise/orm/active_record', 'devise/orm/mongo_mapper_active_model'
-  elsif recipe_list.include? 'mongoid'
+  elsif recipes.include? 'mongoid'
     # Nothing to do (Devise changes its initializer automatically when Mongoid is detected)
     # gsub_file 'config/initializers/devise.rb', 'devise/orm/active_record', 'devise/orm/mongoid'
-  elsif recipe_list.include? 'active_record'
+  elsif recipes.include? 'active_record'
     # Nothing to do
   else
     # Nothing to do
@@ -411,7 +410,7 @@ after_bundler do
   #----------------------------------------------------------------------------
   generate 'devise user'
 
-  if extra_recipes.include? 'git'
+  if recipes.include? 'git'
     git :tag => "devise_installation"
     git :add => '.'
     git :commit => "-am 'Added Devise for authentication.'"
@@ -428,7 +427,7 @@ end
 
 say_recipe 'add_user_name'
 
-if recipe_list.include? 'haml'
+if recipes.include? 'haml'
   # the following gems are required to generate Devise views for Haml
   gem 'hpricot', :group => :development
   gem 'ruby_parser', :group => :development
@@ -439,7 +438,7 @@ after_bundler do
   #----------------------------------------------------------------------------
   # Add a 'name' attribute to the User model
   #----------------------------------------------------------------------------
-  if recipe_list.include? 'mongoid'
+  if recipes.include? 'mongoid'
     gsub_file 'app/models/user.rb', /end/ do
   <<-RUBY
   field :name
@@ -449,9 +448,9 @@ after_bundler do
 end
 RUBY
     end
-  elsif recipe_list.include? 'mongo_mapper'
+  elsif recipes.include? 'mongo_mapper'
     # Using MongoMapper? Create an issue, suggest some code, and I'll add it
-  elsif recipe_list.include? 'active_record'
+  elsif recipes.include? 'active_record'
     gsub_file 'app/models/user.rb', /end/ do
   <<-RUBY
   validates_presence_of :name
@@ -464,13 +463,13 @@ RUBY
     # Placeholder for some other ORM
   end
   
-  if extra_recipes.include? 'git'
+  if recipes.include? 'git'
     git :tag => "add_user_name"
     git :add => '.'
     git :commit => "-am 'Add a name attribute to the User model.'"
   end
 
-  if extra_recipes.include? 'devise'
+  if recipes.include? 'devise'
     #----------------------------------------------------------------------------
     # Generate Devise views
     #----------------------------------------------------------------------------
@@ -479,7 +478,7 @@ RUBY
     #----------------------------------------------------------------------------
     # Modify Devise views to add 'name'
     #----------------------------------------------------------------------------
-    if recipe_list.include? 'haml'
+    if recipes.include? 'haml'
        inject_into_file "app/views/devise/registrations/edit.html.haml", :after => "= devise_error_messages!\n" do
   <<-HAML
   %p
@@ -497,7 +496,7 @@ ERB
        end
     end
 
-    if recipe_list.include? 'haml'
+    if recipes.include? 'haml'
        inject_into_file "app/views/devise/registrations/new.html.haml", :after => "= devise_error_messages!\n" do
   <<-HAML
   %p
@@ -515,7 +514,7 @@ ERB
        end
     end
     
-    if extra_recipes.include? 'git'
+    if recipes.include? 'git'
       git :tag => "devise_views"
       git :add => '.'
       git :commit => "-am 'Generate and modify Devise views.'"
@@ -543,7 +542,7 @@ after_bundler do
   generate(:controller, "home index")
 
   # set up a simple home page (with placeholder content)
-  if recipe_list.include? 'haml'
+  if recipes.include? 'haml'
     remove_file 'app/views/home/index.html.haml'
     # we have to use single-quote-style-heredoc to avoid interpolation
     create_file 'app/views/home/index.html.haml' do 
@@ -562,7 +561,7 @@ ERB
   # set routes
   gsub_file 'config/routes.rb', /get \"home\/index\"/, 'root :to => "home#index"'
 
-  if extra_recipes.include? 'git'
+  if recipes.include? 'git'
     git :tag => "home_page"
     git :add => '.'
     git :commit => "-am 'Create a home controller and view.'"
@@ -581,7 +580,7 @@ say_recipe 'Home Page Showing Users'
 
 after_bundler do
 
-  if extra_recipes.include? 'devise'
+  if recipes.include? 'devise'
 
     #----------------------------------------------------------------------------
     # Modify the home controller
@@ -596,7 +595,7 @@ RUBY
     #----------------------------------------------------------------------------
     # Replace the home page
     #----------------------------------------------------------------------------
-    if recipe_list.include? 'haml'
+    if recipes.include? 'haml'
       remove_file 'app/views/home/index.html.haml'
       # we have to use single-quote-style-heredoc to avoid interpolation
       create_file 'app/views/home/index.html.haml' do 
@@ -618,7 +617,7 @@ ERB
 
   end
 
-  if extra_recipes.include? 'git'
+  if recipes.include? 'git'
     git :tag => "home_page_with_users"
     git :add => '.'
     git :commit => "-am 'Added display of users to the home page.'"
@@ -635,9 +634,9 @@ say_recipe 'Seed Database'
 
 after_bundler do
   
-  if extra_recipes.include? 'devise'
+  if recipes.include? 'devise'
   
-    if recipe_list.include? 'mongoid'
+    if recipes.include? 'mongoid'
       # create a default user
       say_wizard "creating a default user"
       append_file 'db/seeds.rb' do <<-FILE
@@ -654,7 +653,7 @@ FILE
   
   end
 
-  if extra_recipes.include? 'git'
+  if recipes.include? 'git'
     git :tag => "database_seed"
     git :add => '.'
     git :commit => "-am 'Create a database seed file with a default user.'"
@@ -673,7 +672,7 @@ say_recipe 'Users Page'
 
 after_bundler do
 
-  if extra_recipes.include? 'devise'
+  if recipes.include? 'devise'
 
     #----------------------------------------------------------------------------
     # Create a users controller
@@ -703,7 +702,7 @@ RUBY
     #----------------------------------------------------------------------------
     # Create a users show page
     #----------------------------------------------------------------------------
-    if recipe_list.include? 'haml'
+    if recipes.include? 'haml'
       remove_file 'app/views/users/show.html.haml'
       # we have to use single-quote-style-heredoc to avoid interpolation
       create_file 'app/views/users/show.html.haml' do <<-'HAML'
@@ -735,7 +734,7 @@ RUBY
     end
 
     # modify the home page
-    if recipe_list.include? 'haml'
+    if recipes.include? 'haml'
       remove_file 'app/views/home/index.html.haml'
       # we have to use single-quote-style-heredoc to avoid interpolation
       create_file 'app/views/home/index.html.haml' do
@@ -758,7 +757,7 @@ ERB
 
   end
 
-  if extra_recipes.include? 'git'
+  if recipes.include? 'git'
     git :tag => "users_page"
     git :add => '.'
     git :commit => "-am 'Add a users controller and user show page with links from the home page.'"
@@ -818,7 +817,7 @@ after_bundler do
   #----------------------------------------------------------------------------
   # Set up the default application layout
   #----------------------------------------------------------------------------
-  if recipe_list.include? 'haml'
+  if recipes.include? 'haml'
     remove_file 'app/views/layouts/application.html.erb'
     create_file 'app/views/layouts/application.html.haml' do <<-HAML
 !!!
@@ -844,7 +843,7 @@ ERB
     end
   end
   
-  if extra_recipes.include? 'git'
+  if recipes.include? 'git'
     git :tag => "app_layout"
     git :add => '.'
     git :commit => "-am 'Add application layout with CSS.'"
@@ -863,12 +862,12 @@ say_recipe 'Devise Navigation'
 
 after_bundler do
 
-  if extra_recipes.include? 'devise'
+  if recipes.include? 'devise'
 
     #----------------------------------------------------------------------------
     # Create navigation links for Devise
     #----------------------------------------------------------------------------
-    if recipe_list.include? 'haml'
+    if recipes.include? 'haml'
       create_file "app/views/devise/menu/_login_items.html.haml" do <<-'HAML'
 - if user_signed_in?
   %li
@@ -893,7 +892,7 @@ ERB
       end
     end
 
-    if recipe_list.include? 'haml'
+    if recipes.include? 'haml'
       create_file "app/views/devise/menu/_registration_items.html.haml" do <<-'HAML'
 - if user_signed_in?
   %li
@@ -921,7 +920,7 @@ ERB
     #----------------------------------------------------------------------------
     # Add navigation links to the default application layout
     #----------------------------------------------------------------------------
-    if recipe_list.include? 'haml'
+    if recipes.include? 'haml'
       inject_into_file 'app/views/layouts/application.html.haml', :after => "%body\n" do <<-HAML
   %ul.hmenu
     = render 'devise/menu/registration_items'
@@ -939,7 +938,7 @@ ERB
       end
     end
 
-    if extra_recipes.include? 'git'
+    if recipes.include? 'git'
       git :tag => "devise_navlinks"
       git :add => '.'
       git :commit => "-am 'Add navigation links for Devise.'"
@@ -975,7 +974,7 @@ gsub_file "README.textile", /App_Name/, "#{app_name.humanize.titleize}"
 gsub_file "Gemfile", /#.*\n/, "\n"
 gsub_file "Gemfile", /\n+/, "\n"
 
-if extra_recipes.include? 'git'
+if recipes.include? 'git'
   git :tag => "file_cleanup"
   git :add => '.'
   git :commit => "-am 'Removed unnecessary files left over from initial app generation.'"
@@ -993,7 +992,7 @@ say_wizard "banning spiders from your site by changing robots.txt"
 gsub_file 'public/robots.txt', /# User-Agent/, 'User-Agent'
 gsub_file 'public/robots.txt', /# Disallow/, 'Disallow'
 
-if extra_recipes.include? 'git'
+if recipes.include? 'git'
   git :tag => "ban_spiders"
   git :add => '.'
   git :commit => "-am 'Ban spiders from the site by changing robots.txt'"
@@ -1015,7 +1014,7 @@ say_wizard "Running after Bundler callbacks."
 
 # >-----------------------------[ reload Yard for updated documentation ]-------------------------------<
 
-if recipe_list.include? 'yard'
+if recipes.include? 'yard'
   gsub_file '.yardopts', '## --use-cache', ' --use-cache'
   run 'yardoc'
   say_wizard "see application documentation at http://0.0.0.0:8080"
