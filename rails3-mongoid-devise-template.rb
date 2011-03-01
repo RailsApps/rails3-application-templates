@@ -188,12 +188,7 @@ if recipes.include? 'rspec'
   gem 'rspec-rails', '>= 2.5', :group => [:development, :test]
   gem 'database_cleaner', :group => :test
 
-# create a generator configuration file (only used for the RSpec recipe)
-  initializer 'generators.rb', <<-RUBY
-Rails.application.config.generators do |g|
-    g.test_framework = :rspec
-end
-RUBY
+# note: there is no need to specify the RSpec generator in the config/application.rb file
 
   after_bundler do
 
