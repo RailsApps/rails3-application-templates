@@ -99,19 +99,6 @@ if recipes.include? 'mongoid'
   gem 'mongoid', '>= 2.0.0.rc.7'
   gem 'bson_ext', '>= 1.2.4'
 
-  # modifying 'config/application.rb' file to remove ActiveRecord dependency
-  gsub_file 'config/application.rb', /require 'rails\/all'/ do
-  <<-RUBY
-  require 'action_controller/railtie'
-  require 'action_mailer/railtie'
-  require 'active_resource/railtie'
-  require 'rails/test_unit/railtie'
-  RUBY
-  end
-
-  # remove unnecessary 'config/database.yml' file
-  remove_file 'config/database.yml'
-  
   #----------------------------------------------------------------------------
   # Resolve issue 17: https://github.com/fortuity/rails3-mongoid-devise/issues#issue/17
   # Change YAML Engine to accommodate Ruby 1.9.2p180 yaml parser problem.
@@ -127,6 +114,12 @@ if recipes.include? 'mongoid'
   after_bundler do
     generate 'mongoid:config'
   end
+
+  # note: the mongoid generator automatically modifies the config/application.rb file
+  # to remove the ActiveRecord dependency by commenting out "require active_record/railtie'"
+  
+  # remove unnecessary 'config/database.yml' file
+  remove_file 'config/database.yml'
 
   if recipes.include? 'git'
     git :tag => "mongoid_installation"
@@ -202,10 +195,6 @@ Rails.application.config.generators do |g|
 end
 RUBY
 
-  gsub_file 'config/application.rb', /require \'rails\/test_unit\/railtie\' ./, ""
-  say_wizard "Removing test folder (not needed for RSpec)"
-  run 'rm -rf test/'
-
   after_bundler do
 
     generate 'rspec:install'
@@ -230,6 +219,13 @@ RUBY
   end
 RUBY
     end
+    
+    # remove either possible occurrence of "require rails/test_unit/railtie"
+    gsub_file 'config/application.rb', /require 'rails\/test_unit\/railtie'/, "# require 'rails/test_unit/railtie'"
+    gsub_file 'config/application.rb', /require "rails\/test_unit\/railtie"/, "# require 'rails/test_unit/railtie'"
+    
+    say_wizard "Removing test folder (not needed for RSpec)"
+    run 'rm -rf test/'
 
     if recipes.include? 'git'
       git :tag => "rspec_installation"
