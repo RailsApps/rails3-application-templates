@@ -188,7 +188,7 @@ if recipes.include? 'rspec'
   gem 'rspec-rails', '>= 2.5', :group => [:development, :test]
   gem 'database_cleaner', :group => :test
 
-# note: there is no need to specify the RSpec generator in the config/application.rb file
+  # note: there is no need to specify the RSpec generator in the config/application.rb file
 
   after_bundler do
 
