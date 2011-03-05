@@ -234,7 +234,7 @@ RUBY
       <<-RUBY
 RSpec.configure do |config|
   config.include Mongoid::Matchers
-end\n
+end
 RUBY
       end
     end
@@ -245,7 +245,7 @@ RUBY
       <<-RUBY
 RSpec.configure do |config|
   config.include Devise::TestHelpers, :type => :controller
-end\n
+end
 RUBY
       end
     end
