@@ -260,36 +260,6 @@ RUBY
 
 end
 
-# >-------------------------------[ RSpec Example Specs ]--------------------------------<
-
-if recipes.include? 'rspec'
-  
-  say_recipe 'RSpec Example Specs'
-
-  after_bundler do
-
-    # copy all the RSpec specs files from the rails3-mongoid-devise example app
-    inside 'spec' do
-      get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/spec/factories.rb', 'factories.rb'
-    end
-    inside 'spec/controllers' do
-      get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/spec/controllers/home_controller_spec.rb', 'home_controller_spec.rb'
-      get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/spec/controllers/users_controller_spec.rb', 'users_controller_spec.rb'
-    end
-    inside 'spec/models' do
-      get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/spec/models/user_spec.rb', 'user_spec.rb'
-    end
-    
-    if recipes.include? 'git'
-      git :tag => 'example_specs'
-      git :add => '.'
-      git :commit => "-am 'Installed RSpec Example Specs.'"
-    end
-
-  end
-
-end
-
 # >-------------------------------[ Cucumber ]--------------------------------<
 
 if recipes.include? 'cucumber'
@@ -317,40 +287,6 @@ RUBY
       git :tag => "cucumber_installation"
       git :add => '.'
       git :commit => "-am 'Installed Cucumber.'"
-    end
-
-  end
-
-end
-
-# >-------------------------------[ Cucumber Scenarios ]--------------------------------<
-
-if recipes.include? 'cucumber'
-  
-  say_recipe 'Cucumber Scenarios'
-
-  after_bundler do
-
-    # copy all the Cucumber scenario files from the rails3-mongoid-devise example app
-    inside 'features' do
-      get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/sign_in.feature', 'sign_in.feature'
-      get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/sign_out.feature', 'sign_out.feature'
-      get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/sign_up.feature', 'sign_up.feature'
-    end
-    inside 'features/step_definitions' do
-      get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/step_definitions/sign_in_steps.rb', 'sign_in_steps.rb'
-      get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/step_definitions/sign_out_steps.rb', 'sign_out_steps.rb'
-      get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/step_definitions/sign_up_steps.rb', 'sign_up_steps.rb'
-    end
-    remove_file 'features/support/paths.rb'
-    inside 'features/support' do
-      get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/support/paths.rb', 'paths.rb'
-    end
-    
-    if recipes.include? 'git'
-      git :tag => 'cucumber_scenarios'
-      git :add => '.'
-      git :commit => "-am 'Installed Cucumber Scenarios.'"
     end
 
   end
@@ -1072,6 +1008,62 @@ run 'bundle install'
 
 say_wizard "Running after Bundler callbacks."
 @after_blocks.each{|b| b.call}
+
+# >-------------------------------[ RSpec Example Specs ]--------------------------------<
+
+if recipes.include? 'rspec'
+  
+  say_recipe 'RSpec Example Specs'
+
+  # copy all the RSpec specs files from the rails3-mongoid-devise example app
+  inside 'spec' do
+    get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/spec/factories.rb', 'factories.rb'
+  end
+  inside 'spec/controllers' do
+    get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/spec/controllers/home_controller_spec.rb', 'home_controller_spec.rb'
+    get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/spec/controllers/users_controller_spec.rb', 'users_controller_spec.rb'
+  end
+  inside 'spec/models' do
+    get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/spec/models/user_spec.rb', 'user_spec.rb'
+  end
+  
+  if recipes.include? 'git'
+    git :tag => 'example_specs'
+    git :add => '.'
+    git :commit => "-am 'Added RSpec Example Specs.'"
+  end
+    
+end
+
+# >-------------------------------[ Cucumber Scenarios ]--------------------------------<
+
+if recipes.include? 'cucumber'
+  
+  say_recipe 'Cucumber Scenarios'
+
+  # copy all the Cucumber scenario files from the rails3-mongoid-devise example app
+  inside 'features' do
+    get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/sign_in.feature', 'sign_in.feature'
+    get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/sign_out.feature', 'sign_out.feature'
+    get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/sign_up.feature', 'sign_up.feature'
+  end
+  inside 'features/step_definitions' do
+    get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/step_definitions/sign_in_steps.rb', 'sign_in_steps.rb'
+    get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/step_definitions/sign_out_steps.rb', 'sign_out_steps.rb'
+    get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/step_definitions/sign_up_steps.rb', 'sign_up_steps.rb'
+  end
+  remove_file 'features/support/paths.rb'
+  inside 'features/support' do
+    get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/support/paths.rb', 'paths.rb'
+  end
+  
+  if recipes.include? 'git'
+    git :tag => 'cucumber_scenarios'
+    git :add => '.'
+    git :commit => "-am 'Added Cucumber Scenarios.'"
+  end
+
+end
 
 # >-----------------------------[ reload Yard for updated documentation ]-------------------------------<
 
