@@ -187,6 +187,12 @@ if recipes.include? 'rspec'
 
   gem 'rspec-rails', '>= 2.5', :group => [:development, :test]
   gem 'database_cleaner', :group => :test
+  gem 'factory_girl_rails', ">= 1.1.beta1", :group => :test
+  
+  if recipes.include? 'mongoid'
+    # include RSpec matchers from the mongoid-rspec gem
+    gem 'mongoid-rspec', ">= 1.4.1", :group => :test
+  end
 
   # note: there is no need to specify the RSpec generator in the config/application.rb file
 
@@ -221,11 +227,63 @@ RUBY
     
     say_wizard "Removing test folder (not needed for RSpec)"
     run 'rm -rf test/'
+    
+    if recipes.include? 'mongoid'
+      # configure RSpec to use matchers from the mongoid-rspec gem
+      create_file 'spec/support/mongoid.rb' do 
+      <<-RUBY
+RSpec.configure do |config|
+  config.include Mongoid::Matchers
+end
+RUBY
+      end
+    end
+    
+    if recipes.include? 'devise'
+      # add Devise test helpers
+      create_file 'spec/support/devise.rb' do 
+      <<-RUBY
+RSpec.configure do |config|
+  config.include Devise::TestHelpers, :type => :controller
+end
+RUBY
+      end
+    end
 
     if recipes.include? 'git'
       git :tag => "rspec_installation"
       git :add => '.'
       git :commit => "-am 'Installed RSpec.'"
+    end
+
+  end
+
+end
+
+# >-------------------------------[ RSpec Example Specs ]--------------------------------<
+
+if recipes.include? 'rspec'
+  
+  say_recipe 'RSpec Example Specs'
+
+  after_bundler do
+
+    # copy all the RSpec specs files from the rails3-mongoid-devise example app
+    inside 'spec' do
+      get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/spec/factories.rb', 'factories.rb'
+    end
+    inside 'spec/controllers' do
+      get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/spec/controllers/home_controller_spec.rb', 'home_controller_spec.rb'
+      get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/spec/controllers/users_controller_spec.rb', 'users_controller_spec.rb'
+    end
+    inside 'spec/models' do
+      get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/spec/models/user_spec.rb', 'user_spec.rb'
+    end
+    
+    if recipes.include? 'git'
+      git :tag => 'example_specs'
+      git :add => '.'
+      git :commit => "-am 'Installed RSpec Example Specs.'"
     end
 
   end
@@ -1024,4 +1082,5 @@ if recipes.include? 'yard'
 end
 
 # >-----------------------------[ finish up ]-------------------------------<
-say_wizard "Done setting up your Rails app with Mongoid and Devise."
+say_wizard "Problems? Be sure you used the 'rails new' -T -O -J flags."
+say_wizard "Done setting up a new Rails app with Mongoid and Devise."
