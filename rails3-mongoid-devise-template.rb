@@ -234,7 +234,7 @@ RUBY
       <<-RUBY
 RSpec.configure do |config|
   config.include Mongoid::Matchers
-end
+end\n
 RUBY
       end
     end
@@ -245,7 +245,7 @@ RUBY
       <<-RUBY
 RSpec.configure do |config|
   config.include Devise::TestHelpers, :type => :controller
-end
+end\n
 RUBY
       end
     end
@@ -1029,6 +1029,12 @@ if recipes.include? 'rspec'
   inside 'spec/models' do
     get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/spec/models/user_spec.rb', 'user_spec.rb'
   end
+  remove_file 'spec/views/home/index.html.erb_spec.rb'
+  remove_file 'spec/views/home/index.html.haml_spec.rb'
+  remove_file 'spec/views/users/show.html.erb_spec.rb'
+  remove_file 'spec/views/users/show.html.haml_spec.rb'
+  remove_file 'spec/helpers/home_helper_spec.rb'
+  remove_file 'spec/helpers/users_helper_spec.rb'
   
   if recipes.include? 'git'
     git :tag => 'example_specs'
