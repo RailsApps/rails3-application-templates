@@ -31,7 +31,7 @@ Use the recipes to customize your own application generator templates.
 h2. More Information
 
 Are the templates useful to you? Follow me on Twitter:
-"http://twitter.com/yaxdotcom":http://twitter.com/yaxdotcom
+"http://twitter.com/railsinit":http://twitter.com/railsinit
 and tweet some praise. I'd love to know you were helped out by what I've put together.
 
 Any issues? Please create an "Issue":http://github.com/fortuity/rails3-application-templates/issues on GitHub.
@@ -253,7 +253,7 @@ h2. Credits
 Daniel Kehoe ("http://danielkehoe.com/":http://danielkehoe.com/) created these templates.
 
 Are the templates useful to you? Follow me on Twitter:
-"http://twitter.com/yaxdotcom":http://twitter.com/yaxdotcom
+"http://twitter.com/railsinit":http://twitter.com/railsinit
 and tweet some praise. I'd love to know you were helped out by what I've put together.
 
 Any issues? Please create an "Issue":http://github.com/fortuity/rails3-application-templates/issues on GitHub.
