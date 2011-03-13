@@ -269,6 +269,7 @@ if recipes.include? 'cucumber'
 
   gem 'cucumber-rails', :group => :test
   gem 'capybara', :group => :test
+  gem 'relish', :group => :development
 
   after_bundler do
     generate "cucumber:install --capybara#{' --rspec' if recipes.include?('rspec')}#{' -D' unless recipes.include?('activerecord')}"
@@ -1051,10 +1052,10 @@ if recipes.include? 'cucumber'
   say_recipe 'Cucumber Scenarios'
 
   # copy all the Cucumber scenario files from the rails3-mongoid-devise example app
-  inside 'features' do
-    get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/sign_in.feature', 'sign_in.feature'
-    get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/sign_out.feature', 'sign_out.feature'
-    get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/sign_up.feature', 'sign_up.feature'
+  inside 'features/users' do
+    get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/users/sign_in.feature', 'sign_in.feature'
+    get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/users/sign_out.feature', 'sign_out.feature'
+    get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/users/sign_up.feature', 'sign_up.feature'
   end
   inside 'features/step_definitions' do
     get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/step_definitions/sign_in_steps.rb', 'sign_in_steps.rb'
