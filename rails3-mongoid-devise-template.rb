@@ -493,12 +493,15 @@ ERB
       end
       
     else
-      
-      # do something for Haml
-      
-    end 
-    
-    
+
+      # copy Haml versions of modified Devise views
+      inside 'app/views/devise/registrations' do
+        get 'https://github.com/fortuity/rails3-application-templates/raw/master/files/rails3-mongoid-devise/app/views/devise/registrations/edit.html.haml', 'edit.html.haml'
+        get 'https://github.com/fortuity/rails3-application-templates/raw/master/files/rails3-mongoid-devise/app/views/devise/registrations/new.html.haml', 'new.html.haml'
+      end
+
+    end
+
     if recipes.include? 'git'
       git :tag => "devise_views"
       git :add => '.'
