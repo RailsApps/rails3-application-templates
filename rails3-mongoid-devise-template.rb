@@ -1056,11 +1056,11 @@ if recipes.include? 'cucumber'
     get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/users/sign_in.feature', 'sign_in.feature'
     get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/users/sign_out.feature', 'sign_out.feature'
     get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/users/sign_up.feature', 'sign_up.feature'
+    get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/users/user_edit.feature', 'user_edit.feature'
+    get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/users/user_show.feature', 'user_show.feature'
   end
   inside 'features/step_definitions' do
-    get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/step_definitions/sign_in_steps.rb', 'sign_in_steps.rb'
-    get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/step_definitions/sign_out_steps.rb', 'sign_out_steps.rb'
-    get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/step_definitions/sign_up_steps.rb', 'sign_up_steps.rb'
+    get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/features/step_definitions/user_steps.rb', 'user_steps.rb'
   end
   remove_file 'features/support/paths.rb'
   inside 'features/support' do
