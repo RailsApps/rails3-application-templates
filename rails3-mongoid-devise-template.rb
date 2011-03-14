@@ -483,12 +483,15 @@ RUBY
       <p><%= f.label :name %><br />
       <%= f.text_field :name %></p>
 ERB
+      end
 
       inject_into_file "app/views/devise/registrations/new.html.erb", :after => "<%= devise_error_messages! %>\n" do
       <<-ERB
       <p><%= f.label :name %><br />
       <%= f.text_field :name %></p>
 ERB
+      end
+      
     else
       
       # do something for Haml
