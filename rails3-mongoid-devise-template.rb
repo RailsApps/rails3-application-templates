@@ -283,7 +283,10 @@ DatabaseCleaner.orm = "mongoid"
 Before { DatabaseCleaner.clean }
 RUBY
     end
-  
+
+    # see https://github.com/aslakhellesoy/cucumber-rails/issues/closed/#issue/77
+    gsub_file 'features/support/env.rb', /require 'cucumber\/rails\/capybara_javascript_emulation'/, "# require 'cucumber/rails/capybara_javascript_emulation'"
+
     if recipes.include? 'git'
       git :tag => "cucumber_installation"
       git :add => '.'
