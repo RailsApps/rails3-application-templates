@@ -96,7 +96,7 @@ if recipes.include? 'mongoid'
 
   say_recipe 'Mongoid'
 
-  gem 'mongoid', '>= 2.0.0.rc.7'
+  gem 'mongoid', '>= 2.0.0.rc.8'
   gem 'bson_ext', '>= 1.2.4'
 
   # generate mongoid configuration
@@ -175,7 +175,7 @@ if recipes.include? 'rspec'
   say_recipe 'RSpec'
 
   gem 'rspec-rails', '>= 2.5', :group => [:development, :test]
-  gem 'database_cleaner', :group => :test
+  gem 'database_cleaner', '>= 0.6.6', :group => :test
   gem 'factory_girl_rails', ">= 1.1.beta1", :group => :test
   
   if recipes.include? 'mongoid'
@@ -256,9 +256,9 @@ if recipes.include? 'cucumber'
   # Use Cucumber for integration testing with Capybara.
   say_recipe 'Cucumber'
 
-  gem 'cucumber-rails', :group => :test
-  gem 'capybara', :group => :test
-  gem 'relish', :group => :development
+  gem 'cucumber-rails', ">= 0.4.0", :group => :test
+  gem 'capybara', ">= 0.4.1.2", :group => :test
+  gem 'relish', ">= 0.2.2", :group => :development
 
   after_bundler do
     generate "cucumber:install --capybara#{' --rspec' if recipes.include?('rspec')}#{' -D' unless recipes.include?('activerecord')}"
@@ -369,7 +369,7 @@ end
 # Utilize Devise for authentication, automatically configured for your selected ORM.
 say_recipe 'Devise'
 
-gem "devise", ">= 1.2.rc"
+gem "devise", ">= 1.2.0"
 
 after_bundler do
 
