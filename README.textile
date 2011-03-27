@@ -52,10 +52,15 @@ Both templates provide:
 * Database seed file with default user
 * Heroku for deployment and hosting (optional)
 * Git for source control with ".gitignore", init and commit
+* optional RSpec instead of TestUnit
+* optional Cucumber for BDD
+* optional Yard instead of RDoc
 
 The rails3-subdomain-devise-template adds:
 
 * subdomains
+
+Best of all, everything is set up, integrated to work together, and field-tested so you don't waste time tracking down bugs or incompatibilities.
 
 h2. Gems
 
@@ -69,11 +74,8 @@ The templates require these gems:
 These gems are optional:
 
 * "heroku":https://rubygems.org/gems/heroku
-* "jquery-rails":https://rubygems.org/gems/jquery-rails
 * "haml":https://rubygems.org/gems/haml
 * "haml-rails":https://rubygems.org/gems/haml-rails (for Haml)
-* "hpricot":https://rubygems.org/gems/hpricot (used to generate Devise views for Haml)
-* "ruby_parser":https://rubygems.org/gems/ruby_parser (used to generate Devise views for Haml)
 
 The rails3-subdomain-devise-template requires this gem:
 
@@ -84,7 +86,7 @@ h2. Dependencies
 Before generating your application, you will need:
 
 * The Ruby language (version 1.8.7 or 1.9.2)
-* Rails (version 3.0.4 or newer)
+* Rails (version 3.0.5 or newer)
 
 bq. You MUST be using Rails 3.0.4 or newer. Generating a Rails application from an "HTTPS" URL does not work in Rails 3.0.3 and earlier versions.
 
@@ -130,6 +132,9 @@ The application generator template offers you the following options:
 * set up your view files using the Haml templating language
 * use jQuery instead of Prototype
 * install the heroku gem for deployment to Heroku
+* use RSpec instead of TestUnit
+* use Cucumber for BDD
+* use Yard instead of RDoc
 
 If you wish to "change the recipe" to generate the app with your own customized options, you can copy and edit the template file.
 
