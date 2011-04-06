@@ -76,7 +76,7 @@ say_recipe 'Git'
 
 # Git should ignore some files
 remove_file '.gitignore'
-get "https://github.com/fortuity/rails-template-recipes/raw/master/gitignore.txt", ".gitignore"
+get "https://github.com/fortuity/rails3-gitignore/raw/master/gitignore.txt", ".gitignore"
 
 # Initialize new Git repo
 git :init
