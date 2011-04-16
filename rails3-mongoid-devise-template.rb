@@ -130,17 +130,31 @@ if recipes.include? 'jquery'
   # Adds the latest jQuery and Rails UJS helpers for jQuery.
   say_recipe 'jQuery'
 
-  # remove the Prototype adapter file
-  remove_file 'public/javascripts/rails.js'
-  # add jQuery files
-  inside "public/javascripts" do
-    get "https://github.com/rails/jquery-ujs/raw/master/src/rails.js", "rails.js"
-    get "http://code.jquery.com/jquery-1.5.min.js", "jquery.js"
+  after_bundler do
+    # remove the Prototype adapter file
+    remove_file 'public/javascripts/rails.js'
+    # remove the Prototype files (if they exist)
+    remove_file 'public/javascripts/controls.js'
+    remove_file 'public/javascripts/dragdrop.js'
+    remove_file 'public/javascripts/effects.js'
+    remove_file 'public/javascripts/prototype.js'
+    # add jQuery files
+    inside "public/javascripts" do
+      get "https://github.com/rails/jquery-ujs/raw/master/src/rails.js", "rails.js"
+      get "https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js", "jquery.js"
+      if config['ui']
+        get "https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/jquery-ui.min.js", "jqueryui.js"
+      end
+    end
+    # adjust the Javascript defaults
+    if config['ui']
+      inject_into_file 'config/application.rb', "config.action_view.javascript_expansions[:defaults] = %w(jquery jqueryui rails)\n", :after => "config.action_view.javascript_expansions[:defaults] = %w()\n", :verbose => false
+    else
+      inject_into_file 'config/application.rb', "config.action_view.javascript_expansions[:defaults] = %w(jquery rails)\n", :after => "config.action_view.javascript_expansions[:defaults] = %w()\n", :verbose => false
+    end  
+    gsub_file "config/application.rb", /config.action_view.javascript_expansions\[:defaults\] = \%w\(\)\n/, ""
   end
-  # adjust the Javascript defaults
-  inject_into_file 'config/application.rb', "config.action_view.javascript_expansions[:defaults] = %w(jquery rails)\n", :after => "config.action_view.javascript_expansions[:defaults] = %w()\n", :verbose => false
-  gsub_file "config/application.rb", /config.action_view.javascript_expansions\[:defaults\] = \%w\(\)\n/, ""
-  
+    
   if recipes.include? 'git'
     git :tag => "jquery_installation"
     git :add => '.'
