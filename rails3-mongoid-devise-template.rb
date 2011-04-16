@@ -258,7 +258,6 @@ if recipes.include? 'cucumber'
 
   gem 'cucumber-rails', ">= 0.4.1", :group => :test
   gem 'capybara', ">= 0.4.1.2", :group => :test
-  gem 'relish', ">= 0.2.2", :group => :development
 
   after_bundler do
     generate "cucumber:install --capybara#{' --rspec' if recipes.include?('rspec')}#{' -D' unless recipes.include?('activerecord')}"
