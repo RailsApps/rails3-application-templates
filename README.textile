@@ -9,28 +9,18 @@ h4. Applications
 The templates can be used to build the following complete applications:
 
 * "rails3-mongoid-devise":http://github.com/fortuity/rails3-mongoid-devise/
-* "rails3-subdomain-devise":http://github.com/fortuity/rails3-subdomain-devise/ (older version doesn't use "rails-template-recipes":https://github.com/fortuity/rails-template-recipes)
+* "rails3-subdomain-devise":http://github.com/fortuity/rails3-subdomain-devise/
 
 h4. Tutorials
 
 There are detailed tutorials to show how each application is built:
 
 * "Tutorial for rails3-mongoid-devise":http://github.com/fortuity/rails3-mongoid-devise/wiki/Tutorial-%28Walkthrough%29
-* "Tutorial for rails3-subdomain-devise":http://github.com/fortuity/rails3-subdomain-devise/wiki/Tutorial-%28Walkthrough%29 (older version doesn't use "rails-template-recipes":https://github.com/fortuity/rails-template-recipes)
-
-h4. Template Recipes
-
-These application generator templates are assembled from "recipes". 
-
-You can see a collection of useful template recipes:
-
-* "rails-template-recipes":https://github.com/fortuity/rails-template-recipes
-
-Use the recipes to customize your own application generator templates.
+* "Tutorial for rails3-subdomain-devise":http://github.com/fortuity/rails3-subdomain-devise/wiki/Tutorial-%28Walkthrough%29
 
 h2. More Information
 
-Are the templates useful to you? Follow me on Twitter:
+Are these application templates useful to you? Follow me on Twitter:
 "http://twitter.com/railsinit":http://twitter.com/railsinit
 and tweet some praise. I'd love to know you were helped out by what I've put together.
 
@@ -92,24 +82,9 @@ bq. You MUST be using Rails 3.0.4 or newer. Generating a Rails application from 
 
 I recommend installing rvm, the "Ruby Version Manager":http://rvm.beginrescueend.com/, to manage multiple versions of Rails.
 
-If you are using rvm, you can see a list of the Ruby versions currently installed:
-@$ rvm list@
-
 Check that appropriate versions of Ruby and Rails are installed in your development environment:
 @$ ruby -v@
 @$ rails -v@
-
-You will also need:
-
-* A working installation of "MongoDB":http://www.mongodb.org/ (version 1.6.0 or newer)
-
-If you don't have MongoDB installed on your computer, you'll need to install it and set it up to be always running on your computer (run at launch). On Mac OS X, the easiest way to install MongoDB is to install "Homebrew":http://mxcl.github.com/homebrew/ and then run the following:
-
-<pre>
-brew install mongo
-sudo mkdir -p /data/db
-sudo chmod -Rv 777 /data/
-</pre>
 
 h2. Generating the Application
 
