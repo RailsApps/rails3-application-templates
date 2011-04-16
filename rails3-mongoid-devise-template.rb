@@ -96,8 +96,8 @@ if recipes.include? 'mongoid'
 
   say_recipe 'Mongoid'
 
-  gem 'mongoid', '>= 2.0.0.rc.8'
-  gem 'bson_ext', '>= 1.2.4'
+  gem 'mongoid', '>= 2.0.1'
+  gem 'bson_ext', '>= 1.3.0'
 
   # generate mongoid configuration
   after_bundler do
@@ -256,7 +256,7 @@ if recipes.include? 'cucumber'
   # Use Cucumber for integration testing with Capybara.
   say_recipe 'Cucumber'
 
-  gem 'cucumber-rails', ">= 0.4.0", :group => :test
+  gem 'cucumber-rails', ">= 0.4.1", :group => :test
   gem 'capybara', ">= 0.4.1.2", :group => :test
   gem 'relish', ">= 0.2.2", :group => :development
 
@@ -369,7 +369,7 @@ end
 # Utilize Devise for authentication, automatically configured for your selected ORM.
 say_recipe 'Devise'
 
-gem "devise", ">= 1.2.0"
+gem "devise", ">= 1.3.0"
 
 after_bundler do
 
