@@ -100,7 +100,7 @@ h4. Recipes for Testing and BDD
 h4. Recipes for Mongoid
 
 |_. File                    |_.                                  |_. Dependencies     |_. Authors |
-| "mongoid_cleanup.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/mongoid_cleanup.rb        | Installs Mongoid with the bson_ext gem | Mongoid | dkehoe |
+| "mongoid.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/mongoid_cleanup.rb        | Installs Mongoid with the bson_ext gem | Mongoid | dkehoe |
 
 h4. Recipes for jQuery
 
@@ -122,7 +122,6 @@ h4. Recipes for the Application Layout
 |_. File                    |_.                                  |_. Dependencies     |_. Authors |
 | "application_layout.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/application_layout.rb     | Adds application layout with flash messages | ERB or Haml      | dkehoe |
 | "css_setup.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/css_setup.rb              | Add a stylesheet with styles for a horizontal menu and flash messages | none | dkehoe |
-|
 
 h4. Recipes for the Rails3-Mongoid-Devise Example App
 
