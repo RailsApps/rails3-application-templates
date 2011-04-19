@@ -100,7 +100,7 @@ h4. Recipes for Testing and BDD
 h4. Recipes for Mongoid
 
 |_. File                    |_.                                  |_. Dependencies     |_. Authors |
-| "mongoid.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/mongoid_cleanup.rb        | Installs Mongoid with the bson_ext gem | Mongoid | dkehoe |
+| "mongoid.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/mongoid.rb        | Installs Mongoid with the bson_ext gem | Mongoid | dkehoe |
 
 h4. Recipes for jQuery
 
