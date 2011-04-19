@@ -4,6 +4,8 @@ These application generator templates give you a Rails 3 skeleton or starter app
 
 The templates combine "Mongoid":http://mongoid.org/ with "Devise":http://github.com/plataformatec/devise. Mongoid is a datastore that gives you quick development without schemas or migrations. Devise gives you ready-made authentication and user management.
 
+These application templates were created using the "rails3_devise_wizard":https://github.com/fortuity/rails3_devise_wizard gem which provides a convenient way to assemble a reusable application template by selecting various "recipes" for popular Rails development packages.
+
 h4. Applications
 
 The templates can be used to build the following complete applications:
@@ -18,7 +20,7 @@ There are detailed tutorials to show how each application is built:
 * "Tutorial for rails3-mongoid-devise":http://github.com/fortuity/rails3-mongoid-devise/wiki/Tutorial-%28Walkthrough%29
 * "Tutorial for rails3-subdomain-devise":http://github.com/fortuity/rails3-subdomain-devise/wiki/Tutorial-%28Walkthrough%29
 
-h2. More Information
+h2. Follow on Twitter
 
 Are these application templates useful to you? Follow me on Twitter:
 "http://twitter.com/railsinit":http://twitter.com/railsinit
@@ -26,50 +28,11 @@ and tweet some praise. I'd love to know you were helped out by what I've put tog
 
 Any issues? Please create an "Issue":http://github.com/fortuity/rails3-application-templates/issues on GitHub.
 
-h2. What You'll Get
+h2. Suggested Use
 
-Both templates provide:
+Any developer can quickly generate a Rails web application using the rails new command. In practice, experienced Rails developers typically add an assortment of useful additional packages (gems) before beginning development of any web application. A developer often uses the same set of packages to get started and may create a "starter app" that can be copied and reused for any new project.
 
-* Mongoid for the MongoDB datastore
-* Devise for authentication and user management
-* Haml or ERB for a templating engine
-* jQuery or Prototype for a Javascript framework
-* Remove unneeded files (such as "public/index.html")
-* Prevent logging of passwords (in "config/application.rb")
-* Application layout (with flash notices/alerts)
-* Home controller and view
-* User model, controller and view
-* Database seed file with default user
-* Heroku for deployment and hosting (optional)
-* Git for source control with ".gitignore", init and commit
-* optional RSpec instead of TestUnit
-* optional Cucumber for BDD
-* optional Yard instead of RDoc
-
-The rails3-subdomain-devise-template adds:
-
-* subdomains
-
-Best of all, everything is set up, integrated to work together, and field-tested so you don't waste time tracking down bugs or incompatibilities.
-
-h2. Gems
-
-The templates require these gems:
-
-* "rails":http://rubygems.org/gems/rails
-* "mongoid":http://rubygems.org/gems/mongoid
-* "bson_ext":http://rubygems.org/gems/bson_ext (for Mongoid)
-* "devise":http://rubygems.org/gems/devise
-
-These gems are optional:
-
-* "heroku":https://rubygems.org/gems/heroku
-* "haml":https://rubygems.org/gems/haml
-* "haml-rails":https://rubygems.org/gems/haml-rails (for Haml)
-
-The rails3-subdomain-devise-template requires this gem:
-
-* "friendly_id":https://rubygems.org/gems/friendly_id
+These application templates integrate the most commonly used packages that many Rails developers include in a "starter app." It can be a hassle to integrate some of the most commonly used packages, particularly when new versions are released and there are minor "gotchas" that interfere with packages working together. By using these  application templates, you'll have a ready-to-run app without the integration "gotchas". Each has a detailed tutorial so you'll see exactly how the application was assembled.
 
 h2. Dependencies
 
@@ -88,11 +51,11 @@ Check that appropriate versions of Ruby and Rails are installed in your developm
 
 h2. Generating the Application
 
-Generate a new Rails application with the command:
+For the rails3-mongoid-devise app, generate a new Rails application with the command:
 
 @$ rails new app_name -m https://github.com/fortuity/rails3-application-templates/raw/master/rails3-mongoid-devise-template.rb -T -O -J@
 
-or
+For the rails3-subdomain-devise app:
 
 @$ rails new app_name -m https://github.com/fortuity/rails3-application-templates/raw/master/rails3-subdomain-devise-template.rb -T -O -J@
 
@@ -102,20 +65,82 @@ bq. You MUST be using Rails 3.0.4 or newer. Generating a Rails application from 
 
 This creates a new Rails app (with the @app_name@ you provide) on your computer.
 
-The application generator template offers you the following options:
+The application generator template will ask you for your preferences:
 
-* set up your view files using the Haml templating language
-* use jQuery instead of Prototype
-* install the heroku gem for deployment to Heroku
-* use RSpec instead of TestUnit
-* use Cucumber for BDD
-* use Yard instead of RDoc
+* Would you like to use jQuery instead of Prototype?
+* Would you like to use jQuery UI?
+* Would you like to use Haml instead of ERB?
+* Would you like to use RSpec instead of TestUnit?
+* Would you like to use factory_girl for test fixtures with RSpec?
+* Would you like to use Cucumber for your BDD?
+* Would you like to use Mongoid to connect to a MongoDB database?
+* Would you like to use Devise for authentication?
+* Would you like to set a robots.txt file to ban spiders?
 
-If you wish to "change the recipe" to generate the app with your own customized options, you can copy and edit the template file.
+h2. The Recipes
+
+The following recipes were used to create the application template for the rails3-mongoid-devise app.
+
+h4. Recipes for General Use
+
+|_. File                    |_.                                  |_. Dependencies     |_. Authors |
+| "action_mailer.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/action_mailer.rb          | Changes ActionMailer defaults             | none               | dkehoe |
+| "ban_spiders.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/ban_spiders.rb           | Ban spiders from your site by changing robots.txt | none | dkehoe |
+| "cleanup.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/cleanup.rb               | Remove unnecessary files, add READMEs | none | fnichol, dkehoe |
+| "git.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/git.rb                    | Add a gitignore file, initialize new Git repo | Git | fnichol, dkehoe |
+| "sample_readme.textile":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/sample_readme.textile     | Placeholder text for a README file (textile markup) | none | dkehoe |
+| "sample_readme.txt":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/sample_readme.txt         | Placeholder text for a README file (ASCII) | none | dkehoe |
+
+h4. Recipes for Testing and BDD
+
+|_. File                    |_.                                  |_. Dependencies     |_. Authors |
+| "rspec.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/rspec.rb          | Install RSpec | none | rbrooker, dkehoe |
+| "cucumber.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/cucumber.rb          | Install Cucumber | none | rbrooker, dkehoe |
+
+h4. Recipes for Mongoid
+
+|_. File                    |_.                                  |_. Dependencies     |_. Authors |
+| "mongoid_cleanup.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/mongoid_cleanup.rb        | Installs Mongoid with the bson_ext gem | Mongoid | dkehoe |
+
+h4. Recipes for jQuery
+
+|_. File                    |_.                                  |_. Dependencies     |_. Authors |
+| "jquery.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/jquery_fix.rb             | Installs jQuery | none | dkehoe |
+
+h4. Recipes for Devise
+
+|_. File                    |_.                                  |_. Dependencies     |_. Authors |
+| "devise.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/devise.rb          | Installs Devise  | none | dkehoe |
+
+h4. Recipes for Haml
+
+|_. File                    |_.                                  |_. Dependencies     |_. Authors |
+| "haml.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/haml.rb          | Installs Haml | none | dkehoe |
+
+h4. Recipes for the Application Layout
+
+|_. File                    |_.                                  |_. Dependencies     |_. Authors |
+| "application_layout.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/application_layout.rb     | Adds application layout with flash messages | ERB or Haml      | dkehoe |
+| "css_setup.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/css_setup.rb              | Add a stylesheet with styles for a horizontal menu and flash messages | none | dkehoe |
+|
+
+h4. Recipes for the Rails3-Mongoid-Devise Example App
+
+|_. File                    |_.                                  |_. Dependencies     |_. Authors |
+| "add_user_name.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/add_user_name.rb          | adds name to User, generates Devise views | User model, Devise | dkehoe |
+| "devise_navigation.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/devise_navigation.rb      | Add navigation links to the default application layout | Devise | dkehoe |
+| "home_page.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/home_page.rb              | Create a home controller, route, and simple view | ERB or Haml | dkehoe |
+| "home_page_users.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/home_page_users.rb        | Modify a home page to display a list of users | Home controller, User model, ERB or Haml | dkehoe |
+| "seed_database.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/seed_database.rb          | Adds a db/seeds.rb file with a default user | Mongoid, User model | dkehoe |
+| "users_page.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/users_page.rb             | Add a home page containing links to User pages | User model, ERB or Haml | dkehoe |
 
 h2. Documentation and Support
 
 This is the only documentation.
+
+h4. Customizing the Template
+
+If you wish to "change the recipe" to generate the app with your own customized options, you can copy and edit the template file. However, it is better to use the "rails3_devise_wizard":https://github.com/fortuity/rails3_devise_wizard gem to create a new application template. You'll find newer versions of the recipes that make up the application template. You may find issues have been identified and (perhaps) fixed. And it will be easier to maintain your application template if you work from the "rails3_devise_wizard":https://github.com/fortuity/rails3_devise_wizard gem.
 
 h4. Writing Recipes
 
@@ -139,7 +164,7 @@ There are many similar projects. To my knowledge, these are the only application
 
 h4. Rails template-generating applications
 
-Visit these websites to select components and generate an application template.
+Visit these websites to select "recipes" and generate an application template.
 
 * "Rails Wizard":http://railswizard.org/
 
@@ -151,7 +176,11 @@ bq. In development as of February 2011.
 
 h4. Rails application-generating gems
 
-Install this gem and then choose components and generate an application.
+Install these gems and then choose "recipes" and generate an application.
+
+* "rails3_devise_wizard":https://github.com/fortuity/rails3_devise_wizard gem.
+
+bq. The basis for this project's application templates.
 
 * "kfaustino/rails-templater":https://github.com/kfaustino/rails-templater
 
