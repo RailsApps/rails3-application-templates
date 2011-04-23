@@ -180,7 +180,7 @@ if config['rspec']
   gem 'rspec-rails', '>= 2.5.0', :group => [:development, :test]
   if recipes.include? 'mongoid'
     # use the database_cleaner gem to reset the test database
-    gem 'database_cleaner', '>= 0.6.6', :group => :test
+    gem 'database_cleaner', '>= 0.6.7', :group => :test
     # include RSpec matchers from the mongoid-rspec gem
     gem 'mongoid-rspec', ">= 1.4.1", :group => :test
   end
@@ -198,12 +198,16 @@ if config['rspec']
   after_bundler do
     say_wizard "RSpec recipe running 'after bundler'"
     generate 'rspec:install'
-
-    # remove ActiveRecord artifacts
-    gsub_file 'spec/spec_helper.rb', /config.fixture_path/, '# config.fixture_path'
-    gsub_file 'spec/spec_helper.rb', /config.use_transactional_fixtures/, '# config.use_transactional_fixtures'
+    
+    say_wizard "Removing test folder (not needed for RSpec)"
+    run 'rm -rf test/'
 
     if recipes.include? 'mongoid'
+      
+      # remove ActiveRecord artifacts
+      gsub_file 'spec/spec_helper.rb', /config.fixture_path/, '# config.fixture_path'
+      gsub_file 'spec/spec_helper.rb', /config.use_transactional_fixtures/, '# config.use_transactional_fixtures'
+      
       # reset your application database to a pristine state during testing
       inject_into_file 'spec/spec_helper.rb', :before => "\nend" do
       <<-RUBY
@@ -220,16 +224,11 @@ if config['rspec']
   end
 RUBY
       end
-    end
-  
-    # remove either possible occurrence of "require rails/test_unit/railtie"
-    gsub_file 'config/application.rb', /require 'rails\/test_unit\/railtie'/, '# require "rails/test_unit/railtie"'
-    gsub_file 'config/application.rb', /require "rails\/test_unit\/railtie"/, '# require "rails/test_unit/railtie"'
 
-    say_wizard "Removing test folder (not needed for RSpec)"
-    run 'rm -rf test/'
+      # remove either possible occurrence of "require rails/test_unit/railtie"
+      gsub_file 'config/application.rb', /require 'rails\/test_unit\/railtie'/, '# require "rails/test_unit/railtie"'
+      gsub_file 'config/application.rb', /require "rails\/test_unit\/railtie"/, '# require "rails/test_unit/railtie"'
 
-    if recipes.include? 'mongoid'
       # configure RSpec to use matchers from the mongoid-rspec gem
       create_file 'spec/support/mongoid.rb' do 
       <<-RUBY
@@ -271,10 +270,7 @@ config['cucumber'] = yes_wizard?("Would you like to use Cucumber for your BDD?")
 if config['cucumber']
   gem 'cucumber-rails', ">= 0.4.1", :group => :test
   gem 'capybara', ">= 0.4.1.2", :group => :test
-  unless recipes.include? 'rspec'
-    # we already added database_cleaner if we ran the rspec recipe
-    gem 'database_cleaner', '>= 0.6.6', :group => :test
-  end
+  gem 'database_cleaner', '>= 0.6.7', :group => :test
   gem 'launchy', ">= 0.4.0", :group => :test
 else
   recipes.delete('cucumber')
@@ -283,7 +279,7 @@ end
 if config['cucumber']
   after_bundler do
     say_wizard "Cucumber recipe running 'after bundler'"
-    generate "cucumber:install --capybara#{' --rspec' if recipes.include?('rspec')}#{' -D' unless recipes.include?('activerecord')}"
+    generate "cucumber:install --capybara#{' --rspec' if recipes.include?('rspec')}#{' -D' if recipes.include?('mongoid')}"
     if recipes.include? 'mongoid'
       gsub_file 'features/support/env.rb', /transaction/, "truncation"
       inject_into_file 'features/support/env.rb', :after => 'begin' do
@@ -408,7 +404,7 @@ config['devise'] = yes_wizard?("Would you like to use Devise for authentication?
 # https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/devise.rb
 
 if config['devise']
-  gem "devise", ">= 1.3.0"
+  gem "devise", ">= 1.3.3"
 else
   recipes.delete('devise')
 end
@@ -498,19 +494,16 @@ after_bundler do
 end
 RUBY
     end
-  elsif recipes.include? 'mongo_mapper'
-    # Using MongoMapper? Create an issue, suggest some code, and I'll add it
-  elsif recipes.include? 'active_record'
-    gsub_file 'app/models/user.rb', /end/ do
-  <<-RUBY
-  validates_presence_of :name
-  validates_uniqueness_of :name, :email, :case_sensitive => false
-  attr_accessible :name, :email, :password, :password_confirmation, :remember_me
-end
-RUBY
-    end
   else
-    # Placeholder for some other ORM
+    # for ActiveRecord
+    # Devise created a Users database, we'll modify it
+    generate 'migration AddNameToUsers name:string'
+    # Devise created a Users model, we'll modify it
+    gsub_file 'app/models/user.rb', /attr_accessible :email/, 'attr_accessible :name, :email'
+    inject_into_file 'app/models/user.rb', :before => 'validates_uniqueness_of' do
+      "validates_presence_of :name\n"
+    end
+    gsub_file 'app/models/user.rb', /validates_uniqueness_of :email/, 'validates_uniqueness_of :name, :email'
   end
 
   if recipes.include? 'devise'
@@ -667,13 +660,18 @@ after_bundler do
     append_file 'db/seeds.rb' do <<-FILE
 puts 'EMPTY THE MONGODB DATABASE'
 Mongoid.master.collections.reject { |c| c.name =~ /^system/}.each(&:drop)
-puts 'SETTING UP DEFAULT USER LOGIN'
-user = User.create! :name => 'First User', :email => 'user@test.com', :password => 'please', :password_confirmation => 'please'
-puts 'New user created: ' << user.name
 FILE
     end
   end
 
+  # create a default user
+  append_file 'db/seeds.rb' do <<-FILE
+puts 'SETTING UP DEFAULT USER LOGIN'
+user = User.create! :name => 'First User', :email => 'user@test.com', :password => 'please', :password_confirmation => 'please'
+puts 'New user created: ' << user.name
+FILE
+  end
+      
   run 'rake db:seed'
 
 end
