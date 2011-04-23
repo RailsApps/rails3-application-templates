@@ -2,14 +2,25 @@ h1. Rails3-Application-Templates
 
 These application generator templates give you a Rails 3 skeleton or starter app you can deploy in minutes.
 
-The templates combine "Mongoid":http://mongoid.org/ with "Devise":http://github.com/plataformatec/devise. Mongoid is a datastore that gives you quick development without schemas or migrations. Devise gives you ready-made authentication and user management.
-
 These application templates were created using the "rails3_devise_wizard":https://github.com/fortuity/rails3_devise_wizard gem which provides a convenient way to assemble a reusable application template by selecting various "recipes" for popular Rails development packages.
+
+The application generator templates will ask you for various preferences:
+
+* Would you like to use jQuery instead of Prototype?
+* Would you like to use jQuery UI?
+* Would you like to use Haml instead of ERB?
+* Would you like to use RSpec instead of TestUnit?
+* Would you like to use factory_girl for test fixtures with RSpec?
+* Would you like to use Cucumber for your BDD?
+* Would you like to use Mongoid to connect to a MongoDB database?
+* Would you like to use Devise for authentication?
+* Would you like to set a robots.txt file to ban spiders?
 
 h4. Applications
 
 The templates can be used to build the following complete applications:
 
+* "rails3-devise-rspec-cucumber":https://github.com/fortuity/rails3-devise-rspec-cucumber
 * "rails3-mongoid-devise":http://github.com/fortuity/rails3-mongoid-devise/
 * "rails3-subdomain-devise":http://github.com/fortuity/rails3-subdomain-devise/
 
@@ -17,6 +28,7 @@ h4. Tutorials
 
 There are detailed tutorials to show how each application is built:
 
+* "Tutorial for rails3-devise-rspec-cucumber":https://github.com/fortuity/rails3-devise-rspec-cucumber/wiki/Tutorial
 * "Tutorial for rails3-mongoid-devise":http://github.com/fortuity/rails3-mongoid-devise/wiki/Tutorial-%28Walkthrough%29
 * "Tutorial for rails3-subdomain-devise":http://github.com/fortuity/rails3-subdomain-devise/wiki/Tutorial-%28Walkthrough%29
 
@@ -51,31 +63,27 @@ Check that appropriate versions of Ruby and Rails are installed in your developm
 
 h2. Generating the Application
 
-For the rails3-mongoid-devise app, generate a new Rails application with the command:
+For the *rails3-devise-rspec-cucumber* app, generate a new Rails application with the command:
 
-@$ rails new app_name -m https://github.com/fortuity/rails3-application-templates/raw/master/rails3-mongoid-devise-template.rb -T -O -J@
+@$ rails new APP_NAME -m https://github.com/fortuity/rails3-application-templates/raw/master/rails3-devise-rspec-cucumber-template.rb -T -J@
 
-For the rails3-subdomain-devise app:
+Use the @-T -J@ flags to skip Test::Unit files and Prototype files.
 
-@$ rails new app_name -m https://github.com/fortuity/rails3-application-templates/raw/master/rails3-subdomain-devise-template.rb -T -O -J@
+For the *rails3-mongoid-devise* app, generate a new Rails application with the command:
+
+@$ rails new APP_NAME -m https://github.com/fortuity/rails3-application-templates/raw/master/rails3-mongoid-devise-template.rb -T -O -J@
+
+Use the @-T -O -J@ flags to skip Test::Unit files, Active Record files, and Prototype files.
+
+For the *rails3-subdomain-devise* app:
+
+@$ rails new APP_NAME -m https://github.com/fortuity/rails3-application-templates/raw/master/rails3-subdomain-devise-template.rb -T -O -J@
 
 Use the @-T -O -J@ flags to skip Test::Unit files, Active Record files, and Prototype files.
 
 bq. You MUST be using Rails 3.0.4 or newer. Generating a Rails application from an "HTTPS" URL does not work in Rails 3.0.3 and earlier versions.
 
 This creates a new Rails app (with the @app_name@ you provide) on your computer.
-
-The application generator template will ask you for your preferences:
-
-* Would you like to use jQuery instead of Prototype?
-* Would you like to use jQuery UI?
-* Would you like to use Haml instead of ERB?
-* Would you like to use RSpec instead of TestUnit?
-* Would you like to use factory_girl for test fixtures with RSpec?
-* Would you like to use Cucumber for your BDD?
-* Would you like to use Mongoid to connect to a MongoDB database?
-* Would you like to use Devise for authentication?
-* Would you like to set a robots.txt file to ban spiders?
 
 h2. The Recipes
 
@@ -123,7 +131,7 @@ h4. Recipes for the Application Layout
 | "application_layout.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/application_layout.rb     | Adds application layout with flash messages | ERB or Haml      | dkehoe |
 | "css_setup.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/css_setup.rb              | Add a stylesheet with styles for a horizontal menu and flash messages | none | dkehoe |
 
-h4. Recipes for the Rails3-Mongoid-Devise Example App
+h4. Recipes for the Example Apps
 
 |_. File                    |_.                                  |_. Dependencies     |_. Authors |
 | "add_user_name.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/add_user_name.rb          | adds name to User, generates Devise views | User model, Devise | dkehoe |
@@ -247,12 +255,9 @@ bq. For a ranking by popularity, see:
 
 h2. Contributing
 
-If you make improvements to these templates, please share with others.
+If you make improvements to this application, please share with others.
 
-* Fork the project on GitHub.
-* Make your feature addition or bug fix.
-* Commit with Git.
-* Send the author a pull request.
+Send the author a message, create an "issue":http://github.com/fortuity/rails3-application-templates/issues, or fork the project and submit a pull request.
 
 If you add functionality to this application, create an alternative implementation, or build an application that is similar, please contact me and I'll add a note to the README so that others can find your work.
 
