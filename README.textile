@@ -34,8 +34,8 @@ There are detailed tutorials to show how each application is built:
 
 h2. Follow on Twitter
 
-Are these application templates useful to you? Follow me on Twitter:
-"http://twitter.com/railsinit":http://twitter.com/railsinit
+Are these application templates useful to you? Follow the project on Twitter:
+"http://twitter.com/rails_apps":http://twitter.com/rails_apps
 and tweet some praise. I'd love to know you were helped out by what I've put together.
 
 Any issues? Please create an "Issue":http://github.com/fortuity/rails3-application-templates/issues on GitHub.
@@ -265,8 +265,8 @@ h2. Credits
 
 Daniel Kehoe ("http://danielkehoe.com/":http://danielkehoe.com/) created these templates.
 
-Are the templates useful to you? Follow me on Twitter:
-"http://twitter.com/railsinit":http://twitter.com/railsinit
+Are the templates useful to you? Follow the project on Twitter:
+"http://twitter.com/rails_apps":http://twitter.com/rails_apps
 and tweet some praise. I'd love to know you were helped out by what I've put together.
 
 Any issues? Please create an "Issue":http://github.com/fortuity/rails3-application-templates/issues on GitHub.
