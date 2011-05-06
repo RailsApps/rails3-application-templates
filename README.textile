@@ -14,6 +14,7 @@ The application generator templates will ask you for various preferences:
 * Would you like to use Cucumber for your BDD?
 * Would you like to use Mongoid to connect to a MongoDB database?
 * Would you like to use Devise for authentication?
+* Would you like to use OmniAuth for authentication? 
 * Would you like to set a robots.txt file to ban spiders?
 
 h4. Applications
@@ -22,6 +23,7 @@ The templates can be used to build the following complete applications:
 
 * "rails3-devise-rspec-cucumber":https://github.com/fortuity/rails3-devise-rspec-cucumber
 * "rails3-mongoid-devise":http://github.com/fortuity/rails3-mongoid-devise/
+* "rails3-mongoid-omniauth":http://github.com/fortuity/rails3-mongoid-omniauth/
 * "rails3-subdomain-devise":http://github.com/fortuity/rails3-subdomain-devise/
 
 h4. Tutorials
@@ -30,6 +32,7 @@ There are detailed tutorials to show how each application is built:
 
 * "Tutorial for rails3-devise-rspec-cucumber":https://github.com/fortuity/rails3-devise-rspec-cucumber/wiki/Tutorial
 * "Tutorial for rails3-mongoid-devise":http://github.com/fortuity/rails3-mongoid-devise/wiki/Tutorial-%28Walkthrough%29
+* "Tutorial for rails3-mongoid-omniauth":https://github.com/fortuity/rails3-mongoid-omniauth/wiki/Tutorial
 * "Tutorial for rails3-subdomain-devise":http://github.com/fortuity/rails3-subdomain-devise/wiki/Tutorial-%28Walkthrough%29
 
 h2. Follow on Twitter
@@ -75,6 +78,12 @@ For the *rails3-mongoid-devise* app, generate a new Rails application with the c
 
 Use the @-T -O -J@ flags to skip Test::Unit files, Active Record files, and Prototype files.
 
+For the *rails3-mongoid-omniauth* app, generate a new Rails application with the command:
+
+@$ rails new APP_NAME -m https://github.com/fortuity/rails3-application-templates/raw/master/rails3-mongoid-omniauth-template.rb -T -O -J@
+
+Use the @-T -O -J@ flags to skip Test::Unit files, Active Record files, and Prototype files.
+
 For the *rails3-subdomain-devise* app:
 
 @$ rails new APP_NAME -m https://github.com/fortuity/rails3-application-templates/raw/master/rails3-subdomain-devise-template.rb -T -O -J@
@@ -87,7 +96,7 @@ This creates a new Rails app (with the @app_name@ you provide) on your computer.
 
 h2. The Recipes
 
-The following recipes were used to create the application template for the rails3-mongoid-devise app.
+The following recipes were used to create the application templates.
 
 h4. Recipes for General Use
 
@@ -120,6 +129,12 @@ h4. Recipes for Devise
 |_. File                    |_.                                  |_. Dependencies     |_. Authors |
 | "devise.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/devise.rb          | Installs Devise  | none | dkehoe |
 
+h4. Recipes for OmniAuth
+
+|_. File                    |_.                                  |_. Dependencies     |_. Authors |
+| "omniauth.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/omniauth.rb        | OmniAuth for authentication | none | dkehoe |
+| "omniauth_email.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/omniauth_email.rb        | Requests a new uer's email address when authenticating with Twitter, etc. | OmniAuth | dkehoe |
+
 h4. Recipes for Haml
 
 |_. File                    |_.                                  |_. Dependencies     |_. Authors |
@@ -134,11 +149,13 @@ h4. Recipes for the Application Layout
 h4. Recipes for the Example Apps
 
 |_. File                    |_.                                  |_. Dependencies     |_. Authors |
-| "add_user_name.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/add_user_name.rb          | adds name to User, generates Devise views | User model, Devise | dkehoe |
+| "add_user.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/add_user.rb          | adds User model for use with OmniAuth | none | dkehoe |
+| "add_user_name.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/add_user_name.rb          | adds name to User for use with Devise | User model, Devise | dkehoe |
+| "navigation.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/_navigation.rb      | Add navigation links to the default application layout | none | dkehoe |
 | "devise_navigation.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/devise_navigation.rb      | Add navigation links to the default application layout | Devise | dkehoe |
 | "home_page.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/home_page.rb              | Create a home controller, route, and simple view | ERB or Haml | dkehoe |
 | "home_page_users.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/home_page_users.rb        | Modify a home page to display a list of users | Home controller, User model, ERB or Haml | dkehoe |
-| "seed_database.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/seed_database.rb          | Adds a db/seeds.rb file with a default user | Mongoid, User model | dkehoe |
+| "seed_database.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/seed_database.rb          | Adds a db/seeds.rb file to reset a database | none | dkehoe |
 | "users_page.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/users_page.rb             | Add a home page containing links to User pages | User model, ERB or Haml | dkehoe |
 
 h2. Documentation and Support
