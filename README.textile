@@ -105,8 +105,8 @@ h4. Recipes for General Use
 | "ban_spiders.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/ban_spiders.rb           | Ban spiders from your site by changing robots.txt | none | dkehoe |
 | "cleanup.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/cleanup.rb               | Remove unnecessary files, add READMEs | none | fnichol, dkehoe |
 | "git.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/git.rb                    | Add a gitignore file, initialize new Git repo | Git | fnichol, dkehoe |
-| "sample_readme.textile":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/sample_readme.textile     | Placeholder text for a README file (textile markup) | none | dkehoe |
-| "sample_readme.txt":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/sample_readme.txt         | Placeholder text for a README file (ASCII) | none | dkehoe |
+| "sample_readme.textile":https://github.com/fortuity/rails-template-recipes/raw/master/sample_readme.textile     | Placeholder text for a README file (textile markup) | none | dkehoe |
+| "sample_readme.txt":https://github.com/fortuity/rails-template-recipes/raw/master/sample_readme.txt         | Placeholder text for a README file (ASCII) | none | dkehoe |
 
 h4. Recipes for Testing and BDD
 
@@ -149,13 +149,12 @@ h4. Recipes for the Application Layout
 h4. Recipes for the Example Apps
 
 |_. File                    |_.                                  |_. Dependencies     |_. Authors |
-| "add_user.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/add_user.rb          | adds User model for use with OmniAuth | none | dkehoe |
-| "add_user_name.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/add_user_name.rb          | adds name to User for use with Devise | User model, Devise | dkehoe |
+| "add_user.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/add_user.rb          | adds User model for use with OmniAuth or Devise | none | dkehoe |
 | "navigation.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/_navigation.rb      | Add navigation links to the default application layout | none | dkehoe |
 | "devise_navigation.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/devise_navigation.rb      | Add navigation links to the default application layout | Devise | dkehoe |
 | "home_page.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/home_page.rb              | Create a home controller, route, and simple view | ERB or Haml | dkehoe |
 | "home_page_users.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/home_page_users.rb        | Modify a home page to display a list of users | Home controller, User model, ERB or Haml | dkehoe |
-| "seed_database.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/seed_database.rb          | Adds a db/seeds.rb file to reset a database | none | dkehoe |
+| "seed_database.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/seed_database.rb          | Adds a db/seeds.rb file to initialize a database | none | dkehoe |
 | "users_page.rb":https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/users_page.rb             | Add a home page containing links to User pages | User model, ERB or Haml | dkehoe |
 
 h2. Documentation and Support
