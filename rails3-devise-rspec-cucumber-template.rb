@@ -41,7 +41,7 @@ Rails.application.config.generators do |g|
 end
 RUBY
 
-@recipes = ["jquery", "haml", "rspec", "cucumber", "action_mailer", "devise", "add_user_name", "home_page", "home_page_users", "seed_database", "users_page", "css_setup", "application_layout", "devise_navigation", "cleanup", "ban_spiders", "git"] 
+@recipes = ["jquery", "haml", "rspec", "cucumber", "action_mailer", "devise", "add_user", "home_page", "home_page_users", "seed_database", "users_page", "css_setup", "application_layout", "devise_navigation", "cleanup", "ban_spiders", "git"] 
 
 def recipes; @recipes end
 def recipe?(name); @recipes.include?(name) end
@@ -121,9 +121,9 @@ if config['jquery']
     # add jQuery files
     inside "public/javascripts" do
       get "https://github.com/rails/jquery-ujs/raw/master/src/rails.js", "rails.js"
-      get "https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js", "jquery.js"
+      get "http://code.jquery.com/jquery-1.6.min.js", "jquery.js"
       if config['ui']
-        get "https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/jquery-ui.min.js", "jqueryui.js"
+        get "https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js", "jqueryui.js"
       end
     end
     # adjust the Javascript defaults
@@ -153,7 +153,7 @@ config['haml'] = yes_wizard?("Would you like to use Haml instead of ERB?") if tr
 # https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/haml.rb
 
 if config['haml']
-  gem 'haml', '>= 3.0.25'
+  gem 'haml', '>= 3.1.1'
   gem 'haml-rails', '>= 0.3.4', :group => :development
 else
   recipes.delete('haml')
@@ -182,7 +182,7 @@ if config['rspec']
     # use the database_cleaner gem to reset the test database
     gem 'database_cleaner', '>= 0.6.7', :group => :test
     # include RSpec matchers from the mongoid-rspec gem
-    gem 'mongoid-rspec', ">= 1.4.1", :group => :test
+    gem 'mongoid-rspec', ">= 1.4.2", :group => :test
   end
   if config['factory_girl']
     # use the factory_girl gem for test fixtures
@@ -198,16 +198,28 @@ if config['rspec']
   after_bundler do
     say_wizard "RSpec recipe running 'after bundler'"
     generate 'rspec:install'
-    
+
     say_wizard "Removing test folder (not needed for RSpec)"
     run 'rm -rf test/'
 
+    inject_into_file 'config/application.rb', :after => "Rails::Application\n" do <<-RUBY
+
+    # don't generate RSpec tests for views and helpers
+    config.generators do |g|
+      g.view_specs false
+      g.helper_specs false
+    end
+
+RUBY
+    end
+
+
     if recipes.include? 'mongoid'
-      
+
       # remove ActiveRecord artifacts
       gsub_file 'spec/spec_helper.rb', /config.fixture_path/, '# config.fixture_path'
       gsub_file 'spec/spec_helper.rb', /config.use_transactional_fixtures/, '# config.use_transactional_fixtures'
-      
+
       # reset your application database to a pristine state during testing
       inject_into_file 'spec/spec_helper.rb', :before => "\nend" do
       <<-RUBY
@@ -392,13 +404,10 @@ if config['devise']
       # Nothing to do (Devise changes its initializer automatically when Mongoid is detected)
       # gsub_file 'config/initializers/devise.rb', 'devise/orm/active_record', 'devise/orm/mongoid'
     end
-  
+
     # Prevent logging of password_confirmation
     gsub_file 'config/application.rb', /:password/, ':password, :password_confirmation'
 
-    # Generate models and routes for a User
-    generate 'devise user'
-    
   end
 
   after_everything do
@@ -406,20 +415,20 @@ if config['devise']
     say_wizard "Devise recipe running 'after everything'"
 
     if recipes.include? 'rspec'
-      say_wizard "Copying RSpec files from the rails3-mongoid-devise examples"
-      # copy all the RSpec specs files from the rails3-mongoid-devise example app
+      say_wizard "Copying RSpec files from the rails3-devise-rspec-cucumber examples"
+      # copy all the RSpec specs files from the rails3-devise-rspec-cucumber example app
       inside 'spec' do
-        get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/spec/factories.rb', 'factories.rb'
+        get 'https://github.com/fortuity/rails3-devise-rspec-cucumber/raw/master/spec/factories.rb', 'factories.rb'
       end
       remove_file 'spec/controllers/home_controller_spec.rb'
       remove_file 'spec/controllers/users_controller_spec.rb'
       inside 'spec/controllers' do
-        get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/spec/controllers/home_controller_spec.rb', 'home_controller_spec.rb'
-        get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/spec/controllers/users_controller_spec.rb', 'users_controller_spec.rb'
+        get 'https://github.com/fortuity/rails3-devise-rspec-cucumber/raw/master/spec/controllers/home_controller_spec.rb', 'home_controller_spec.rb'
+        get 'https://github.com/fortuity/rails3-devise-rspec-cucumber/raw/master/spec/controllers/users_controller_spec.rb', 'users_controller_spec.rb'
       end
       remove_file 'spec/models/user_spec.rb'
       inside 'spec/models' do
-        get 'https://github.com/fortuity/rails3-mongoid-devise/raw/master/spec/models/user_spec.rb', 'user_spec.rb'
+        get 'https://github.com/fortuity/rails3-devise-rspec-cucumber/raw/master/spec/models/user_spec.rb', 'user_spec.rb'
       end
       remove_file 'spec/views/home/index.html.erb_spec.rb'
       remove_file 'spec/views/home/index.html.haml_spec.rb'
@@ -433,25 +442,40 @@ if config['devise']
 end
 
 
-# >------------------------------[ AddUserName ]------------------------------<
+# >--------------------------------[ AddUser ]--------------------------------<
 
-@current_recipe = "add_user_name"
-@before_configs["add_user_name"].call if @before_configs["add_user_name"]
-say_recipe 'AddUserName'
+@current_recipe = "add_user"
+@before_configs["add_user"].call if @before_configs["add_user"]
+say_recipe 'AddUser'
 
 
 @configs[@current_recipe] = config
 
 # Application template recipe for the rails3_devise_wizard. Check for a newer version here:
-# https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/add_user_name.rb
+# https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/add_user.rb
 
 after_bundler do
   
-  say_wizard "AddUserName recipe running 'after bundler'"
+  say_wizard "AddUser recipe running 'after bundler'"
   
-  # Add a 'name' attribute to the User model
-  if recipes.include? 'mongoid'
+  if recipes.include? 'omniauth'
+    generate(:model, "user provider:string uid:string name:string email:string")
     gsub_file 'app/models/user.rb', /end/ do
+<<-RUBY
+  attr_accessible :provider, :uid, :name, :email
+end
+RUBY
+    end
+  end
+
+  if recipes.include? 'devise'
+    
+    # Generate models and routes for a User
+    generate 'devise user'
+
+    # Add a 'name' attribute to the User model
+    if recipes.include? 'mongoid'
+      gsub_file 'app/models/user.rb', /end/ do
   <<-RUBY
   field :name
   validates_presence_of :name
@@ -459,20 +483,19 @@ after_bundler do
   attr_accessible :name, :email, :password, :password_confirmation, :remember_me
 end
 RUBY
+      end
+    else
+      # for ActiveRecord
+      # Devise created a Users database, we'll modify it
+      generate 'migration AddNameToUsers name:string'
+      # Devise created a Users model, we'll modify it
+      gsub_file 'app/models/user.rb', /attr_accessible :email/, 'attr_accessible :name, :email'
+      inject_into_file 'app/models/user.rb', :before => 'validates_uniqueness_of' do
+        "validates_presence_of :name\n"
+      end
+      gsub_file 'app/models/user.rb', /validates_uniqueness_of :email/, 'validates_uniqueness_of :name, :email'
     end
-  else
-    # for ActiveRecord
-    # Devise created a Users database, we'll modify it
-    generate 'migration AddNameToUsers name:string'
-    # Devise created a Users model, we'll modify it
-    gsub_file 'app/models/user.rb', /attr_accessible :email/, 'attr_accessible :name, :email'
-    inject_into_file 'app/models/user.rb', :before => 'validates_uniqueness_of' do
-      "validates_presence_of :name\n"
-    end
-    gsub_file 'app/models/user.rb', /validates_uniqueness_of :email/, 'validates_uniqueness_of :name, :email'
-  end
 
-  if recipes.include? 'devise'
     unless recipes.include? 'haml'
       
       # Generate Devise views (unless you are using Haml)
@@ -626,7 +649,6 @@ after_bundler do
   end
 
   if recipes.include? 'mongoid'
-    # create a default user
     append_file 'db/seeds.rb' do <<-FILE
 puts 'EMPTY THE MONGODB DATABASE'
 Mongoid.master.collections.reject { |c| c.name =~ /^system/}.each(&:drop)
@@ -634,14 +656,16 @@ FILE
     end
   end
 
-  # create a default user
-  append_file 'db/seeds.rb' do <<-FILE
+  if recipes.include? 'devise'
+    # create a default user
+    append_file 'db/seeds.rb' do <<-FILE
 puts 'SETTING UP DEFAULT USER LOGIN'
 user = User.create! :name => 'First User', :email => 'user@test.com', :password => 'please', :password_confirmation => 'please'
 puts 'New user created: ' << user.name
 FILE
+    end
   end
-      
+
   run 'rake db:seed'
 
 end
@@ -698,11 +722,14 @@ RUBY
       create_file 'app/views/users/show.html.haml' do <<-'HAML'
 %p
   User: #{@user.name}
+%p
+  Email: #{@user.email if @user.email}
 HAML
       end
     else
       append_file 'app/views/users/show.html.erb' do <<-ERB
 <p>User: <%= @user.name %></p>
+<p>Email: <%= @user.email if @user.email %></p>
 ERB
       end
     end
@@ -1010,10 +1037,21 @@ say_recipe 'Git'
 # https://github.com/fortuity/rails3_devise_wizard/blob/master/recipes/git.rb
 
 after_everything do
+  
   say_wizard "Git recipe running 'after everything'"
+  
   # Git should ignore some files
   remove_file '.gitignore'
   get "https://github.com/fortuity/rails3-gitignore/raw/master/gitignore.txt", ".gitignore"
+
+  if recipes.include? 'omniauth'
+    append_file '.gitignore' do <<-TXT
+# keep OmniAuth service provider secrets out of the Git repo
+config/initializers/omniauth.rb
+TXT
+    end
+  end
+
   # Initialize new Git repo
   git :init
   git :add => '.'
