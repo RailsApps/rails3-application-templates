@@ -35,13 +35,14 @@ There are detailed tutorials to show how each application is built:
 * "Tutorial for rails3-mongoid-omniauth":https://github.com/fortuity/rails3-mongoid-omniauth/wiki/Tutorial
 * "Tutorial for rails3-subdomain-devise":http://github.com/fortuity/rails3-subdomain-devise/wiki/Tutorial-%28Walkthrough%29
 
-h2. Follow on Twitter
-
-Are these application templates useful to you? Follow the project on Twitter:
-"http://twitter.com/rails_apps":http://twitter.com/rails_apps
-and tweet some praise. I'd love to know you were helped out by what I've put together.
-
 Any issues? Please create an "Issue":http://github.com/fortuity/rails3-application-templates/issues on GitHub.
+
+h2. !http://twitter-badges.s3.amazonaws.com/t_logo-a.png(Follow on Twitter)!:http://www.twitter.com/rails_apps Follow on Twitter
+
+To keep up to date, follow the project on Twitter:
+"http://twitter.com/rails_apps":http://twitter.com/rails_apps
+
+Please tweet some praise if you like what you've found.
 
 h2. Suggested Use
 
