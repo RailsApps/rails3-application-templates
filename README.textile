@@ -6,8 +6,8 @@ These application templates were created using the "rails3_devise_wizard":https:
 
 The application generator templates will ask you for various preferences:
 
-* Would you like to use jQuery instead of Prototype?
-* Would you like to use jQuery UI?
+* Would you like to use jQuery instead of Prototype? (for Rails 3.0)
+* Would you like to use jQuery UI? (for Rails 3.0 or 3.1)
 * Would you like to use Haml instead of ERB?
 * Would you like to use RSpec instead of TestUnit?
 * Would you like to use factory_girl for test fixtures with RSpec?
