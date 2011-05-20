@@ -20,8 +20,8 @@ h4. Applications
 The templates can be used to build the following complete applications:
 
 * "rails3-devise-rspec-cucumber":https://github.com/RailsApps/rails3-devise-rspec-cucumber
-* "rails3-mongoid-devise":http://github.com/fortuity/rails3-mongoid-devise/
-* "rails3-mongoid-omniauth":http://github.com/fortuity/rails3-mongoid-omniauth/
+* "rails3-mongoid-devise":http://github.com/railsapps/rails3-mongoid-devise/
+* "rails3-mongoid-omniauth":http://github.com/railsapps/rails3-mongoid-omniauth/
 * "rails3-subdomain-devise":http://github.com/fortuity/rails3-subdomain-devise/
 
 h4. Tutorials
@@ -29,8 +29,8 @@ h4. Tutorials
 There are detailed tutorials to show how each application is built:
 
 * "Tutorial for rails3-devise-rspec-cucumber":https://github.com/RailsApps/rails3-devise-rspec-cucumber/wiki/Tutorial
-* "Tutorial for rails3-mongoid-devise":http://github.com/fortuity/rails3-mongoid-devise/wiki/Tutorial-%28Walkthrough%29
-* "Tutorial for rails3-mongoid-omniauth":https://github.com/fortuity/rails3-mongoid-omniauth/wiki/Tutorial
+* "Tutorial for rails3-mongoid-devise":http://github.com/railsapps/rails3-mongoid-devise/wiki/Tutorial-%28Walkthrough%29
+* "Tutorial for rails3-mongoid-omniauth":https://github.com/railsapps/rails3-mongoid-omniauth/wiki/Tutorial
 * "Tutorial for rails3-subdomain-devise":http://github.com/fortuity/rails3-subdomain-devise/wiki/Tutorial-%28Walkthrough%29
 
 Any issues? Please create an "Issue":http://github.com/RailsApps/rails3-application-templates/issues on GitHub.
