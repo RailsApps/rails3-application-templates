@@ -22,6 +22,7 @@ tmp/*
 *.rbc
 *.sassc
 .rspec
+.redcar/
 .sass-cache
 /config/config.yml
 /config/database.yml
