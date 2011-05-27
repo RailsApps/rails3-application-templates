@@ -41,7 +41,7 @@ Rails.application.config.generators do |g|
 end
 RUBY
 
-@recipes = ["rake_fix", "jquery", "haml", "rspec", "cucumber", "mongoid", "action_mailer", "devise", "add_user", "home_page", "home_page_users", "seed_database", "users_page", "css_setup", "application_layout", "devise_navigation", "cleanup", "ban_spiders", "git"]
+@recipes = ["jquery", "haml", "rspec", "cucumber", "mongoid", "action_mailer", "devise", "add_user", "home_page", "home_page_users", "seed_database", "users_page", "css_setup", "application_layout", "devise_navigation", "cleanup", "ban_spiders", "git"]
 
 def recipes; @recipes end
 def recipe?(name); @recipes.include?(name) end
@@ -107,29 +107,6 @@ else
 end
 
 say_wizard "Checking configuration. Please confirm your preferences."
-
-
-# >--------------------------------[ RakeFix ]--------------------------------<
-
-@current_recipe = "rake_fix"
-@before_configs["rake_fix"].call if @before_configs["rake_fix"]
-say_recipe 'RakeFix'
-
-config = {}
-config['rakefix'] = yes_wizard?("Would you like to use Rake gem version 0.8.7 (recommended)?") if true && true unless config.key?('rakefix')
-@configs[@current_recipe] = config
-
-# Application template recipe for the rails_apps_composer. Check for a newer version here:
-# https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/rake_fix.rb
-
-if config['rakefix']
-  if recipes.include? 'rails 3.0'
-    # for Rails 3.0, bind rake gem at version 0.8.7
-    gem 'rake', '0.8.7'
-  end
-else
-  recipes.delete('rakefix')
-end
 
 
 # >--------------------------------[ jQuery ]---------------------------------<
@@ -242,7 +219,7 @@ if config['rspec']
     # for Rails 3.0, use only gem versions we know that work
     say_wizard "REMINDER: When creating a Rails app using RSpec..."
     say_wizard "you should add the '-T' flag to 'rails new'"
-    gem 'rspec-rails', '2.5.0', :group => [:development, :test]
+    gem 'rspec-rails', '2.6.1', :group => [:development, :test]
     if recipes.include? 'mongoid'
       # use the database_cleaner gem to reset the test database
       gem 'database_cleaner', '0.6.7', :group => :test
@@ -255,7 +232,7 @@ if config['rspec']
     end
   else
     # for Rails 3.1+, use optimistic versioning for gems
-    gem 'rspec-rails', '>= 2.6.0', :group => [:development, :test]
+    gem 'rspec-rails', '>= 2.6.1', :group => [:development, :test]
     if recipes.include? 'mongoid'
       # use the database_cleaner gem to reset the test database
       gem 'database_cleaner', '>= 0.6.7', :group => :test
@@ -361,13 +338,13 @@ config['cucumber'] = yes_wizard?("Would you like to use Cucumber for your BDD?")
 if config['cucumber']
   if recipes.include? 'rails 3.0'
     # for Rails 3.0, use only gem versions we know that work
-    gem 'cucumber-rails', '0.4.1', :group => :test
-    gem 'capybara', '0.4.1.2', :group => :test
+    gem 'cucumber-rails', '0.5.1', :group => :test
+    gem 'capybara', '1.0.0.beta1', :group => :test
     gem 'database_cleaner', '0.6.7', :group => :test
     gem 'launchy', '0.4.0', :group => :test
   else
     # for Rails 3.1+, use optimistic versioning for gems
-    gem 'cucumber-rails', '>= 0.5.0', :group => :test
+    gem 'cucumber-rails', '>= 0.5.1', :group => :test
     gem 'capybara', '>= 1.0.0.beta1', :group => :test
     gem 'database_cleaner', '>= 0.6.7', :group => :test
     gem 'launchy', '>= 0.4.0', :group => :test
@@ -924,14 +901,15 @@ after_bundler do
   say_wizard "CssSetup recipe running 'after bundler'"
 
   # Add a stylesheet with styles for a horizontal menu and flash messages
-  create_file 'public/stylesheets/application.css' do <<-CSS
+  css = <<-CSS
+
 ul.hmenu {
-  list-style: none;	
+  list-style: none;
   margin: 0 0 2em;
   padding: 0;
 }
 ul.hmenu li {
-  display: inline;  
+  display: inline;
 }
 #flash_notice, #flash_alert {
   padding: 5px 8px;
@@ -945,7 +923,12 @@ ul.hmenu li {
   background-color: #FCC;
   border: solid 1px #C66;
 }
+
 CSS
+  if recipes.include? 'rails 3.0'
+    create_file 'public/stylesheets/application.css', css
+  else
+    append_file 'app/assets/stylesheets/application.css', css
   end
 
 end
@@ -972,7 +955,7 @@ after_bundler do
     remove_file 'app/views/layouts/application.html.erb'
     # There is Haml code in this script. Changing the indentation is perilous between HAMLs.
     create_file 'app/views/layouts/application.html.haml' do <<-HAML
-!!!
+!!! 5
 %html
   %head
     %title #{app_name}
@@ -984,6 +967,10 @@ after_bundler do
       = content_tag :div, msg, :id => "flash_\#{name}" if msg.is_a?(String)
     = yield
 HAML
+    end
+    if recipes.include? 'rails 3.1'
+      gsub_file 'app/views/layouts/application.html.haml', /stylesheet_link_tag :all/, 'stylesheet_link_tag :application'
+      gsub_file 'app/views/layouts/application.html.haml', /javascript_include_tag :defaults/, 'javascript_include_tag :application'
     end
   else
     inject_into_file 'app/views/layouts/application.html.erb', :after => "<body>\n" do
@@ -1073,9 +1060,9 @@ ERB
     if recipes.include? 'haml'
       # There is Haml code in this script. Changing the indentation is perilous between HAMLs.
       inject_into_file 'app/views/layouts/application.html.haml', :after => "%body\n" do <<-HAML
-  %ul.hmenu
-    = render 'devise/menu/registration_items'
-    = render 'devise/menu/login_items'
+    %ul.hmenu
+      = render 'devise/menu/registration_items'
+      = render 'devise/menu/login_items'
 HAML
       end
     else
@@ -1204,6 +1191,7 @@ end
 say_wizard "Running 'bundle install'. This will take a while."
 run 'bundle install'
 say_wizard "Running 'after bundler' callbacks."
+require 'bundler/setup'
 @after_blocks.each{|b| config = @configs[b[0]] || {}; @current_recipe = b[0]; b[1].call}
 
 @current_recipe = nil
