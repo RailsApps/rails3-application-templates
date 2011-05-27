@@ -37,7 +37,7 @@ Any issues? Please create an "Issue":http://github.com/RailsApps/rails3-applicat
 
 h2. !http://twitter-badges.s3.amazonaws.com/t_logo-a.png(Follow on Twitter)!:http://www.twitter.com/rails_apps Follow on Twitter !http://railsapps.github.com/images/mailing-list-icon.jpg(Join the Mailing List)!:http://eepurl.com/dQx3o Join the Mailing List
 
-Follow the project on Twitter: "http://twitter.com/rails_apps":http://twitter.com/rails_apps. Please tweet some praise if you like what you've found.
+Follow the project on Twitter: "rails_apps":http://twitter.com/rails_apps. Please tweet some praise if you like what you've found.
 
 <a href="http://eepurl.com/dQx3o">Join the email list</a> (low volume, announcements only) for project updates and tips about Rails resources.
 
@@ -57,22 +57,20 @@ h2. Dependencies
 
 Before generating your application, you will need:
 
-* The Ruby language (version 1.8.7 or 1.9.2)
-* Rails (version 3.0.5 or newer)
+* The Ruby language (version 1.9.2)
+* Rails
 
 bq. You MUST be using Rails 3.0.4 or newer. Generating a Rails application from an "HTTPS" URL does not work in Rails 3.0.3 and earlier versions.
 
-I recommend installing rvm, the "Ruby Version Manager":http://rvm.beginrescueend.com/, to manage multiple versions of Rails.
+The application templates will detect which version of Rails you are using and attempt to install gems that are appproriate for your version.
 
-Check that appropriate versions of Ruby and Rails are installed in your development environment:
-@$ ruby -v@
-@$ rails -v@
+See "Managing Rails Versions and Gems":http://railsapps.github.com/managing-rails-versions-gems.html for detailed instructions and advice.
 
 h2. Generating the Application
 
 Use the @"rails new app_name -m"@ command to generate a Rails web application.
 
-You can add the @-T -O@ flags to skip Test::Unit files and Active Record files. For Rails 3.0, you can also add the @-J@ flag to skip Prototype files.
+You can add the @-T -O@ flags to skip Test::Unit files and Active Record files. For Rails 3.0, you can also add the @-J@ flag to skip Prototype files (not needed for Rails 3.1).
 
 h4. Template for Rails 3 + Devise + RSpec + Cucumber
 
@@ -105,8 +103,6 @@ To build the "rails3-subdomain-devise" example application, run the command:
 @$ rails new APP_NAME -m https://github.com/RailsApps/rails3-application-templates/raw/master/rails3-subdomain-devise-template.rb -T -O@
 
 Use the @-T -O@ flags to skip Test::Unit files and Active Record files. Add the @-J@ flag to skip Prototype files for Rails 3.0 (not needed for Rails 3.1).
-
-bq. You MUST be using Rails 3.0.4 or newer. Generating a Rails application from an "HTTPS" URL does not work in Rails 3.0.3 and earlier versions.
 
 This creates a new Rails app (with the @APP_NAME@ you provide) on your computer.
 
@@ -155,7 +151,7 @@ h2. Credits
 Daniel Kehoe ("http://danielkehoe.com/":http://danielkehoe.com/) created these templates.
 
 Are the templates useful to you? Follow the project on Twitter:
-"http://twitter.com/rails_apps":http://twitter.com/rails_apps
+"rails_apps":http://twitter.com/rails_apps
 and tweet some praise. I'd love to know you were helped out by what I've put together.
 
 h2. License
