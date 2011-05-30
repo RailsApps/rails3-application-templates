@@ -115,7 +115,9 @@ Problems? Check the "issues":http://github.com/RailsApps/rails3-application-temp
 h4. Rails 3.1
 
 <pre>
-The template [https://github.com/RailsApps/rails3-application-templates/raw/master/rails3-devise-rspec-cucumber-template.rb] could not be loaded. Error: You have already activated rake 0.8.7, but your Gemfile requires rake 0.9.0. Consider using bundle exec.
+The template ... could not be loaded.
+Error: You have already activated rake 0.8.7, but your Gemfile requires rake 0.9.0.
+Consider using bundle exec.
 </pre>
 
 You must update the standard Ruby installation from Rake 0.8.7 to Rake 0.9.0 before using the application templates to generate a new Rails app. See "Installing Rails 3.1":http://railsapps.github.com/installing-rails-3-1.html.
