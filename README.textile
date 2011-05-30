@@ -58,15 +58,17 @@ h2. Dependencies
 Before generating your application, you will need:
 
 * The Ruby language (version 1.9.2)
-* Rails
+** @$ ruby -v@
+* Rails 3.1
+** @$ rails -v@
+* Rake 0.9.0
+** @$ rake --version@
 
-The application templates will detect which version of Rails you are using and attempt to install gems that are appproriate for your version.
+You must update the standard Ruby installation from Rake 0.8.7 to Rake 0.9.0 before using the application templates to generate a new Rails app.
 
-See "Managing Rails Versions and Gems":http://railsapps.github.com/managing-rails-versions-gems.html for detailed instructions and advice.
+See "Installing Rails 3.1":http://railsapps.github.com/installing-rails-3-1.html and "Managing Rails Versions and Gems":http://railsapps.github.com/managing-rails-versions-gems.html for detailed instructions and advice.
 
 h2. Generating the Application
-
-You MUST be using Rails 3.0.4 or newer. Generating a Rails application from an "HTTPS" URL does not work in Rails 3.0.3 and earlier versions.
 
 Use the @"rails new app_name -m"@ command to generate a Rails web application.
 
@@ -105,6 +107,22 @@ To build the "rails3-subdomain-devise" example application, run the command:
 Use the @-T -O@ flags to skip Test::Unit files and Active Record files. Add the @-J@ flag to skip Prototype files for Rails 3.0 (not needed for Rails 3.1).
 
 This creates a new Rails app (with the @APP_NAME@ you provide) on your computer.
+
+h2. Troubleshooting
+
+Problems? Check the "issues":http://github.com/RailsApps/rails3-application-templates/issues.
+
+h4. Rails 3.1
+
+<pre>
+The template [https://github.com/RailsApps/rails3-application-templates/raw/master/rails3-devise-rspec-cucumber-template.rb] could not be loaded. Error: You have already activated rake 0.8.7, but your Gemfile requires rake 0.9.0. Consider using bundle exec.
+</pre>
+
+You must update the standard Ruby installation from Rake 0.8.7 to Rake 0.9.0 before using the application templates to generate a new Rails app. See "Installing Rails 3.1":http://railsapps.github.com/installing-rails-3-1.html.
+
+h4. Rails 3.0.3 and earlier
+
+You must be using Rails 3.0.4 or newer. Generating a Rails application from an "HTTPS" URL does not work in Rails 3.0.3 and earlier versions.
 
 h2. The Recipes
 
