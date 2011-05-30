@@ -60,13 +60,13 @@ Before generating your application, you will need:
 * The Ruby language (version 1.9.2)
 * Rails
 
-bq. You MUST be using Rails 3.0.4 or newer. Generating a Rails application from an "HTTPS" URL does not work in Rails 3.0.3 and earlier versions.
-
 The application templates will detect which version of Rails you are using and attempt to install gems that are appproriate for your version.
 
 See "Managing Rails Versions and Gems":http://railsapps.github.com/managing-rails-versions-gems.html for detailed instructions and advice.
 
 h2. Generating the Application
+
+You MUST be using Rails 3.0.4 or newer. Generating a Rails application from an "HTTPS" URL does not work in Rails 3.0.3 and earlier versions.
 
 Use the @"rails new app_name -m"@ command to generate a Rails web application.
 
