@@ -39,7 +39,7 @@ The application generator templates will ask you for various preferences:
 
 h2. !http://twitter-badges.s3.amazonaws.com/t_logo-a.png(Follow on Twitter)!:http://www.twitter.com/rails_apps Follow on Twitter !http://railsapps.github.com/images/mailing-list-icon.jpg(Join the Mailing List)!:http://eepurl.com/dQx3o Join the Mailing List
 
-Follow the project on Twitter: "rails_apps":http://twitter.com/rails_apps. Please tweet some praise if you like what you've found.
+Follow the project on Twitter: "@rails_apps":http://twitter.com/rails_apps. Please tweet some praise if you like what you've found.
 
 <a href="http://eepurl.com/dQx3o">Join the email list</a> (low volume, announcements only) for project updates and tips about Rails resources.
 
@@ -63,10 +63,6 @@ Before generating your application, you will need:
 ** @$ ruby -v@
 * Rails 3.1
 ** @$ rails -v@
-* Rake 0.9.0
-** @$ rake --version@
-
-You must update the standard Ruby installation from Rake 0.8.7 to Rake 0.9.0 before using the application templates to generate a new Rails app.
 
 See "Installing Rails 3.1":http://railsapps.github.com/installing-rails-3-1.html and "Managing Rails Versions and Gems":http://railsapps.github.com/managing-rails-versions-gems.html for detailed instructions and advice.
 
@@ -80,7 +76,7 @@ h4. Template for Rails 3 + Devise + RSpec + Cucumber
 
 To build the "rails3-devise-rspec-cucumber" example application, run the command:
 
-@$ rails new APP_NAME -m https://github.com/RailsApps/rails3-application-templates/raw/master/rails3-devise-rspec-cucumber-template.rb -T@
+@$ rails new APP_NAME -m https://raw.github.com/RailsApps/rails3-application-templatesrc3/rails3-devise-rspec-cucumber-template.rb -T@
 
 Use the @-T@ flag to skip Test::Unit files. Add the @-J@ flag to skip Prototype files for Rails 3.0 (not needed for Rails 3.1).
 
@@ -88,7 +84,7 @@ h4. Template for Rails 3 + Mongoid + Devise
 
 To build the "rails3-mongoid-devise" example application, run the command:
 
-@$ rails new APP_NAME -m https://github.com/RailsApps/rails3-application-templates/raw/master/rails3-mongoid-devise-template.rb -T -O@
+@$ rails new APP_NAME -m https://raw.github.com/RailsApps/rails3-application-templatesrc3/rails3-mongoid-devise-template.rb -T -O@
 
 Use the @-T -O@ flags to skip Test::Unit files and Active Record files. Add the @-J@ flag to skip Prototype files for Rails 3.0 (not needed for Rails 3.1).
 
@@ -96,7 +92,7 @@ h4. Template for Rails 3 + Mongoid + OmniAuth
 
 To build the "rails3-mongoid-omniauth" example application, run the command:
 
-@$ rails new APP_NAME -m https://github.com/RailsApps/rails3-application-templates/raw/master/rails3-mongoid-omniauth-template.rb -T -O@
+@$ rails new APP_NAME -m https://raw.github.com/RailsApps/rails3-application-templatesrc3/rails3-mongoid-omniauth-template.rb -T -O@
 
 Use the @-T -O@ flags to skip Test::Unit files and Active Record files. Add the @-J@ flag to skip Prototype files for Rails 3.0 (not needed for Rails 3.1).
 
@@ -104,7 +100,7 @@ h4. Template for Rails 3 + Subdomains + Devise
 
 To build the "rails3-subdomain-devise" example application, run the command:
 
-@$ rails new APP_NAME -m https://github.com/RailsApps/rails3-application-templates/raw/master/rails3-subdomain-devise-template.rb -T -O@
+@$ rails new APP_NAME -m https://raw.github.com/RailsApps/rails3-application-templatesrc3/rails3-subdomain-devise-template.rb -T -O@
 
 Use the @-T -O@ flags to skip Test::Unit files and Active Record files. Add the @-J@ flag to skip Prototype files for Rails 3.0 (not needed for Rails 3.1).
 
@@ -173,7 +169,7 @@ h2. Credits
 Daniel Kehoe ("http://danielkehoe.com/":http://danielkehoe.com/) created these templates.
 
 Are the templates useful to you? Follow the project on Twitter:
-"rails_apps":http://twitter.com/rails_apps
+"@rails_apps":http://twitter.com/rails_apps
 and tweet some praise. I'd love to know you were helped out by what I've put together.
 
 h2. License

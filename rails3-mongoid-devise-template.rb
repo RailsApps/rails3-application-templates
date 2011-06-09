@@ -106,7 +106,30 @@ else
   say_wizard "You are using Rails version #{Rails::VERSION::STRING} which is not supported."
 end
 
+# show which version of rake is running
+# with the added benefit of ensuring that the Gemfile's version of rake is activated
+gemfile_rake_ver = run 'bundle exec rake --version', :capture => true, :verbose => false
+say_wizard "You are using #{gemfile_rake_ver.strip}"
+
 say_wizard "Checking configuration. Please confirm your preferences."
+
+# >---------------------------[ Javascript Runtime ]-----------------------------<
+
+@current_recipe = "linux"
+config = {}
+config['linux'] = yes_wizard?("Are using a Linux OS such as Ubuntu?") if true && true unless config.key?('linux')
+@configs[@current_recipe] = config
+
+if config['linux']
+  if recipes.include? 'rails 3.0'
+    # nothing needed
+  else
+    # for Rails 3.1+, install a gem for a Javascript runtime
+    gem 'therubyracer', '>= 0.8.2'
+  end
+end
+
+# >---------------------------------[ Recipes ]----------------------------------<
 
 
 # >--------------------------------[ jQuery ]---------------------------------<
@@ -137,7 +160,7 @@ if config['jquery']
       remove_file 'public/javascripts/prototype.js'
       # add jQuery files
       inside "public/javascripts" do
-        get "https://github.com/rails/jquery-ujs/raw/master/src/rails.js", "rails.js"
+        get "https://raw.github.com/rails/jquery-ujs/master/src/rails.js", "rails.js"
         get "http://code.jquery.com/jquery-1.6.min.js", "jquery.js"
         if config['ui']
           get "https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js", "jqueryui.js"
@@ -192,7 +215,7 @@ if config['haml']
     gem 'haml-rails', '0.3.4', :group => :development
   else
     # for Rails 3.1+, use optimistic versioning for gems
-    gem 'haml', '>= 3.1.1'
+    gem 'haml', '>= 3.1.2'
     gem 'haml-rails', '>= 0.3.4', :group => :development
   end
 else
@@ -237,7 +260,7 @@ if config['rspec']
       # use the database_cleaner gem to reset the test database
       gem 'database_cleaner', '>= 0.6.7', :group => :test
       # include RSpec matchers from the mongoid-rspec gem
-      gem 'mongoid-rspec', '>= 1.4.2', :group => :test
+      gem 'mongoid-rspec', '>= 1.4.4', :group => :test
     end
     if config['factory_girl']
       # use the factory_girl gem for test fixtures
@@ -344,8 +367,8 @@ if config['cucumber']
     gem 'launchy', '0.4.0', :group => :test
   else
     # for Rails 3.1+, use optimistic versioning for gems
-    gem 'cucumber-rails', '>= 0.5.1', :group => :test
-    gem 'capybara', '>= 1.0.0.beta1', :group => :test
+    gem 'cucumber-rails', '>= 0.5.2', :group => :test
+    gem 'capybara', '>= 1.0.0.rc1', :group => :test
     gem 'database_cleaner', '>= 0.6.7', :group => :test
     gem 'launchy', '>= 0.4.0', :group => :test
   end
@@ -372,14 +395,14 @@ if config['cucumber']
       say_wizard "Copying Cucumber scenarios from the rails3-devise-rspec-cucumber examples"
       begin
         # copy all the Cucumber scenario files from the rails3-devise-rspec-cucumber example app
-        get 'https://github.com/RailsApps/rails3-devise-rspec-cucumber/raw/master/features/users/sign_in.feature', 'features/users/sign_in.feature'
-        get 'https://github.com/RailsApps/rails3-devise-rspec-cucumber/raw/master/features/users/sign_out.feature', 'features/users/sign_out.feature'
-        get 'https://github.com/RailsApps/rails3-devise-rspec-cucumber/raw/master/features/users/sign_up.feature', 'features/users/sign_up.feature'
-        get 'https://github.com/RailsApps/rails3-devise-rspec-cucumber/raw/master/features/users/user_edit.feature', 'features/users/user_edit.feature'
-        get 'https://github.com/RailsApps/rails3-devise-rspec-cucumber/raw/master/features/users/user_show.feature', 'features/users/user_show.feature'
-        get 'https://github.com/RailsApps/rails3-devise-rspec-cucumber/raw/master/features/step_definitions/user_steps.rb', 'features/step_definitions/user_steps.rb'
+        get 'https://raw.github.com/RailsApps/rails3-devise-rspec-cucumber/master/features/users/sign_in.feature', 'features/users/sign_in.feature'
+        get 'https://raw.github.com/RailsApps/rails3-devise-rspec-cucumber/master/features/users/sign_out.feature', 'features/users/sign_out.feature'
+        get 'https://raw.github.com/RailsApps/rails3-devise-rspec-cucumber/master/features/users/sign_up.feature', 'features/users/sign_up.feature'
+        get 'https://raw.github.com/RailsApps/rails3-devise-rspec-cucumber/master/features/users/user_edit.feature', 'features/users/user_edit.feature'
+        get 'https://raw.github.com/RailsApps/rails3-devise-rspec-cucumber/master/features/users/user_show.feature', 'features/users/user_show.feature'
+        get 'https://raw.github.com/RailsApps/rails3-devise-rspec-cucumber/master/features/step_definitions/user_steps.rb', 'features/step_definitions/user_steps.rb'
         remove_file 'features/support/paths.rb'
-        get 'https://github.com/RailsApps/rails3-devise-rspec-cucumber/raw/master/features/support/paths.rb', 'features/support/paths.rb'
+        get 'https://raw.github.com/RailsApps/rails3-devise-rspec-cucumber/master/features/support/paths.rb', 'features/support/paths.rb'
       rescue OpenURI::HTTPError
         say_wizard "Unable to obtain Cucumber example files from the repo"
       end
@@ -528,13 +551,13 @@ if config['devise']
       say_wizard "Copying RSpec files from the rails3-devise-rspec-cucumber examples"
       begin
         # copy all the RSpec specs files from the rails3-devise-rspec-cucumber example app
-        get 'https://github.com/RailsApps/rails3-devise-rspec-cucumber/raw/master/spec/factories.rb', 'spec/factories.rb'
+        get 'https://raw.github.com/RailsApps/rails3-devise-rspec-cucumber/master/spec/factories.rb', 'spec/factories.rb'
         remove_file 'spec/controllers/home_controller_spec.rb'
         remove_file 'spec/controllers/users_controller_spec.rb'
-        get 'https://github.com/RailsApps/rails3-devise-rspec-cucumber/raw/master/spec/controllers/home_controller_spec.rb', 'spec/controllers/home_controller_spec.rb'
-        get 'https://github.com/RailsApps/rails3-devise-rspec-cucumber/raw/master/spec/controllers/users_controller_spec.rb', 'spec/controllers/users_controller_spec.rb'
+        get 'https://raw.github.com/RailsApps/rails3-devise-rspec-cucumber/master/spec/controllers/home_controller_spec.rb', 'spec/controllers/home_controller_spec.rb'
+        get 'https://raw.github.com/RailsApps/rails3-devise-rspec-cucumber/master/spec/controllers/users_controller_spec.rb', 'spec/controllers/users_controller_spec.rb'
         remove_file 'spec/models/user_spec.rb'
-        get 'https://github.com/RailsApps/rails3-devise-rspec-cucumber/raw/master/spec/models/user_spec.rb', 'spec/models/user_spec.rb'
+        get 'https://raw.github.com/RailsApps/rails3-devise-rspec-cucumber/master/spec/models/user_spec.rb', 'spec/models/user_spec.rb'
       rescue OpenURI::HTTPError
         say_wizard "Unable to obtain RSpec example files from the repo"
       end
@@ -628,8 +651,8 @@ ERB
 
       # copy Haml versions of modified Devise views
       inside 'app/views/devise/registrations' do
-        get 'https://github.com/RailsApps/rails3-application-templates/raw/master/files/rails3-mongoid-devise/app/views/devise/registrations/edit.html.haml', 'edit.html.haml'
-        get 'https://github.com/RailsApps/rails3-application-templates/raw/master/files/rails3-mongoid-devise/app/views/devise/registrations/new.html.haml', 'new.html.haml'
+        get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/rails3-mongoid-devise/app/views/devise/registrations/edit.html.haml', 'edit.html.haml'
+        get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/rails3-mongoid-devise/app/views/devise/registrations/new.html.haml', 'new.html.haml'
       end
 
     end
@@ -753,7 +776,7 @@ after_bundler do
   say_wizard "SeedDatabase recipe running 'after bundler'"
 
   unless recipes.include? 'mongoid'
-    run 'rake db:migrate'
+    run 'bundle exec rake db:migrate'
   end
 
   if recipes.include? 'mongoid'
@@ -774,7 +797,7 @@ FILE
     end
   end
 
-  run 'rake db:seed'
+  run 'bundle exec rake db:seed'
 
 end
 
@@ -959,18 +982,19 @@ after_bundler do
 %html
   %head
     %title #{app_name}
-    = stylesheet_link_tag :all
-    = javascript_include_tag :defaults
-    = csrf_meta_tag
+    = stylesheet_link_tag :application
+    = javascript_include_tag :application
+    = csrf_meta_tags
   %body
     - flash.each do |name, msg|
       = content_tag :div, msg, :id => "flash_\#{name}" if msg.is_a?(String)
     = yield
 HAML
     end
-    if recipes.include? 'rails 3.1'
-      gsub_file 'app/views/layouts/application.html.haml', /stylesheet_link_tag :all/, 'stylesheet_link_tag :application'
-      gsub_file 'app/views/layouts/application.html.haml', /javascript_include_tag :defaults/, 'javascript_include_tag :application'
+    if recipes.include? 'rails 3.0'
+      gsub_file 'app/views/layouts/application.html.haml', /stylesheet_link_tag :application/, 'stylesheet_link_tag :all'
+      gsub_file 'app/views/layouts/application.html.haml', /javascript_include_tag :application/, 'javascript_include_tag :defaults'
+      gsub_file 'app/views/layouts/application.html.haml', /csrf_meta_tags/, 'csrf_meta_tag'
     end
   else
     inject_into_file 'app/views/layouts/application.html.erb', :after => "<body>\n" do
@@ -1100,12 +1124,21 @@ after_bundler do
     README
     doc/README_FOR_APP
     public/index.html
-    public/images/rails.png
   }.each { |file| remove_file file }
-
+  
+  if recipes.include? 'rails 3.0'
+    %w{
+      public/images/rails.png
+    }.each { |file| remove_file file }
+  else
+    %w{
+      app/assets/images/rails.png
+    }.each { |file| remove_file file }
+  end
+  
   # add placeholder READMEs
-  get "https://github.com/RailsApps/rails3-application-templates/raw/master/files/sample_readme.txt", "README"
-  get "https://github.com/RailsApps/rails3-application-templates/raw/master/files/sample_readme.textile", "README.textile"
+  get "https://raw.github.com/RailsApps/rails3-application-templates/master/files/sample_readme.txt", "README"
+  get "https://raw.github.com/RailsApps/rails3-application-templates/master/files/sample_readme.textile", "README.textile"
   gsub_file "README", /App_Name/, "#{app_name.humanize.titleize}"
   gsub_file "README.textile", /App_Name/, "#{app_name.humanize.titleize}"
 
@@ -1160,10 +1193,11 @@ after_everything do
   
   # Git should ignore some files
   remove_file '.gitignore'
-  get "https://github.com/RailsApps/rails3-application-templates/raw/master/files/gitignore.txt", ".gitignore"
+  get "https://raw.github.com/RailsApps/rails3-application-templates/master/files/gitignore.txt", ".gitignore"
 
   if recipes.include? 'omniauth'
     append_file '.gitignore' do <<-TXT
+
 # keep OmniAuth service provider secrets out of the Git repo
 config/initializers/omniauth.rb
 TXT
@@ -1173,11 +1207,12 @@ TXT
   # Initialize new Git repo
   git :init
   git :add => '.'
-  git :commit => "-aqm 'new Rails app generated by rails_apps_composer'"
+  git :commit => "-aqm 'new Rails app generated by Rails Apps Composer gem'"
   # Create a git branch
   git :checkout => ' -b working_branch'
   git :add => '.'
   git :commit => "-m 'Initial commit of working_branch'"
+  git :checkout => 'master'
 end
 
 
