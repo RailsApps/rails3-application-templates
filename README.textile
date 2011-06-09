@@ -76,7 +76,7 @@ h4. Template for Rails 3 + Devise + RSpec + Cucumber
 
 To build the "rails3-devise-rspec-cucumber" example application, run the command:
 
-@$ rails new APP_NAME -m https://raw.github.com/RailsApps/rails3-application-templates/rails3-devise-rspec-cucumber-template.rb -T@
+@$ rails new APP_NAME -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-devise-rspec-cucumber-template.rb -T@
 
 Use the @-T@ flag to skip Test::Unit files. Add the @-J@ flag to skip Prototype files for Rails 3.0 (not needed for Rails 3.1).
 
@@ -84,7 +84,7 @@ h4. Template for Rails 3 + Mongoid + Devise
 
 To build the "rails3-mongoid-devise" example application, run the command:
 
-@$ rails new APP_NAME -m https://raw.github.com/RailsApps/rails3-application-templates/rails3-mongoid-devise-template.rb -T -O@
+@$ rails new APP_NAME -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-mongoid-devise-template.rb -T -O@
 
 Use the @-T -O@ flags to skip Test::Unit files and Active Record files. Add the @-J@ flag to skip Prototype files for Rails 3.0 (not needed for Rails 3.1).
 
@@ -92,7 +92,7 @@ h4. Template for Rails 3 + Mongoid + OmniAuth
 
 To build the "rails3-mongoid-omniauth" example application, run the command:
 
-@$ rails new APP_NAME -m https://raw.github.com/RailsApps/rails3-application-templates/rails3-mongoid-omniauth-template.rb -T -O@
+@$ rails new APP_NAME -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-mongoid-omniauth-template.rb -T -O@
 
 Use the @-T -O@ flags to skip Test::Unit files and Active Record files. Add the @-J@ flag to skip Prototype files for Rails 3.0 (not needed for Rails 3.1).
 
@@ -100,7 +100,7 @@ h4. Template for Rails 3 + Subdomains + Devise
 
 To build the "rails3-subdomain-devise" example application, run the command:
 
-@$ rails new APP_NAME -m https://raw.github.com/RailsApps/rails3-application-templates/rails3-subdomain-devise-template.rb -T -O@
+@$ rails new APP_NAME -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-subdomain-devise-template.rb -T -O@
 
 Use the @-T -O@ flags to skip Test::Unit files and Active Record files. Add the @-J@ flag to skip Prototype files for Rails 3.0 (not needed for Rails 3.1).
 
