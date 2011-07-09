@@ -264,7 +264,7 @@ if config['rspec']
     end
     if config['factory_girl']
       # use the factory_girl gem for test fixtures
-      gem 'factory_girl_rails', '>= 1.1.beta1', :group => :test
+      gem 'factory_girl_rails', '>= 1.1.rc1', :group => :test
     end
   end
 else
@@ -367,7 +367,7 @@ if config['cucumber']
     gem 'launchy', '0.4.0', :group => :test
   else
     # for Rails 3.1+, use optimistic versioning for gems
-    gem 'cucumber-rails', '>= 1.0.0', :group => :test
+    gem 'cucumber-rails', '>= 1.0.2', :group => :test
     gem 'capybara', '>= 1.0.0', :group => :test
     gem 'database_cleaner', '>= 0.6.7', :group => :test
     gem 'launchy', '>= 0.4.0', :group => :test
@@ -514,7 +514,7 @@ if config['devise']
     gem 'devise', '1.3.4'
   else
     # for Rails 3.1+, use optimistic versioning for gems
-    gem 'devise', '>= 1.3.4'
+    gem 'devise', '>= 1.4.2'
   end
 else
   recipes.delete('devise')
@@ -541,6 +541,12 @@ if config['devise']
     # Prevent logging of password_confirmation
     gsub_file 'config/application.rb', /:password/, ':password, :password_confirmation'
 
+    if recipes.include? 'cucumber'
+      # Cucumber wants to test GET requests not DELETE requests for destroy_user_session_path
+      # (see https://github.com/RailsApps/rails3-devise-rspec-cucumber/issues/3)
+      gsub_file 'config/initializers/devise.rb', 'config.sign_out_via = :delete', 'config.sign_out_via = :get'
+    end
+    
   end
 
   after_everything do
@@ -1051,7 +1057,7 @@ say_recipe 'html5'
 
 config = {}
 config['html5'] = yes_wizard?("Would you like to install HTML5 Boilerplate?") if true && true unless config.key?('html5')
-config['css_option'] = multiple_choice("How do you like your CSS?", [["Normalize CSS for consistent styling across browsers", "normalize"], ["Completely reset all CSS to eliminate styling", "reset"]]) if true && true unless config.key?('css_option')
+config['css_option'] = multiple_choice("If you've chosen HTML5 Boilerplate, how do you like your CSS?", [["Do nothing", "nothing"], ["Normalize CSS and add Skeleton styling", "skeleton"], ["Normalize CSS for consistent styling across browsers", "normalize"], ["Completely reset all CSS to eliminate styling", "reset"]]) if true && true unless config.key?('css_option')
 @configs[@current_recipe] = config
 
 # Application template recipe for the rails_apps_composer. Check for a newer version here:
@@ -1066,10 +1072,16 @@ if config['html5']
       get "https://raw.github.com/paulirish/html5-boilerplate/master/js/libs/respond.min.js", "app/assets/javascripts/respond.js"
       # Download stylesheet to normalize or reset CSS
       case config['css_option']
+        when 'skeleton'
+          get "https://raw.github.com/necolas/normalize.css/master/normalize.css", "app/assets/stylesheets/normalize.css.scss"
+          get "https://raw.github.com/dhgamache/Skeleton/master/stylesheets/base.css", "app/assets/stylesheets/base.css.scss"
+          get "https://raw.github.com/dhgamache/Skeleton/master/stylesheets/layout.css", "app/assets/stylesheets/layout.css.scss"
+          get "https://raw.github.com/dhgamache/Skeleton/master/stylesheets/skeleton.css", "app/assets/stylesheets/skeleton.css.scss"
+          get "https://raw.github.com/dhgamache/Skeleton/master/javascripts/app.js", "app/assets/javascripts/tabs.js"
         when 'normalize'
-          get "https://raw.github.com/necolas/normalize.css/master/normalize.css", "app/assets/stylesheets/normalize.scss"
+          get "https://raw.github.com/necolas/normalize.css/master/normalize.css", "app/assets/stylesheets/normalize.css.scss"
         when 'reset'
-          get "https://raw.github.com/paulirish/html5-boilerplate/master/css/style.css", "app/assets/stylesheets/reset.scss"
+          get "https://raw.github.com/paulirish/html5-boilerplate/master/css/style.css", "app/assets/stylesheets/reset.css.scss"
       end
       # Download HTML5 Boilerplate Site Root Assets
       get "https://raw.github.com/paulirish/html5-boilerplate/master/apple-touch-icon-114x114-precomposed.png", "public/apple-touch-icon-114x114-precomposed.png"
@@ -1125,11 +1137,14 @@ RUBY
 - ie_html :lang => 'en', :class => 'no-js' do
   %head
     %title #{app_name}
+    %meta{:charset => "utf-8"}
+    %meta{"http-equiv" => "X-UA-Compatible", :content => "IE=edge,chrome=1"}
+    %meta{:name => "viewport", :content => "width=device-width, initial-scale=1, maximum-scale=1"}
     = stylesheet_link_tag :application
     = javascript_include_tag :application
     = csrf_meta_tags
     %body
-      #container
+      #container.container
         %header
           - flash.each do |name, msg|
             = content_tag :div, msg, :id => "flash_\#{name}" if msg.is_a?(String)
@@ -1160,7 +1175,7 @@ HAML
   <%= csrf_meta_tags %>
 </head>
 <body>
-  <div id="container">
+  <div id="container" class="container">
     <header>
     </header>
     <div id="main" role="main">
@@ -1188,6 +1203,7 @@ ERB
     say_wizard "Don't know what to do for Rails version #{Rails::VERSION::STRING}. HTML5 Boilerplate recipe skipped."
   end
 else
+  say_wizard "HTML5 Boilerplate recipe skipped. No CSS styles added."
   recipes.delete('html5')
 end
 
