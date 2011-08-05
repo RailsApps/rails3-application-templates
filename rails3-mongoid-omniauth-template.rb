@@ -264,7 +264,7 @@ if config['rspec']
     end
     if config['factory_girl']
       # use the factory_girl gem for test fixtures
-      gem 'factory_girl_rails', '>= 1.1.rc1', :group => :test
+      gem 'factory_girl_rails', '>= 1.1.0', :group => :test
     end
   end
 else
@@ -370,7 +370,7 @@ if config['cucumber']
     gem 'cucumber-rails', '>= 1.0.2', :group => :test
     gem 'capybara', '>= 1.0.0', :group => :test
     gem 'database_cleaner', '>= 0.6.7', :group => :test
-    gem 'launchy', '>= 0.4.0', :group => :test
+    gem 'launchy', '>= 2.0.5', :group => :test
   end
 else
   recipes.delete('cucumber')
@@ -434,7 +434,7 @@ if config['mongoid']
   else
     # for Rails 3.1+, use optimistic versioning for gems
     gem 'bson_ext', '>= 1.3.1'
-    gem 'mongoid', '>= 2.0.2'
+    gem 'mongoid', '>= 2.1.5'
   end
 else
   recipes.delete('mongoid')
@@ -982,11 +982,11 @@ config['css_option'] = multiple_choice("If you've chosen HTML5 Boilerplate, how 
 
 if config['html5']
   if recipes.include? 'rails 3.1'
+    gem 'frontend-helpers'
     after_bundler do
       say_wizard "HTML5 Boilerplate recipe running 'after bundler'"
       # Download HTML5 Boilerplate JavaScripts
-      get "https://raw.github.com/paulirish/html5-boilerplate/master/js/libs/modernizr-2.0.min.js", "app/assets/javascripts/modernizr.js"
-      get "https://raw.github.com/paulirish/html5-boilerplate/master/js/libs/respond.min.js", "app/assets/javascripts/respond.js"
+      get "https://raw.github.com/paulirish/html5-boilerplate/master/js/libs/modernizr-2.0.6.min.js", "app/assets/javascripts/modernizr.js"
       # Download stylesheet to normalize or reset CSS
       case config['css_option']
         when 'skeleton'
@@ -1012,38 +1012,8 @@ if config['html5']
       if recipes.include? 'haml'
         # create some Haml helpers
         # We have to use single-quote-style-heredoc to avoid interpolation.
-        inject_into_file 'app/helpers/application_helper.rb', :after => "ApplicationHelper\n" do <<-'RUBY'
-  # Create a named haml tag to wrap IE conditional around a block
-  # http://paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither
-  def ie_tag(name=:body, attrs={}, &block)
-    attrs.symbolize_keys!
-    haml_concat("<!--[if lt IE 7]> #{ tag(name, add_class('ie6', attrs), true) } <![endif]-->".html_safe)
-    haml_concat("<!--[if IE 7]>    #{ tag(name, add_class('ie7', attrs), true) } <![endif]-->".html_safe)
-    haml_concat("<!--[if IE 8]>    #{ tag(name, add_class('ie8', attrs), true) } <![endif]-->".html_safe)
-    haml_concat("<!--[if gt IE 8]><!-->".html_safe)
-    haml_tag name, attrs do
-      haml_concat("<!--<![endif]-->".html_safe)
-      block.call
-    end
-  end
-
-  def ie_html(attrs={}, &block)
-    ie_tag(:html, attrs, &block)
-  end
-
-  def ie_body(attrs={}, &block)
-    ie_tag(:body, attrs, &block)
-  end
-
-private
-
-  def add_class(name, attrs)
-    classes = attrs[:class] || ''
-    classes.strip!
-    classes = ' ' + classes if !classes.blank?
-    classes = name + classes
-    attrs.merge(:class => classes)
-  end
+        inject_into_file 'app/controllers/application_controller.rb', :after => "protect_from_forgery\n" do <<-'RUBY'
+  include FrontendHelpers::Html5Helper
 RUBY
         end
         # Haml version of default application layout
@@ -1051,7 +1021,7 @@ RUBY
         remove_file 'app/views/layouts/application.html.haml'
         # There is Haml code in this script. Changing the indentation is perilous between HAMLs.
         create_file 'app/views/layouts/application.html.haml' do <<-HAML
-- ie_html :lang => 'en', :class => 'no-js' do
+- html_tag class: 'no-js' do
   %head
     %title #{app_name}
     %meta{:charset => "utf-8"}
@@ -1060,7 +1030,7 @@ RUBY
     = stylesheet_link_tag :application
     = javascript_include_tag :application
     = csrf_meta_tags
-    %body
+    %body{:class => params[:controller]}
       #container.container
         %header
           - flash.each do |name, msg|
@@ -1091,7 +1061,7 @@ HAML
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
 </head>
-<body>
+<body class="<%= params[:controller] %>">
   <div id="container" class="container">
     <header>
     </header>
