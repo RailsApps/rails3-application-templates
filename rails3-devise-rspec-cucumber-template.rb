@@ -368,7 +368,7 @@ if config['cucumber']
   else
     # for Rails 3.1+, use optimistic versioning for gems
     gem 'cucumber-rails', '>= 1.0.2', :group => :test
-    gem 'capybara', '>= 1.0.0', :group => :test
+    gem 'capybara', '>= 1.0.1', :group => :test
     gem 'database_cleaner', '>= 0.6.7', :group => :test
     gem 'launchy', '>= 2.0.5', :group => :test
   end
@@ -1036,7 +1036,7 @@ if config['html5']
           get "https://raw.github.com/dhgamache/Skeleton/master/stylesheets/base.css", "app/assets/stylesheets/base.css.scss"
           get "https://raw.github.com/dhgamache/Skeleton/master/stylesheets/layout.css", "app/assets/stylesheets/layout.css.scss"
           get "https://raw.github.com/dhgamache/Skeleton/master/stylesheets/skeleton.css", "app/assets/stylesheets/skeleton.css.scss"
-          get "https://raw.github.com/dhgamache/Skeleton/master/javascripts/app.js", "app/assets/javascripts/tabs.js"
+          get "https://raw.github.com/dhgamache/Skeleton/master/javascripts/tabs.js", "app/assets/javascripts/tabs.js"
         when 'normalize'
           get "https://raw.github.com/necolas/normalize.css/master/normalize.css", "app/assets/stylesheets/normalize.css.scss"
         when 'reset'
