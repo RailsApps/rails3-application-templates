@@ -367,14 +367,10 @@ if config['cucumber']
     gem 'launchy', '0.4.0', :group => :test
   else
     # for Rails 3.1+, use optimistic versioning for gems
-    # avoid gem compatibility issues with OmniAuth by using an older 'cucumber-rails'
-    # gem 'cucumber-rails', '>= 1.0.2', :group => :test
-    gem 'cucumber-rails', '>= 1.0.1', :group => :test
+    gem 'cucumber-rails', '>= 1.0.2', :group => :test
     gem 'capybara', '>= 1.0.1', :group => :test
     gem 'database_cleaner', '>= 0.6.7', :group => :test
-    # avoid gem compatibility issues with OmniAuth by using an older 'launchy'
-    # gem 'launchy', '>= 2.0.5', :group => :test
-    gem 'launchy', '>= 0.4.0', :group => :test
+    gem 'launchy', '>= 2.0.5', :group => :test
   end
 else
   recipes.delete('cucumber')
@@ -609,7 +605,8 @@ if config['omniauth']
     gem 'omniauth', '0.2.6'
   else
     # for Rails 3.1+, use optimistic versioning for gems
-    gem 'omniauth', '>= 0.2.6'
+    # avoid gem compatibility issues for Cucumber and Launchy by using OmniAuth from GitHub
+    gem 'omniauth', '>= 0.2.6', :git => "git://github.com/intridea/omniauth.git"
   end
 else
   recipes.delete('omniauth')
