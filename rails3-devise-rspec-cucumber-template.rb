@@ -473,7 +473,7 @@ if config['devise']
     gem 'devise', '1.3.4'
   else
     # for Rails 3.1+, use optimistic versioning for gems
-    gem 'devise', '>= 1.4.2'
+    gem 'devise', '>= 1.4.4'
   end
 else
   recipes.delete('devise')
@@ -503,7 +503,7 @@ if config['devise']
     if recipes.include? 'cucumber'
       # Cucumber wants to test GET requests not DELETE requests for destroy_user_session_path
       # (see https://github.com/RailsApps/rails3-devise-rspec-cucumber/issues/3)
-      gsub_file 'config/initializers/devise.rb', 'config.sign_out_via = :delete', 'config.sign_out_via = :get'
+      gsub_file 'config/initializers/devise.rb', 'config.sign_out_via = :delete', 'config.sign_out_via = Rails.env.test? ? :get : :delete'
     end
     
   end

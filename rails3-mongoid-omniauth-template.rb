@@ -370,6 +370,7 @@ if config['cucumber']
     gem 'cucumber-rails', '>= 1.0.2', :group => :test
     gem 'capybara', '>= 1.0.1', :group => :test
     gem 'database_cleaner', '>= 0.6.7', :group => :test
+    gem 'launchy', '>= 2.0.5', :group => :test
   end
 else
   recipes.delete('cucumber')
@@ -433,7 +434,7 @@ if config['mongoid']
   else
     # for Rails 3.1+, use optimistic versioning for gems
     gem 'bson_ext', '>= 1.3.1'
-    gem 'mongoid', '>= 2.1.9'
+    gem 'mongoid', '>= 2.2.0'
   end
 else
   recipes.delete('mongoid')
