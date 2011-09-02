@@ -264,7 +264,7 @@ if config['rspec']
     end
     if config['factory_girl']
       # use the factory_girl gem for test fixtures
-      gem 'factory_girl_rails', '>= 1.1.0', :group => :test
+      gem 'factory_girl_rails', '>= 1.2.0', :group => :test
     end
   end
 else
@@ -368,7 +368,7 @@ if config['cucumber']
   else
     # for Rails 3.1+, use optimistic versioning for gems
     gem 'cucumber-rails', '>= 1.0.2', :group => :test
-    gem 'capybara', '>= 1.0.1', :group => :test
+    gem 'capybara', '>= 1.1.0', :group => :test
     gem 'database_cleaner', '>= 0.6.7', :group => :test
     gem 'launchy', '>= 2.0.5', :group => :test
   end
