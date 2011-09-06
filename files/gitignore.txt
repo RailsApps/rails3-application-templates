@@ -58,7 +58,7 @@ tmp/*
 /nbproject/
 
 # Textmate project files
-/*.tmpproj
+/*.tmproj
 
 # vim artifacts
 **.swp
