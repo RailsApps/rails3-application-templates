@@ -41,7 +41,7 @@ Rails.application.config.generators do |g|
 end
 RUBY
 
-@recipes = ["jquery", "haml", "rspec", "cucumber", "mongoid", "seed_database", "add_user", "omniauth", "home_page", "home_page_users", "css_setup", "application_layout", "html5", "navigation", "users_page", "omniauth_email", "cleanup", "ban_spiders", "extras", "git"]
+@recipes = ["jquery", "haml", "rspec", "cucumber", "guard", "mongoid", "seed_database", "add_user", "omniauth", "home_page", "home_page_users", "css_setup", "application_layout", "html5", "navigation", "users_page", "omniauth_email", "cleanup", "ban_spiders", "extras", "git"]
 
 def recipes; @recipes end
 def recipe?(name); @recipes.include?(name) end
@@ -115,17 +115,21 @@ say_wizard "Checking configuration. Please confirm your preferences."
 
 # >---------------------------[ Javascript Runtime ]-----------------------------<
 
-@current_recipe = "linux"
-config = {}
-config['linux'] = yes_wizard?("Are using a Linux OS such as Ubuntu?") if true && true unless config.key?('linux')
-@configs[@current_recipe] = config
+prepend_file 'Gemfile' do <<-RUBY
+require 'rbconfig'
+HOST_OS = Config::CONFIG['host_os']
 
-if config['linux']
-  if recipes.include? 'rails 3.0'
-    # nothing needed
-  else
-    # for Rails 3.1+, install a gem for a Javascript runtime
-    gem 'therubyracer', '>= 0.8.2'
+RUBY
+end
+
+if recipes.include? 'rails 3.1'
+  append_file 'Gemfile' do <<-RUBY
+# install a Javascript runtime for linux
+if HOST_OS =~ /linux/i
+  gem 'therubyracer', '>= 0.8.2'
+end
+
+  RUBY
   end
 end
 
@@ -368,7 +372,7 @@ if config['cucumber']
   else
     # for Rails 3.1+, use optimistic versioning for gems
     gem 'cucumber-rails', '>= 1.0.2', :group => :test
-    gem 'capybara', '>= 1.1.0', :group => :test
+    gem 'capybara', '>= 1.1.1', :group => :test
     gem 'database_cleaner', '>= 0.6.7', :group => :test
     gem 'launchy', '>= 2.0.5', :group => :test
   end
@@ -408,6 +412,80 @@ if config['cucumber']
       end
     end
   end
+end
+
+
+# >---------------------------------[ guard ]---------------------------------<
+
+@current_recipe = "guard"
+@before_configs["guard"].call if @before_configs["guard"]
+say_recipe 'guard'
+
+config = {}
+config['guard'] = yes_wizard?("Would you like to use Guard to automate your workflow?") if true && true unless config.key?('guard')
+config['livereload'] = yes_wizard?("Would you like to enable the LiveReload guard?") if true && true unless config.key?('livereload')
+@configs[@current_recipe] = config
+
+if config['guard']
+  gem 'guard', '>= 0.6.2', :group => :development
+  
+  append_file 'Gemfile' do <<-RUBY
+case HOST_OS
+  when /darwin/i
+    gem 'rb-fsevent', :group => :development
+    gem 'growl', :group => :development
+  when /linux/i
+    gem 'libnotify', :group => :development
+    gem 'rb-inotify', :group => :development
+  when /mswin|windows/i
+    gem 'rb-fchange', :group => :development
+    gem 'win32console', :group => :development
+    gem 'rb-notifu', :group => :development
+end
+  RUBY
+  end
+
+  def guards
+    @guards ||= []
+  end
+
+  def guard(name, version = nil)
+    args = []
+    if version
+      args << version 
+    end
+    args << { :group => :development }
+    gem "guard-#{name}", *args
+    guards << name
+  end
+
+  guard 'bundler', '>= 0.1.3' 
+
+  unless recipes.include? 'pow' 
+    guard 'rails', '>= 0.0.3' 
+  end
+
+  if config['livereload']
+    guard 'livereload', '>= 0.3.0'
+  end
+
+  if recipes.include? 'rspec' 
+    guard 'rspec', '>= 0.4.3' 
+  end
+
+  if recipes.include? 'cucumber' 
+    guard 'cucumber', '>= 0.6.1' 
+  end
+
+  after_bundler do
+    run 'guard init'
+    guards.each do |name|
+      run "guard init #{name}"
+    end
+  end
+
+else
+  recipes.delete 'guard' 
 end
 
 
@@ -605,8 +683,7 @@ if config['omniauth']
     gem 'omniauth', '0.2.6'
   else
     # for Rails 3.1+, use optimistic versioning for gems
-    # avoid gem compatibility issues for Cucumber and Launchy by using OmniAuth from GitHub
-    gem 'omniauth', '>= 0.2.6', :git => "git://github.com/intridea/omniauth.git"
+    gem 'omniauth', '>= 0.3.0.rc3'
   end
 else
   recipes.delete('omniauth')
@@ -1031,14 +1108,14 @@ RUBY
     = stylesheet_link_tag :application
     = javascript_include_tag :application
     = csrf_meta_tags
-    %body{:class => params[:controller]}
-      #container.container
-        %header
-          - flash.each do |name, msg|
-            = content_tag :div, msg, :id => "flash_\#{name}" if msg.is_a?(String)
-        #main{:role => "main"}
-          = yield
-        %footer
+  %body{:class => params[:controller]}
+    #container.container
+      %header
+        - flash.each do |name, msg|
+          = content_tag :div, msg, :id => "flash_\#{name}" if msg.is_a?(String)
+      #main{:role => "main"}
+        = yield
+      %footer
 HAML
         end
       else
@@ -1111,12 +1188,57 @@ say_recipe 'Navigation'
 after_bundler do
 
   say_wizard "Navigation recipe running 'after bundler'"
+  
+    if recipes.include? 'devise'
+      # Create navigation links for Devise
+      if recipes.include? 'haml'
+        # There is Haml code in this script. Changing the indentation is perilous between HAMLs.
+        # We have to use single-quote-style-heredoc to avoid interpolation.
+        create_file "app/views/shared/_navigation.html.haml" do <<-'HAML'
+- if user_signed_in?
+  %li
+    = link_to('Logout', destroy_user_session_path, :method=>'delete')
+- else
+  %li
+    = link_to('Login', new_user_session_path)
+- if user_signed_in?
+  %li
+    = link_to('Edit account', edit_user_registration_path)
+- else
+  %li
+    = link_to('Sign up', new_user_registration_path)
+HAML
+        end
+      else
+        create_file "app/views/shared/_navigation.html.erb" do <<-ERB
+<% if user_signed_in? %>
+  <li>
+  <%= link_to('Logout', destroy_user_session_path, :method=>'delete') %>        
+  </li>
+<% else %>
+  <li>
+  <%= link_to('Login', new_user_session_path)  %>  
+  </li>
+<% end %>
+<% if user_signed_in? %>
+  <li>
+  <%= link_to('Edit account', edit_user_registration_path) %>
+  </li>
+<% else %>
+  <li>
+  <%= link_to('Sign up', new_user_registration_path)  %>
+  </li>
+<% end %>
+ERB
+        end
+      end
 
-    # Create navigation links
-    if recipes.include? 'haml'
-      # There is Haml code in this script. Changing the indentation is perilous between HAMLs.
-      # We have to use single-quote-style-heredoc to avoid interpolation.
-      create_file "app/views/shared/_navigation.html.haml" do <<-'HAML'
+    else
+      # Create navigation links
+      if recipes.include? 'haml'
+        # There is Haml code in this script. Changing the indentation is perilous between HAMLs.
+        # We have to use single-quote-style-heredoc to avoid interpolation.
+        create_file "app/views/shared/_navigation.html.haml" do <<-'HAML'
 - if user_signed_in?
   %li
     Logged in as #{current_user.name}
@@ -1126,9 +1248,9 @@ after_bundler do
   %li
     = link_to('Login', signin_path)
 HAML
-      end
-    else
-      create_file "app/views/shared/_navigation.html.erb" do <<-ERB
+        end
+      else
+        create_file "app/views/shared/_navigation.html.erb" do <<-ERB
 <% if user_signed_in? %>
   <li>
   Logged in as <%= current_user.name %>
@@ -1142,6 +1264,7 @@ HAML
   </li>
 <% end %>
 ERB
+        end
       end
     end
 
@@ -1530,5 +1653,4 @@ say_wizard "Running 'after everything' callbacks."
 
 @current_recipe = nil
 say_wizard "Finished running the rails_apps_composer app template."
-say_wizard "Your new Rails app is ready. Any problems?"
-say_wizard "See http://github.com/RailsApps/rails3-mongoid-omniauth/issues"
+say_wizard "Your new Rails app is ready."
