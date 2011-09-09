@@ -32,10 +32,12 @@ The application generator templates will ask you for various preferences:
 * Would you like to use RSpec instead of TestUnit?
 * Would you like to use factory_girl for test fixtures with RSpec?
 * Would you like to use Cucumber for your BDD?
+* Would you like to use Guard to automate your workflow?
 * Would you like to use Mongoid to connect to a MongoDB database?
 * Would you like to use Devise for authentication?
 * Would you like to use OmniAuth for authentication?
 * Would you like to install HTML5 Boilerplate?
+* Normalize CSS and use Skeleton boilerplate?
 * Normalize CSS for consistent styling across browsers?
 * Completely reset all CSS to eliminate styling?
 * Would you like to set a robots.txt file to ban spiders?
