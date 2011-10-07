@@ -371,7 +371,7 @@ if config['cucumber']
     gem 'launchy', '0.4.0', :group => :test
   else
     # for Rails 3.1+, use optimistic versioning for gems
-    gem 'cucumber-rails', '>= 1.0.2', :group => :test
+    gem 'cucumber-rails', '>= 1.1.1', :group => :test
     gem 'capybara', '>= 1.1.1', :group => :test
     gem 'database_cleaner', '>= 0.6.7', :group => :test
     gem 'launchy', '>= 2.0.5', :group => :test
@@ -511,8 +511,8 @@ if config['mongoid']
     gem 'mongoid', '2.0.2'
   else
     # for Rails 3.1+, use optimistic versioning for gems
-    gem 'bson_ext', '>= 1.3.1'
-    gem 'mongoid', '>= 2.2.0'
+    gem 'bson_ext', '>= 1.4.0'
+    gem 'mongoid', '>= 2.3.0'
   end
 else
   recipes.delete('mongoid')
@@ -563,7 +563,7 @@ FILE
     # create a default user
     append_file 'db/seeds.rb' do <<-FILE
 puts 'SETTING UP DEFAULT USER LOGIN'
-user = User.create! :name => 'First User', :email => 'user@test.com', :password => 'please', :password_confirmation => 'please'
+user = User.create! :name => 'First User', :email => 'user@example.com', :password => 'please', :password_confirmation => 'please'
 puts 'New user created: ' << user.name
 FILE
     end
@@ -683,7 +683,7 @@ if config['omniauth']
     gem 'omniauth', '0.2.6'
   else
     # for Rails 3.1+, use optimistic versioning for gems
-    gem 'omniauth', '>= 0.3.0.rc3'
+    gem 'omniauth', '>= 0.3.0'
   end
 else
   recipes.delete('omniauth')
