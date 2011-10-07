@@ -53,7 +53,7 @@ h2. Suggested Use
 
 Any developer can quickly generate a Rails web application using just the @rails new@ command. In practice, experienced Rails developers typically add an assortment of useful additional packages (known as RubyGems, or just "gems") before beginning development of any web application. A developer often uses the same set of gems to get started and may create a "starter app" that can be copied and reused for any new project. Often a developer will create an "application template" to automate the creation of starter apps.
 
-Rails application templates are Ruby scripts used with the @"rails new app_name -m"@ command to generate a Rails web application.
+Rails application templates are Ruby scripts used with the @"rails new myapp -m"@ command to generate a Rails web application.
 
 Application templates commonly integrate popular gems that many Rails developers include in a starter app. It can be a hassle to integrate some of the most commonly used gems, particularly when new versions are released and there are minor "gotchas" that interfere with gems working together. By using these  application templates, you'll have a ready-to-run app without the integration "gotchas". Each has a detailed tutorial so you'll see exactly how the application was assembled.
 
@@ -74,7 +74,7 @@ See "Installing Rails 3.1":http://railsapps.github.com/installing-rails-3-1.html
 
 h2. Generating the Application
 
-Use the @"rails new app_name -m"@ command to generate a Rails web application.
+Use the @"rails new myapp -m"@ command to generate a Rails web application.
 
 You can add the @-T -O@ flags to skip Test::Unit files and Active Record files. For Rails 3.0, you can also add the @-J@ flag to skip Prototype files (not needed for Rails 3.1).
 
@@ -82,7 +82,7 @@ h4. Template for Rails 3 + Devise + RSpec + Cucumber
 
 To build the "rails3-devise-rspec-cucumber" example application, run the command:
 
-@$ rails new APP_NAME -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-devise-rspec-cucumber-template.rb -T@
+@$ rails new myapp -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-devise-rspec-cucumber-template.rb -T@
 
 Use the @-T@ flag to skip Test::Unit files. Add the @-J@ flag to skip Prototype files for Rails 3.0 (not needed for Rails 3.1).
 
@@ -90,7 +90,7 @@ h4. Template for Rails 3 + Mongoid + Devise
 
 To build the "rails3-mongoid-devise" example application, run the command:
 
-@$ rails new APP_NAME -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-mongoid-devise-template.rb -T -O@
+@$ rails new myapp -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-mongoid-devise-template.rb -T -O@
 
 Use the @-T -O@ flags to skip Test::Unit files and Active Record files. Add the @-J@ flag to skip Prototype files for Rails 3.0 (not needed for Rails 3.1).
 
@@ -98,7 +98,7 @@ h4. Template for Rails 3 + Mongoid + OmniAuth
 
 To build the "rails3-mongoid-omniauth" example application, run the command:
 
-@$ rails new APP_NAME -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-mongoid-omniauth-template.rb -T -O@
+@$ rails new myapp -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-mongoid-omniauth-template.rb -T -O@
 
 Use the @-T -O@ flags to skip Test::Unit files and Active Record files. Add the @-J@ flag to skip Prototype files for Rails 3.0 (not needed for Rails 3.1).
 
@@ -106,11 +106,11 @@ h4. Template for Rails 3 + Subdomains + Devise
 
 To build the "rails3-subdomain-devise" example application, run the command:
 
-@$ rails new APP_NAME -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-subdomain-devise-template.rb -T -O@
+@$ rails new myapp -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-subdomain-devise-template.rb -T -O@
 
 Use the @-T -O@ flags to skip Test::Unit files and Active Record files. Add the @-J@ flag to skip Prototype files for Rails 3.0 (not needed for Rails 3.1).
 
-This creates a new Rails app (with the @APP_NAME@ you provide) on your computer.
+This creates a new Rails app (with the @myapp@ you provide) on your computer.
 
 h2. Troubleshooting
 
