@@ -117,7 +117,7 @@ say_wizard "Checking configuration. Please confirm your preferences."
 
 prepend_file 'Gemfile' do <<-RUBY
 require 'rbconfig'
-HOST_OS = Config::CONFIG['host_os']
+HOST_OS = RbConfig::CONFIG['host_os']
 
 RUBY
 end
