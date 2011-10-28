@@ -126,7 +126,7 @@ if recipes.include? 'rails 3.1'
   append_file 'Gemfile' do <<-RUBY
 # install a Javascript runtime for linux
 if HOST_OS =~ /linux/i
-  gem 'therubyracer', '>= 0.8.2'
+  gem 'therubyracer', '>= 0.9.8'
 end
 
   RUBY
@@ -259,7 +259,7 @@ if config['rspec']
     end
   else
     # for Rails 3.1+, use optimistic versioning for gems
-    gem 'rspec-rails', '>= 2.6.1', :group => [:development, :test]
+    gem 'rspec-rails', '>= 2.7.0', :group => [:development, :test]
     if recipes.include? 'mongoid'
       # use the database_cleaner gem to reset the test database
       gem 'database_cleaner', '>= 0.6.7', :group => :test
@@ -268,7 +268,7 @@ if config['rspec']
     end
     if config['factory_girl']
       # use the factory_girl gem for test fixtures
-      gem 'factory_girl_rails', '>= 1.2.0', :group => :test
+      gem 'factory_girl_rails', '>= 1.3.0', :group => :test
     end
   end
 else
@@ -551,7 +551,7 @@ if config['devise']
     gem 'devise', '1.3.4'
   else
     # for Rails 3.1+, use optimistic versioning for gems
-    gem 'devise', '>= 1.4.7'
+    gem 'devise', '>= 1.4.9'
   end
 else
   recipes.delete('devise')
@@ -992,8 +992,8 @@ ul.hmenu li {
 
 CSS
 
-  # Add a stylesheet for use with HTML5 Boilerplate
-  css_boilerplate = <<-CSS
+  # Add a stylesheet for use with HTML5
+  css_html5 = <<-CSS
 
 header nav ul {
   list-style: none;
@@ -1022,7 +1022,7 @@ CSS
     create_file 'public/stylesheets/application.css', css
   else
     if recipes.include? 'html5'
-      append_file 'app/assets/stylesheets/application.css', css_boilerplate
+      append_file 'app/assets/stylesheets/application.css', css_html5
     else
       append_file 'app/assets/stylesheets/application.css', css
     end
@@ -1093,125 +1093,67 @@ end
 say_recipe 'html5'
 
 config = {}
-config['html5'] = yes_wizard?("Would you like to install HTML5 Boilerplate?") if true && true unless config.key?('html5')
-config['css_option'] = multiple_choice("If you've chosen HTML5 Boilerplate, how do you like your CSS?", [["Do nothing", "nothing"], ["Normalize CSS and add Skeleton styling", "skeleton"], ["Normalize CSS for consistent styling across browsers", "normalize"], ["Completely reset all CSS to eliminate styling", "reset"]]) if true && true unless config.key?('css_option')
+config['css_option'] = multiple_choice("Which front-end framework would you like for HTML5 and CSS3?", [["None", "nothing"], ["Zurb Foundation", "foundation"], ["Twitter Bootstrap", "bootstrap"], ["Skeleton", "skeleton"], ["Just normalize CSS for consistent styling", "normalize"]]) if true && true unless config.key?('css_option')
 @configs[@current_recipe] = config
 
 # Application template recipe for the rails_apps_composer. Check for a newer version here:
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/html5.rb
 
-if config['html5']
-  if recipes.include? 'rails 3.1'
-    gem 'frontend-helpers'
-    after_bundler do
-      say_wizard "HTML5 Boilerplate recipe running 'after bundler'"
-      # Download HTML5 Boilerplate JavaScripts
-      get "https://raw.github.com/h5bp/html5-boilerplate/master/js/libs/modernizr-2.0.6.min.js", "app/assets/javascripts/modernizr.js"
-      # Download stylesheet to normalize or reset CSS
-      case config['css_option']
-        when 'skeleton'
-          get "https://raw.github.com/necolas/normalize.css/master/normalize.css", "app/assets/stylesheets/normalize.css.scss"
-          get "https://raw.github.com/dhgamache/Skeleton/master/stylesheets/base.css", "app/assets/stylesheets/base.css.scss"
-          get "https://raw.github.com/dhgamache/Skeleton/master/stylesheets/layout.css", "app/assets/stylesheets/layout.css.scss"
-          get "https://raw.github.com/dhgamache/Skeleton/master/stylesheets/skeleton.css", "app/assets/stylesheets/skeleton.css.scss"
-          get "https://raw.github.com/dhgamache/Skeleton/master/javascripts/tabs.js", "app/assets/javascripts/tabs.js"
-        when 'normalize'
-          get "https://raw.github.com/necolas/normalize.css/master/normalize.css", "app/assets/stylesheets/normalize.css.scss"
-        when 'reset'
-          get "https://raw.github.com/h5bp/html5-boilerplate/master/css/style.css", "app/assets/stylesheets/reset.css.scss"
-      end
-      # Download HTML5 Boilerplate Site Root Assets
-      get "https://raw.github.com/h5bp/html5-boilerplate/master/apple-touch-icon-114x114-precomposed.png", "public/apple-touch-icon-114x114-precomposed.png"
-      get "https://raw.github.com/h5bp/html5-boilerplate/master/apple-touch-icon-57x57-precomposed.png", "public/apple-touch-icon-57x57-precomposed.png"
-      get "https://raw.github.com/h5bp/html5-boilerplate/master/apple-touch-icon-72x72-precomposed.png", "public/apple-touch-icon-72x72-precomposed.png"
-      get "https://raw.github.com/h5bp/html5-boilerplate/master/apple-touch-icon-precomposed.png", "public/apple-touch-icon-precomposed.png"
-      get "https://raw.github.com/h5bp/html5-boilerplate/master/apple-touch-icon.png", "public/apple-touch-icon.png"
-      get "https://raw.github.com/h5bp/html5-boilerplate/master/crossdomain.xml", "public/crossdomain.xml"
-      get "https://raw.github.com/h5bp/html5-boilerplate/master/humans.txt", "public/humans.txt"
-      # Set up the default application layout
-      if recipes.include? 'haml'
-        # create some Haml helpers
-        # We have to use single-quote-style-heredoc to avoid interpolation.
-        inject_into_file 'app/controllers/application_controller.rb', :after => "protect_from_forgery\n" do <<-'RUBY'
-  include FrontendHelpers::Html5Helper
-RUBY
-        end
-        # Haml version of default application layout
-        remove_file 'app/views/layouts/application.html.erb'
-        remove_file 'app/views/layouts/application.html.haml'
-        # There is Haml code in this script. Changing the indentation is perilous between HAMLs.
-        create_file 'app/views/layouts/application.html.haml' do <<-HAML
-- html_tag class: 'no-js' do
-  %head
-    %title #{app_name}
-    %meta{:charset => "utf-8"}
-    %meta{"http-equiv" => "X-UA-Compatible", :content => "IE=edge,chrome=1"}
-    %meta{:name => "viewport", :content => "width=device-width, initial-scale=1, maximum-scale=1"}
-    = stylesheet_link_tag :application
-    = javascript_include_tag :application
-    = csrf_meta_tags
-  %body{:class => params[:controller]}
-    #container.container
-      %header
-        - flash.each do |name, msg|
-          = content_tag :div, msg, :id => "flash_\#{name}" if msg.is_a?(String)
-      #main{:role => "main"}
-        = yield
-      %footer
-HAML
-        end
-      else
-        # ERB version of default application layout
-        remove_file 'app/views/layouts/application.html.erb'
-        remove_file 'app/views/layouts/application.html.haml'
-        create_file 'app/views/layouts/application.html.erb' do <<-ERB
-<!doctype html>
-<!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
-<!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
-<!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>#{app_name}</title>
-  <meta name="description" content="">
-  <meta name="author" content="">
-  <%= stylesheet_link_tag    "application" %>
-  <%= javascript_include_tag "application" %>
-  <%= csrf_meta_tags %>
-</head>
-<body class="<%= params[:controller] %>">
-  <div id="container" class="container">
-    <header>
-    </header>
-    <div id="main" role="main">
-      <%= yield %>
-    </div>
-    <footer>
-    </footer>
-  </div> <!--! end of #container -->
-</body>
-</html>
-ERB
-        end
-        inject_into_file 'app/views/layouts/application.html.erb', :after => "<header>\n" do
-  <<-ERB
-      <%- flash.each do |name, msg| -%>
-        <%= content_tag :div, msg, :id => "flash_\#{name}" if msg.is_a?(String) %>
-      <%- end -%>
-ERB
-        end
-      end
-    end
-  elsif recipes.include? 'rails 3.0'
-    say_wizard "Not supported for Rails version #{Rails::VERSION::STRING}. HTML5 Boilerplate recipe skipped."
-  else
-    say_wizard "Don't know what to do for Rails version #{Rails::VERSION::STRING}. HTML5 Boilerplate recipe skipped."
+if recipes.include? 'rails 3.1'
+  case config['css_option']
+    when 'foundation'
+      # https://github.com/zurb/foundation-rails
+      gem 'zurb-foundation'
+    when 'bootstrap'
+      # https://github.com/seyhunak/twitter-bootstrap-rails
+      gem 'twitter-bootstrap-rails'
   end
+  after_bundler do
+    say_wizard "HTML5 recipe running 'after bundler'"
+    # add a humans.txt file
+    get "https://raw.github.com/RailsApps/rails3-application-templates/master/files/humans.txt", "public/humans.txt"
+    # install a front-end framework for HTML5 and CSS3
+    case config['css_option']
+      when 'nothing'
+        say_wizard "no HTML5 front-end framework selected"
+      when 'foundation'
+        say_wizard "installing Zurb Foundation HTML5 framework"
+        insert_into_file "app/assets/javascripts/application.js", "//= require foundation\n", :after => "jquery_ujs\n"
+        insert_into_file "app/assets/stylesheets/application.css", " *= require foundation\n", :after => "require_self\n"
+      when 'bootstrap'
+        say_wizard "installing Twitter Bootstrap HTML5 framework"
+        insert_into_file "app/assets/javascripts/application.js", "//= require twitter/bootstrap\n", :after => "jquery_ujs\n"
+        insert_into_file "app/assets/stylesheets/application.css", " *= require twitter/bootstrap\n", :after => "require_self\n"
+      when 'skeleton'
+        say_wizard "installing Skeleton HTML5 framework"
+        get "https://raw.github.com/necolas/normalize.css/master/normalize.css", "app/assets/stylesheets/normalize.css.scss"
+        get "https://raw.github.com/dhgamache/Skeleton/master/stylesheets/base.css", "app/assets/stylesheets/base.css.scss"
+        get "https://raw.github.com/dhgamache/Skeleton/master/stylesheets/layout.css", "app/assets/stylesheets/layout.css.scss"
+        get "https://raw.github.com/dhgamache/Skeleton/master/stylesheets/skeleton.css", "app/assets/stylesheets/skeleton.css.scss"
+        get "https://raw.github.com/dhgamache/Skeleton/master/javascripts/tabs.js", "app/assets/javascripts/tabs.js"
+      when 'normalize'
+        say_wizard "normalizing CSS for consistent styling"
+        get "https://raw.github.com/necolas/normalize.css/master/normalize.css", "app/assets/stylesheets/normalize.css.scss"
+    end
+    # Set up the default application layout
+    if recipes.include? 'haml'
+      # Haml version of default application layout
+      remove_file 'app/views/layouts/application.html.erb'
+      remove_file 'app/views/layouts/application.html.haml'
+      get "https://raw.github.com/RailsApps/rails3-application-templates/master/files/views/layouts/application.html.haml", "app/views/layouts/application.html.haml"
+      gsub_file "app/views/layouts/application.html.haml", /App_Name/, "#{app_name.humanize.titleize}"
+    else
+      # ERB version of default application layout
+      remove_file 'app/views/layouts/application.html.erb'
+      remove_file 'app/views/layouts/application.html.haml'
+      get "https://raw.github.com/RailsApps/rails3-application-templates/master/files/views/layouts/application.html.erb", "app/views/layouts/application.html.erb"
+      gsub_file "app/views/layouts/application.html.erb", /App_Name/, "#{app_name.humanize.titleize}"
+    end
+  end
+elsif recipes.include? 'rails 3.0'
+  say_wizard "Not supported for Rails version #{Rails::VERSION::STRING}. HTML5 recipe skipped."
 else
-  say_wizard "HTML5 Boilerplate recipe skipped. No CSS styles added."
-  recipes.delete('html5')
+  say_wizard "Don't know what to do for Rails version #{Rails::VERSION::STRING}. HTML5 recipe skipped."
 end
 
 
