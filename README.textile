@@ -38,11 +38,11 @@ The application generator templates will ask you for various preferences:
 * Would you like to use OmniAuth for authentication?
 * Would you like to install HTML5 Boilerplate?
 * Which front-end framework would you like for HTML5 and CSS3?
-  * None
-  * Zurb Foundation
-  * Twitter Bootstrap
-  * Skeleton
-  * Normalize CSS for consistent styling
+  # None
+  # Zurb Foundation
+  # Twitter Bootstrap
+  # Skeleton
+  # Normalize CSS for consistent styling
 * Would you like to set a robots.txt file to ban spiders?
 * Would you like to use 'rails-footnotes' during development?
 
