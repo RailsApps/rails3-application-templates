@@ -259,7 +259,7 @@ if config['rspec']
     end
   else
     # for Rails 3.1+, use optimistic versioning for gems
-    gem 'rspec-rails', '>= 2.7.0', :group => [:development, :test]
+    gem 'rspec-rails', '>= 2.8.0.rc1', :group => [:development, :test]
     if recipes.include? 'mongoid'
       # use the database_cleaner gem to reset the test database
       gem 'database_cleaner', '>= 0.6.7', :group => :test
@@ -371,7 +371,7 @@ if config['cucumber']
     gem 'launchy', '0.4.0', :group => :test
   else
     # for Rails 3.1+, use optimistic versioning for gems
-    gem 'cucumber-rails', '>= 1.1.1', :group => :test
+    gem 'cucumber-rails', '>= 1.2.0', :group => :test
     gem 'capybara', '>= 1.1.1', :group => :test
     gem 'database_cleaner', '>= 0.6.7', :group => :test
     gem 'launchy', '>= 2.0.5', :group => :test

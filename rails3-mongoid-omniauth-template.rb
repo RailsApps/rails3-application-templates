@@ -259,7 +259,7 @@ if config['rspec']
     end
   else
     # for Rails 3.1+, use optimistic versioning for gems
-    gem 'rspec-rails', '>= 2.7.0', :group => [:development, :test]
+    gem 'rspec-rails', '>= 2.8.0.rc1', :group => [:development, :test]
     if recipes.include? 'mongoid'
       # use the database_cleaner gem to reset the test database
       gem 'database_cleaner', '>= 0.6.7', :group => :test
@@ -371,7 +371,7 @@ if config['cucumber']
     gem 'launchy', '0.4.0', :group => :test
   else
     # for Rails 3.1+, use optimistic versioning for gems
-    gem 'cucumber-rails', '>= 1.1.1', :group => :test
+    gem 'cucumber-rails', '>= 1.2.0', :group => :test
     gem 'capybara', '>= 1.1.1', :group => :test
     gem 'database_cleaner', '>= 0.6.7', :group => :test
     gem 'launchy', '>= 2.0.5', :group => :test
@@ -512,7 +512,7 @@ if config['mongoid']
   else
     # for Rails 3.1+, use optimistic versioning for gems
     gem 'bson_ext', '>= 1.3.1'
-    gem 'mongoid', '>= 2.2.3'
+    gem 'mongoid', '>= 2.3.3'
   end
 else
   recipes.delete('mongoid')
@@ -671,7 +671,7 @@ say_recipe 'OmniAuth'
 
 config = {}
 config['omniauth'] = yes_wizard?("Would you like to use OmniAuth for authentication?") if true && true unless config.key?('omniauth')
-config['provider'] = multiple_choice("Which service provider will you use?", [["Twitter", "twitter"], ["Facebook", "facebook"], ["GitHub", "github"], ["LinkedIn", "linked_in"], ["Other", "provider"]]) if true && true unless config.key?('provider')
+config['provider'] = multiple_choice("Which service provider will you use?", [["Twitter", "twitter"], ["Facebook", "facebook"], ["GitHub", "github"], ["LinkedIn", "linkedin"], ["Other", "provider"]]) if true && true unless config.key?('provider')
 @configs[@current_recipe] = config
 
 # Application template recipe for the rails_apps_composer. Check for a newer version here:
@@ -683,7 +683,20 @@ if config['omniauth']
     gem 'omniauth', '0.2.6'
   else
     # for Rails 3.1+, use optimistic versioning for gems
-    gem 'omniauth', '>= 0.3.2'
+    gem 'omniauth', '>= 1.0.0'
+    # for available gems, see https://github.com/intridea/omniauth/wiki/List-of-Strategies
+    case config['provider']
+      when 'twitter'
+        gem 'omniauth-twitter'
+      when 'facebook'
+        gem 'omniauth-facebook'
+      when 'github'
+       gem 'omniauth-github'
+      when 'linkedin'
+        gem 'omniauth-linkedin'
+      when 'provider'
+        say_wizard "IMPORTANT: you'll have to add a gem to your Gemfile for the provider you want"
+    end
   end
 else
   recipes.delete('omniauth')
@@ -725,13 +738,9 @@ RUBY
     create! do |user|
       user.provider = auth['provider']
       user.uid = auth['uid']
-      if auth['user_info']
-        user.name = auth['user_info']['name'] if auth['user_info']['name'] # Twitter, Google, Yahoo, GitHub
-        user.email = auth['user_info']['email'] if auth['user_info']['email'] # Google, Yahoo, GitHub
-      end
-      if auth['extra'] && auth['extra']['user_hash']
-        user.name = auth['extra']['user_hash']['name'] if auth['extra']['user_hash']['name'] # Facebook
-        user.email = auth['extra']['user_hash']['email'] if auth['extra']['user_hash']['email'] # Facebook
+      if auth['info']
+         user.name = auth['info']['name'] || ""
+         user.email = auth['info']['email'] || ""
       end
     end
   end
@@ -752,7 +761,7 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    session[:user_id] = nil
+    reset_session
     redirect_to root_url, :notice => 'Signed out!'
   end
 
