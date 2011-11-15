@@ -7,18 +7,18 @@ h4. Applications
 The templates can be used to build the following complete applications:
 
 * "Rails 3 + Devise + RSpec + Cucumber":https://github.com/RailsApps/rails3-devise-rspec-cucumber
-* "Rails 3 + Mongoid + Devise":http://github.com/railsapps/rails3-mongoid-devise/
-* "Rails 3 + Mongoid + OmniAuth":http://github.com/railsapps/rails3-mongoid-omniauth/
-* "Rails 3 + Subdomains + Devise":http://github.com/fortuity/rails3-subdomain-devise/
+* "Rails 3 + Mongoid + Devise":https://github.com/railsapps/rails3-mongoid-devise/
+* "Rails 3 + Mongoid + OmniAuth":https://github.com/railsapps/rails3-mongoid-omniauth/
+* "Rails 3 + Subdomains":https://github.com/RailsApps/rails3-subdomains
 
 h4. Tutorials
 
 There are detailed tutorials to show how each application is built:
 
 * "Tutorial for Rails 3 + Devise + RSpec + Cucumber":https://github.com/RailsApps/rails3-devise-rspec-cucumber/wiki/Tutorial
-* "Tutorial for Rails 3 + Mongoid + Devise":http://github.com/railsapps/rails3-mongoid-devise/wiki/Tutorial-%28Walkthrough%29
+* "Tutorial for Rails 3 + Mongoid + Devise":https://github.com/railsapps/rails3-mongoid-devise/wiki/Tutorial-%28Walkthrough%29
 * "Tutorial for Rails 3 + Mongoid + OmniAuth":https://github.com/railsapps/rails3-mongoid-omniauth/wiki/Tutorial
-* "Tutorial for Rails 3 + Subdomains + Devise":http://github.com/fortuity/rails3-subdomain-devise/wiki/Tutorial-%28Walkthrough%29
+* "Tutorial for Rails 3 + Subdomains":https://github.com/RailsApps/rails3-subdomains/wiki/Tutorial
 
 h4. Options
 
@@ -38,6 +38,9 @@ The application generator templates will ask you for various preferences:
 * Would you like to use OmniAuth for authentication?
 * Would you like to set a robots.txt file to ban spiders?
 * Would you like to use 'rails-footnotes' during development?
+* Would you like to add support for subdomains?
+## No
+## One subdomain per user (like Basecamp)
 * Which front-end framework would you like for HTML5 and CSS3?
 ## None
 ## Zurb Foundation
@@ -45,12 +48,9 @@ The application generator templates will ask you for various preferences:
 ## Skeleton
 ## Normalize CSS for consistent styling
 
-
-h2. !http://twitter-badges.s3.amazonaws.com/t_logo-a.png(Follow on Twitter)!:http://www.twitter.com/rails_apps Follow on Twitter !http://railsapps.github.com/images/mailing-list-icon.jpg(Join the Mailing List)!:http://eepurl.com/dQx3o Join the Mailing List
+h2. !http://twitter-badges.s3.amazonaws.com/t_logo-a.png(Follow on Twitter)!:http://www.twitter.com/rails_apps Follow on Twitter
 
 Follow the project on Twitter: "@rails_apps":http://twitter.com/rails_apps. Please tweet some praise if you like what you've found.
-
-<a href="http://eepurl.com/dQx3o">Join the email list</a> (low volume, announcements only) for project updates and tips about Rails resources.
 
 h2. Suggested Use
 
@@ -68,7 +68,7 @@ h2. Dependencies
 
 Before generating your application, you will need:
 
-* The Ruby language (version 1.9.2)
+* The Ruby language (version 1.9.3)
 ** @$ ruby -v@
 * Rails 3.1
 ** @$ rails -v@
@@ -105,11 +105,11 @@ To build the "rails3-mongoid-omniauth" example application, run the command:
 
 Use the @-T -O@ flags to skip Test::Unit files and Active Record files. Add the @-J@ flag to skip Prototype files for Rails 3.0 (not needed for Rails 3.1).
 
-h4. Template for Rails 3 + Subdomains + Devise
+h4. Template for Rails 3 + Subdomains
 
-To build the "rails3-subdomain-devise" example application, run the command:
+To build the "rails3-subdomains" example application, run the command:
 
-@$ rails new myapp -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-subdomain-devise-template.rb -T -O@
+@$ rails new myapp -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-subdomains-template.rb -T -O@
 
 Use the @-T -O@ flags to skip Test::Unit files and Active Record files. Add the @-J@ flag to skip Prototype files for Rails 3.0 (not needed for Rails 3.1).
 
@@ -117,7 +117,7 @@ This creates a new Rails app (with the @myapp@ you provide) on your computer.
 
 h2. Troubleshooting
 
-Problems? Check the "issues":http://github.com/RailsApps/rails3-application-templates/issues.
+Problems? Check the "issues":https://github.com/RailsApps/rails3-application-templates/issues.
 
 h4. Rails 3.1
 
@@ -163,13 +163,13 @@ There are many similar projects. Here's an annotated list of other "Rails applic
 
 h4. Issues
 
-Any issues? Please create an "issue":http://github.com/RailsApps/rails3-application-templates/issues on GitHub.
+Any issues? Please create an "issue":https://github.com/RailsApps/rails3-application-templates/issues on GitHub.
 
 h2. Contributing
 
 If you make improvements to this application, please share with others.
 
-Send the author a message, create an "issue":http://github.com/RailsApps/rails3-application-templates/issues, or fork the project and submit a pull request.
+Send the author a message, create an "issue":https://github.com/RailsApps/rails3-application-templates/issues, or fork the project and submit a pull request.
 
 If you add functionality to this application, create an alternative implementation, or build an application that is similar, please contact me and I'll add a note to the README so that others can find your work.
 
