@@ -257,7 +257,7 @@ if config['rspec']
     gem 'rspec-rails', '2.6.1', :group => [:development, :test]
     if recipes.include? 'mongoid'
       # use the database_cleaner gem to reset the test database
-      gem 'database_cleaner', '0.6.7', :group => :test
+      gem 'database_cleaner', '0.7.0', :group => :test
       # include RSpec matchers from the mongoid-rspec gem
       gem 'mongoid-rspec', '1.4.2', :group => :test
     end
@@ -375,7 +375,7 @@ if config['cucumber']
     # for Rails 3.0, use only gem versions we know that work
     gem 'cucumber-rails', '0.5.1', :group => :test
     gem 'capybara', '1.0.0', :group => :test
-    gem 'database_cleaner', '0.6.7', :group => :test
+    gem 'database_cleaner', '0.7.0', :group => :test
     gem 'launchy', '0.4.0', :group => :test
   else
     # for Rails 3.1+, use optimistic versioning for gems
