@@ -257,7 +257,7 @@ if config['rspec']
     gem 'rspec-rails', '2.6.1', :group => [:development, :test]
     if recipes.include? 'mongoid'
       # use the database_cleaner gem to reset the test database
-      gem 'database_cleaner', '0.7.0', :group => :test
+      gem 'database_cleaner', '0.6.7', :group => :test
       # include RSpec matchers from the mongoid-rspec gem
       gem 'mongoid-rspec', '1.4.2', :group => :test
     end
@@ -375,7 +375,7 @@ if config['cucumber']
     # for Rails 3.0, use only gem versions we know that work
     gem 'cucumber-rails', '0.5.1', :group => :test
     gem 'capybara', '1.0.0', :group => :test
-    gem 'database_cleaner', '0.7.0', :group => :test
+    gem 'database_cleaner', '0.6.7', :group => :test
     gem 'launchy', '0.4.0', :group => :test
   else
     # for Rails 3.1+, use optimistic versioning for gems
@@ -1218,7 +1218,19 @@ RUBY
   root :to => "home#index"
 RUBY
             end
-            
+            remove_file 'app/views/users/show.html.haml'
+            # There is Haml code in this script. Changing the indentation is perilous between HAMLs.
+            # We have to use single-quote-style-heredoc to avoid interpolation.
+            create_file 'app/views/users/show.html.haml' do
+<<-'HAML'
+%p
+  User: #{@user.name}
+%p
+  Email: #{@user.email if @user.email}
+%p
+  Profile: #{link_to root_url(:subdomain => @user.name), root_url(:subdomain => @user.name)}
+HAML
+            end
             remove_file 'app/views/home/index.html.haml'
             # There is Haml code in this script. Changing the indentation is perilous between HAMLs.
             # We have to use single-quote-style-heredoc to avoid interpolation.
@@ -1227,10 +1239,10 @@ RUBY
 %h3 Home
 - @users.each do |user|
   %br/ 
-  User: #{link_to user.name, user}
-  Profile: #{link_to root_url(:subdomain => user.name), root_url(:subdomain => user.name)}
+  #{user.name} profile: #{link_to root_url(:subdomain => user.name), root_url(:subdomain => user.name)}
 HAML
             end
+            gsub_file 'app/controllers/users_controller.rb', /before_filter :authenticate_user!/, ''
         end
       end
     elsif recipes.include? 'rails 3.0'
@@ -1459,20 +1471,21 @@ ERB
       create_file 'app/views/shared/_navigation.html.haml' do <<-'HAML'
 %li
   = link_to 'Main', root_url(:host => request.domain)
-- unless request.subdomain.present? && request.subdomain != "www"
+- if request.subdomain.present? && request.subdomain != "www"
   - if user_signed_in?
     %li
-      = link_to('Edit account', edit_user_registration_path)
+      = link_to('Edit account', edit_user_registration_url)
+    %li
+      = link_to('Logout', destroy_user_session_url, :method=>'delete')
   - else
     %li
-      = link_to('Sign up', new_user_registration_path)
+      = link_to('Login', new_user_session_url)
 - else
+  %li
+    = link_to('Sign up', new_user_registration_url(:host => request.domain))
   - if user_signed_in?
     %li
-      = link_to('Logout', destroy_user_session_path, :method=>'delete')
-  - else
-    %li
-      = link_to('Login', new_user_session_path)
+      = link_to('Logout', destroy_user_session_url, :method=>'delete')
 HAML
       end
     end
