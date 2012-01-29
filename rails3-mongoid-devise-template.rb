@@ -316,7 +316,7 @@ say_recipe 'guard'
 
 config = {}
 config['guard'] = yes_wizard?("Would you like to use Guard to automate your workflow?") if true && true unless config.key?('guard')
-config['livereload'] = yes_wizard?("Would you like to enable the LiveReload guard?") if true && true unless config.key?('livereload')
+config['livereload'] = yes_wizard?("Would you like to enable the LiveReload guard?") if true && true && config['guard'] unless config.key?('livereload')
 @configs[@current_recipe] = config
 
 if config['guard']
