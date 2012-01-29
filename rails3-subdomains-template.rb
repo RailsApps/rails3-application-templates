@@ -438,6 +438,7 @@ if config['guard']
   gem 'guard', '>= 0.6.2', :group => :development
   
   append_file 'Gemfile' do <<-RUBY
+    
 case HOST_OS
   when /darwin/i
     gem 'rb-fsevent', :group => :development
