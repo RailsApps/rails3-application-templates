@@ -41,7 +41,7 @@ Rails.application.config.generators do |g|
 end
 RUBY
 
-@recipes = ["jquery", "haml", "rspec", "cucumber", "guard", "mongoid", "action_mailer", "devise", "add_user", "home_page", "home_page_users", "seed_database", "users_page", "css_setup", "application_layout", "html5", "navigation", "cleanup", "ban_spiders", "extras", "git"]
+@recipes = ["haml", "rspec", "cucumber", "guard", "mongoid", "action_mailer", "devise", "add_user", "home_page", "home_page_users", "seed_database", "users_page", "css_setup", "html5", "navigation", "cleanup", "extras", "git"]
 
 def recipes; @recipes end
 def recipe?(name); @recipes.include?(name) end
@@ -90,113 +90,36 @@ def after_everything(&block); @after_everything_blocks << [@current_recipe, bloc
 def before_config(&block); @before_configs[@current_recipe] = block; end
 
 
+# this application template only supports Rails version 3.1 and newer
 case Rails::VERSION::MAJOR.to_s
 when "3"
   case Rails::VERSION::MINOR.to_s
+  when "2"
+    say_wizard "You are using Rails version #{Rails::VERSION::STRING}."
   when "1"
     say_wizard "You are using Rails version #{Rails::VERSION::STRING}."
-    @recipes << 'rails 3.1'
   when "0"
-    say_wizard "You are using Rails version #{Rails::VERSION::STRING}."
-    @recipes << 'rails 3.0'
+    say_wizard "You are using Rails version #{Rails::VERSION::STRING} which is not supported. Try 3.1 or newer."
+    raise StandardError.new "Rails #{Rails::VERSION::STRING} is not supported. Try 3.1 or newer."
   else
-    say_wizard "You are using Rails version #{Rails::VERSION::STRING} which is not supported."
+    say_wizard "You are using Rails version #{Rails::VERSION::STRING}."
   end
 else
-  say_wizard "You are using Rails version #{Rails::VERSION::STRING} which is not supported."
+  say_wizard "You are using Rails version #{Rails::VERSION::STRING} which is not supported. Try 3.1 or newer."
+  raise StandardError.new "Rails #{Rails::VERSION::STRING} is not supported. Try 3.1 or newer."
 end
-
-# show which version of rake is running
-# with the added benefit of ensuring that the Gemfile's version of rake is activated
-gemfile_rake_ver = run 'bundle exec rake --version', :capture => true, :verbose => false
-say_wizard "You are using #{gemfile_rake_ver.strip}"
 
 say_wizard "Checking configuration. Please confirm your preferences."
 
-# >---------------------------[ Javascript Runtime ]-----------------------------<
+# >---------------------------[ Autoload Modules/Classes ]-----------------------------<
 
-prepend_file 'Gemfile' do <<-RUBY
-require 'rbconfig'
-HOST_OS = RbConfig::CONFIG['host_os']
+inject_into_file 'config/application.rb', :after => 'config.autoload_paths += %W(#{config.root}/extras)' do <<-'RUBY'
 
+    config.autoload_paths += %W(#{config.root}/lib)
 RUBY
 end
 
-if recipes.include? 'rails 3.1'
-  append_file 'Gemfile' do <<-RUBY
-# install a Javascript runtime for linux
-if HOST_OS =~ /linux/i
-  gem 'therubyracer', '>= 0.9.8'
-end
-
-  RUBY
-  end
-end
-
 # >---------------------------------[ Recipes ]----------------------------------<
-
-
-# >--------------------------------[ jQuery ]---------------------------------<
-
-@current_recipe = "jquery"
-@before_configs["jquery"].call if @before_configs["jquery"]
-say_recipe 'jQuery'
-
-config = {}
-config['jquery'] = yes_wizard?("Would you like to use jQuery?") if true && true unless config.key?('jquery')
-config['ui'] = yes_wizard?("Would you like to use jQuery UI?") if true && true unless config.key?('ui')
-@configs[@current_recipe] = config
-
-# Application template recipe for the rails_apps_composer. Check for a newer version here:
-# https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/jquery.rb
-
-if config['jquery']
-  if recipes.include? 'rails 3.0'
-    say_wizard "Replacing Prototype framework with jQuery for Rails 3.0."
-    after_bundler do
-      say_wizard "jQuery recipe running 'after bundler'"
-      # remove the Prototype adapter file
-      remove_file 'public/javascripts/rails.js'
-      # remove the Prototype files (if they exist)
-      remove_file 'public/javascripts/controls.js'
-      remove_file 'public/javascripts/dragdrop.js'
-      remove_file 'public/javascripts/effects.js'
-      remove_file 'public/javascripts/prototype.js'
-      # add jQuery files
-      inside "public/javascripts" do
-        get "https://raw.github.com/rails/jquery-ujs/master/src/rails.js", "rails.js"
-        get "http://code.jquery.com/jquery-1.6.min.js", "jquery.js"
-        if config['ui']
-          get "https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js", "jqueryui.js"
-        end
-      end
-      # adjust the Javascript defaults
-      # first uncomment "config.action_view.javascript_expansions"
-      gsub_file "config/application.rb", /# config.action_view.javascript_expansions/, "config.action_view.javascript_expansions"
-      # then add "jquery rails" if necessary
-      gsub_file "config/application.rb", /= \%w\(\)/, "= %w(jquery rails)"
-      # finally change to "jquery jqueryui rails" if necessary
-      if config['ui']
-        gsub_file "config/application.rb", /jquery rails/, "jquery jqueryui rails"
-      end
-    end
-  elsif recipes.include? 'rails 3.1'
-    if config['ui']
-      inside "app/assets/javascripts" do
-        get "https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js", "jqueryui.js"
-      end
-    else
-      say_wizard "jQuery installed by default in Rails 3.1."
-    end
-  else
-    say_wizard "Don't know what to do for Rails version #{Rails::VERSION::STRING}. jQuery recipe skipped."
-  end
-else
-  if config['ui']
-    say_wizard "You said you didn't want jQuery. Can't install jQuery UI without jQuery."
-  end
-  recipes.delete('jquery')
-end
 
 
 # >---------------------------------[ HAML ]----------------------------------<
@@ -213,15 +136,8 @@ config['haml'] = yes_wizard?("Would you like to use Haml instead of ERB?") if tr
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/haml.rb
 
 if config['haml']
-  if recipes.include? 'rails 3.0'
-    # for Rails 3.0, use only gem versions we know that work
-    gem 'haml', '3.1.1'
-    gem 'haml-rails', '0.3.4', :group => :development
-  else
-    # for Rails 3.1+, use optimistic versioning for gems
-    gem 'haml', '>= 3.1.2'
-    gem 'haml-rails', '>= 0.3.4', :group => :development
-  end
+  gem 'haml', '>= 3.1.4'
+  gem 'haml-rails', '>= 0.3.4', :group => :development
 else
   recipes.delete('haml')
 end
@@ -236,40 +152,25 @@ say_recipe 'RSpec'
 config = {}
 config['rspec'] = yes_wizard?("Would you like to use RSpec instead of TestUnit?") if true && true unless config.key?('rspec')
 config['factory_girl'] = yes_wizard?("Would you like to use factory_girl for test fixtures with RSpec?") if true && true unless config.key?('factory_girl')
+config['machinist'] = yes_wizard?("Would you like to use machinist for test fixtures with RSpec?") if true && true unless config.key?('machinist')
 @configs[@current_recipe] = config
 
 # Application template recipe for the rails_apps_composer. Check for a newer version here:
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/rspec.rb
 
 if config['rspec']
-  if recipes.include? 'rails 3.0'
-    # for Rails 3.0, use only gem versions we know that work
-    say_wizard "REMINDER: When creating a Rails app using RSpec..."
-    say_wizard "you should add the '-T' flag to 'rails new'"
-    gem 'rspec-rails', '2.6.1', :group => [:development, :test]
-    if recipes.include? 'mongoid'
-      # use the database_cleaner gem to reset the test database
-      gem 'database_cleaner', '0.6.7', :group => :test
-      # include RSpec matchers from the mongoid-rspec gem
-      gem 'mongoid-rspec', '1.4.2', :group => :test
-    end
-    if config['factory_girl']
-      # use the factory_girl gem for test fixtures
-      gem 'factory_girl_rails', '1.1.beta1', :group => :test
-    end
-  else
-    # for Rails 3.1+, use optimistic versioning for gems
-    gem 'rspec-rails', '>= 2.8.0.rc1', :group => [:development, :test]
-    if recipes.include? 'mongoid'
-      # use the database_cleaner gem to reset the test database
-      gem 'database_cleaner', '>= 0.7.0', :group => :test
-      # include RSpec matchers from the mongoid-rspec gem
-      gem 'mongoid-rspec', '>= 1.4.4', :group => :test
-    end
-    if config['factory_girl']
-      # use the factory_girl gem for test fixtures
-      gem 'factory_girl_rails', '>= 1.4.0', :group => :test
-    end
+  gem 'rspec-rails', '>= 2.8.1', :group => [:development, :test]
+  if recipes.include? 'mongoid'
+    # use the database_cleaner gem to reset the test database
+    gem 'database_cleaner', '>= 0.7.1', :group => :test
+    # include RSpec matchers from the mongoid-rspec gem
+    gem 'mongoid-rspec', '>= 1.4.4', :group => :test
+  end
+  if config['machinist']
+    gem 'machinist', group: :test
+  end
+  if config['factory_girl']
+    gem 'factory_girl_rails', '>= 1.6.0', :group => :test
   end
 else
   recipes.delete('rspec')
@@ -291,6 +192,7 @@ if config['rspec']
     config.generators do |g|
       g.view_specs false
       g.helper_specs false
+      #{"g.fixture_replacement :machinist" if config['machinist']}
     end
 
 RUBY
@@ -325,7 +227,7 @@ RUBY
       gsub_file 'config/application.rb', /require "rails\/test_unit\/railtie"/, '# require "rails/test_unit/railtie"'
 
       # configure RSpec to use matchers from the mongoid-rspec gem
-      create_file 'spec/support/mongoid.rb' do 
+      create_file 'spec/support/mongoid.rb' do
       <<-RUBY
 RSpec.configure do |config|
   config.include Mongoid::Matchers
@@ -336,7 +238,7 @@ RUBY
 
     if recipes.include? 'devise'
       # add Devise test helpers
-      create_file 'spec/support/devise.rb' do 
+      create_file 'spec/support/devise.rb' do
       <<-RUBY
 RSpec.configure do |config|
   config.include Devise::TestHelpers, :type => :controller
@@ -363,19 +265,10 @@ config['cucumber'] = yes_wizard?("Would you like to use Cucumber for your BDD?")
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/cucumber.rb
 
 if config['cucumber']
-  if recipes.include? 'rails 3.0'
-    # for Rails 3.0, use only gem versions we know that work
-    gem 'cucumber-rails', '0.5.1', :group => :test
-    gem 'capybara', '1.0.0', :group => :test
-    gem 'database_cleaner', '0.6.7', :group => :test
-    gem 'launchy', '0.4.0', :group => :test
-  else
-    # for Rails 3.1+, use optimistic versioning for gems
-    gem 'cucumber-rails', '>= 1.2.0', :group => :test
-    gem 'capybara', '>= 1.1.2', :group => :test
-    gem 'database_cleaner', '>= 0.7.0', :group => :test
-    gem 'launchy', '>= 2.0.5', :group => :test
-  end
+  gem 'cucumber-rails', '>= 1.2.1', :group => :test
+  gem 'capybara', '>= 1.1.2', :group => :test
+  gem 'database_cleaner', '>= 0.7.1', :group => :test
+  gem 'launchy', '>= 2.0.5', :group => :test
 else
   recipes.delete('cucumber')
 end
@@ -428,8 +321,16 @@ config['livereload'] = yes_wizard?("Would you like to enable the LiveReload guar
 
 if config['guard']
   gem 'guard', '>= 0.6.2', :group => :development
-  
+
+  prepend_file 'Gemfile' do <<-RUBY
+require 'rbconfig'
+HOST_OS = RbConfig::CONFIG['host_os']
+
+RUBY
+  end
+
   append_file 'Gemfile' do <<-RUBY
+  # need newline here!
 case HOST_OS
   when /darwin/i
     gem 'rb-fsevent', :group => :development
@@ -452,29 +353,29 @@ end
   def guard(name, version = nil)
     args = []
     if version
-      args << version 
+      args << version
     end
     args << { :group => :development }
     gem "guard-#{name}", *args
     guards << name
   end
 
-  guard 'bundler', '>= 0.1.3' 
+  guard 'bundler', '>= 0.1.3'
 
-  unless recipes.include? 'pow' 
-    guard 'rails', '>= 0.0.3' 
+  unless recipes.include? 'pow'
+    guard 'rails', '>= 0.0.3'
   end
 
   if config['livereload']
     guard 'livereload', '>= 0.3.0'
   end
 
-  if recipes.include? 'rspec' 
-    guard 'rspec', '>= 0.4.3' 
+  if recipes.include? 'rspec'
+    guard 'rspec', '>= 0.4.3'
   end
 
-  if recipes.include? 'cucumber' 
-    guard 'cucumber', '>= 0.6.1' 
+  if recipes.include? 'cucumber'
+    guard 'cucumber', '>= 0.6.1'
   end
 
   after_bundler do
@@ -485,7 +386,7 @@ end
   end
 
 else
-  recipes.delete 'guard' 
+  recipes.delete 'guard'
 end
 
 
@@ -503,17 +404,10 @@ config['mongoid'] = yes_wizard?("Would you like to use Mongoid to connect to a M
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/mongoid.rb
 
 if config['mongoid']
-  if recipes.include? 'rails 3.0'
-    # for Rails 3.0, use only gem versions we know that work
-    say_wizard "REMINDER: When creating a Rails app using Mongoid..."
-    say_wizard "you should add the '-O' flag to 'rails new'"
-    gem 'bson_ext', '1.3.1'
-    gem 'mongoid', '2.0.2'
-  else
-    # for Rails 3.1+, use optimistic versioning for gems
-    gem 'bson_ext', '>= 1.3.1'
-    gem 'mongoid', '>= 2.3.3'
-  end
+  say_wizard "REMINDER: When creating a Rails app using Mongoid..."
+  say_wizard "you should add the '-O' flag to 'rails new'"
+  gem 'bson_ext', '>= 1.3.1'
+  gem 'mongoid', '>= 2.4.3'
 else
   recipes.delete('mongoid')
 end
@@ -587,17 +481,10 @@ config['devise'] = yes_wizard?("Would you like to use Devise for authentication?
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/devise.rb
 
 if config['devise']
-  if recipes.include? 'rails 3.0'
-    # for Rails 3.0, use only gem versions we know that work
-    gem 'devise', '1.3.4'
-  else
-    # for Rails 3.1+, use optimistic versioning for gems
-    gem 'devise', '>= 1.5.0'
-  end
+  gem 'devise', '>= 2.0.0'
 else
   recipes.delete('devise')
 end
-
 
 if config['devise']
   after_bundler do
@@ -919,7 +806,7 @@ RUBY
     # Modify the routes
     #----------------------------------------------------------------------------
     # @devise_for :users@ route must be placed above @resources :users, :only => :show@.
-    gsub_file 'config/routes.rb', /get \"users\/show\"/, '#get \"users\/show\"'
+    gsub_file 'config/routes.rb', /get \"users\/show\"/, ''
     gsub_file 'config/routes.rb', /devise_for :users/ do
     <<-RUBY
 devise_for :users
@@ -1059,71 +946,15 @@ header nav ul li {
 
 CSS
 
-  if recipes.include? 'rails 3.0'
-    create_file 'public/stylesheets/application.css', css
+  # rename the application stylesheet to use SCSS
+  copy_file 'app/assets/stylesheets/application.css', 'app/assets/stylesheets/application.css.scss'
+  remove_file 'app/assets/stylesheets/application.css'
+  if recipes.include? 'html5'
+    append_file 'app/assets/stylesheets/application.css.scss', css_html5
   else
-    if recipes.include? 'html5'
-      append_file 'app/assets/stylesheets/application.css', css_html5
-    else
-      append_file 'app/assets/stylesheets/application.css', css
-    end
+    append_file 'app/assets/stylesheets/application.css.scss', css
   end
-
-end
-
-
-# >---------------------------[ ApplicationLayout ]---------------------------<
-
-@current_recipe = "application_layout"
-@before_configs["application_layout"].call if @before_configs["application_layout"]
-say_recipe 'ApplicationLayout'
-
-
-@configs[@current_recipe] = config
-
-# Application template recipe for the rails_apps_composer. Check for a newer version here:
-# https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/application_layout.rb
-
-after_bundler do
-
-  say_wizard "ApplicationLayout recipe running 'after bundler'"
-
-  # Set up the default application layout
-  if recipes.include? 'haml'
-    remove_file 'app/views/layouts/application.html.erb'
-    remove_file 'app/views/layouts/application.html.haml'
-    # There is Haml code in this script. Changing the indentation is perilous between HAMLs.
-    create_file 'app/views/layouts/application.html.haml' do <<-HAML
-!!! 5
-%html
-  %head
-    %title #{app_name}
-    = stylesheet_link_tag :application
-    = javascript_include_tag :application
-    = csrf_meta_tags
-  %body
-    - flash.each do |name, msg|
-      = content_tag :div, msg, :id => "flash_\#{name}" if msg.is_a?(String)
-    = yield
-HAML
-    end
-    if recipes.include? 'rails 3.0'
-      gsub_file 'app/views/layouts/application.html.haml', /stylesheet_link_tag :application/, 'stylesheet_link_tag :all'
-      gsub_file 'app/views/layouts/application.html.haml', /javascript_include_tag :application/, 'javascript_include_tag :defaults'
-      gsub_file 'app/views/layouts/application.html.haml', /csrf_meta_tags/, 'csrf_meta_tag'
-    end
-  else
-    unless recipes.include? 'html5'
-      inject_into_file 'app/views/layouts/application.html.erb', :after => "<body>\n" do
-    <<-ERB
-  <%- flash.each do |name, msg| -%>
-    <%= content_tag :div, msg, :id => "flash_\#{name}" if msg.is_a?(String) %>
-  <%- end -%>
-ERB
-      end
-    end
-  end
-
+  
 end
 
 
@@ -1134,67 +965,62 @@ end
 say_recipe 'html5'
 
 config = {}
-config['css_option'] = multiple_choice("Which front-end framework would you like for HTML5 and CSS3?", [["None", "nothing"], ["Zurb Foundation", "foundation"], ["Twitter Bootstrap", "bootstrap"], ["Skeleton", "skeleton"], ["Just normalize CSS for consistent styling", "normalize"]]) if true && true unless config.key?('css_option')
+config['css_option'] = multiple_choice("Which front-end framework would you like for HTML5 and CSS?", [["None", "nothing"], ["Zurb Foundation", "foundation"], ["Twitter Bootstrap", "bootstrap"], ["Skeleton", "skeleton"], ["Just normalize CSS for consistent styling", "normalize"]]) if true && true unless config.key?('css_option')
 @configs[@current_recipe] = config
 
 # Application template recipe for the rails_apps_composer. Check for a newer version here:
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/html5.rb
 
-if recipes.include? 'rails 3.1'
+case config['css_option']
+  when 'foundation'
+    # https://github.com/zurb/foundation-rails
+    gem 'zurb-foundation'
+  when 'bootstrap'
+    # https://github.com/thomas-mcdonald/bootstrap-sass
+    # http://rubysource.com/twitter-bootstrap-less-and-sass-understanding-your-options-for-rails-3-1/
+    gem 'bootstrap-sass'
+end
+after_bundler do
+  say_wizard "HTML5 recipe running 'after bundler'"
+  # add a humans.txt file
+  get "https://raw.github.com/RailsApps/rails3-application-templates/master/files/humans.txt", "public/humans.txt"
+  # install a front-end framework for HTML5 and CSS3
   case config['css_option']
+    when 'nothing'
+      say_wizard "no HTML5 front-end framework selected"
     when 'foundation'
-      # https://github.com/zurb/foundation-rails
-      gem 'zurb-foundation'
+      say_wizard "installing Zurb Foundation HTML5 framework"
+      insert_into_file "app/assets/javascripts/application.js", "//= require foundation\n", :after => "jquery_ujs\n"
+      insert_into_file "app/assets/stylesheets/application.css.scss", " *= require foundation\n", :after => "require_self\n"
     when 'bootstrap'
-      # https://github.com/seyhunak/twitter-bootstrap-rails
-      gem 'twitter-bootstrap-rails'
+      say_wizard "installing Twitter Bootstrap HTML5 framework"
+      insert_into_file "app/assets/javascripts/application.js", "//= require bootstrap\n", :after => "jquery_ujs\n"
+      insert_into_file "app/assets/stylesheets/application.css.scss", " *= require bootstrap\n", :after => "require_self\n"
+    when 'skeleton'
+      say_wizard "installing Skeleton HTML5 framework"
+      get "https://raw.github.com/necolas/normalize.css/master/normalize.css", "app/assets/stylesheets/normalize.css.scss"
+      get "https://raw.github.com/dhgamache/Skeleton/master/stylesheets/base.css", "app/assets/stylesheets/base.css.scss"
+      get "https://raw.github.com/dhgamache/Skeleton/master/stylesheets/layout.css", "app/assets/stylesheets/layout.css.scss"
+      get "https://raw.github.com/dhgamache/Skeleton/master/stylesheets/skeleton.css", "app/assets/stylesheets/skeleton.css.scss"
+      get "https://raw.github.com/dhgamache/Skeleton/master/javascripts/tabs.js", "app/assets/javascripts/tabs.js"
+    when 'normalize'
+      say_wizard "normalizing CSS for consistent styling"
+      get "https://raw.github.com/necolas/normalize.css/master/normalize.css", "app/assets/stylesheets/normalize.css.scss"
   end
-  after_bundler do
-    say_wizard "HTML5 recipe running 'after bundler'"
-    # add a humans.txt file
-    get "https://raw.github.com/RailsApps/rails3-application-templates/master/files/humans.txt", "public/humans.txt"
-    # install a front-end framework for HTML5 and CSS3
-    case config['css_option']
-      when 'nothing'
-        say_wizard "no HTML5 front-end framework selected"
-      when 'foundation'
-        say_wizard "installing Zurb Foundation HTML5 framework"
-        insert_into_file "app/assets/javascripts/application.js", "//= require foundation\n", :after => "jquery_ujs\n"
-        insert_into_file "app/assets/stylesheets/application.css", " *= require foundation\n", :after => "require_self\n"
-      when 'bootstrap'
-        say_wizard "installing Twitter Bootstrap HTML5 framework"
-        insert_into_file "app/assets/javascripts/application.js", "//= require twitter/bootstrap\n", :after => "jquery_ujs\n"
-        insert_into_file "app/assets/stylesheets/application.css", " *= require twitter/bootstrap\n", :after => "require_self\n"
-      when 'skeleton'
-        say_wizard "installing Skeleton HTML5 framework"
-        get "https://raw.github.com/necolas/normalize.css/master/normalize.css", "app/assets/stylesheets/normalize.css.scss"
-        get "https://raw.github.com/dhgamache/Skeleton/master/stylesheets/base.css", "app/assets/stylesheets/base.css.scss"
-        get "https://raw.github.com/dhgamache/Skeleton/master/stylesheets/layout.css", "app/assets/stylesheets/layout.css.scss"
-        get "https://raw.github.com/dhgamache/Skeleton/master/stylesheets/skeleton.css", "app/assets/stylesheets/skeleton.css.scss"
-        get "https://raw.github.com/dhgamache/Skeleton/master/javascripts/tabs.js", "app/assets/javascripts/tabs.js"
-      when 'normalize'
-        say_wizard "normalizing CSS for consistent styling"
-        get "https://raw.github.com/necolas/normalize.css/master/normalize.css", "app/assets/stylesheets/normalize.css.scss"
-    end
-    # Set up the default application layout
-    if recipes.include? 'haml'
-      # Haml version of default application layout
-      remove_file 'app/views/layouts/application.html.erb'
-      remove_file 'app/views/layouts/application.html.haml'
-      get "https://raw.github.com/RailsApps/rails3-application-templates/master/files/views/layouts/application.html.haml", "app/views/layouts/application.html.haml"
-      gsub_file "app/views/layouts/application.html.haml", /App_Name/, "#{app_name.humanize.titleize}"
-    else
-      # ERB version of default application layout
-      remove_file 'app/views/layouts/application.html.erb'
-      remove_file 'app/views/layouts/application.html.haml'
-      get "https://raw.github.com/RailsApps/rails3-application-templates/master/files/views/layouts/application.html.erb", "app/views/layouts/application.html.erb"
-      gsub_file "app/views/layouts/application.html.erb", /App_Name/, "#{app_name.humanize.titleize}"
-    end
+  # Set up the default application layout
+  if recipes.include? 'haml'
+    # Haml version of default application layout
+    remove_file 'app/views/layouts/application.html.erb'
+    remove_file 'app/views/layouts/application.html.haml'
+    get "https://raw.github.com/RailsApps/rails3-application-templates/master/files/views/layouts/application.html.haml", "app/views/layouts/application.html.haml"
+    gsub_file "app/views/layouts/application.html.haml", /App_Name/, "#{app_name.humanize.titleize}"
+  else
+    # ERB version of default application layout
+    remove_file 'app/views/layouts/application.html.erb'
+    remove_file 'app/views/layouts/application.html.haml'
+    get "https://raw.github.com/RailsApps/rails3-application-templates/master/files/views/layouts/application.html.erb", "app/views/layouts/application.html.erb"
+    gsub_file "app/views/layouts/application.html.erb", /App_Name/, "#{app_name.humanize.titleize}"
   end
-elsif recipes.include? 'rails 3.0'
-  say_wizard "Not supported for Rails version #{Rails::VERSION::STRING}. HTML5 recipe skipped."
-else
-  say_wizard "Don't know what to do for Rails version #{Rails::VERSION::STRING}. HTML5 recipe skipped."
 end
 
 
@@ -1332,6 +1158,33 @@ ERB
       end
     end
 
+    # Throw it all away and create new navigation if we're enabling subdomains
+    if recipes.include? 'subdomains'
+      remove_file 'app/views/shared/_navigation.html.haml'
+      # There is Haml code in this script. Changing the indentation is perilous between HAMLs.
+      # We have to use single-quote-style-heredoc to avoid interpolation.
+      create_file 'app/views/shared/_navigation.html.haml' do <<-'HAML'
+%li
+  = link_to 'Main', root_url(:host => request.domain)
+- if request.subdomain.present? && request.subdomain != "www"
+  - if user_signed_in?
+    %li
+      = link_to('Edit account', edit_user_registration_url)
+    %li
+      = link_to('Logout', destroy_user_session_url, :method=>'delete')
+  - else
+    %li
+      = link_to('Login', new_user_session_url)
+- else
+  %li
+    = link_to('Sign up', new_user_registration_url(:host => request.domain))
+  - if user_signed_in?
+    %li
+      = link_to('Logout', destroy_user_session_url, :method=>'delete')
+HAML
+      end
+    end
+
 end
 
 
@@ -1356,18 +1209,9 @@ after_bundler do
     README
     doc/README_FOR_APP
     public/index.html
+    app/assets/images/rails.png
   }.each { |file| remove_file file }
-  
-  if recipes.include? 'rails 3.0'
-    %w{
-      public/images/rails.png
-    }.each { |file| remove_file file }
-  else
-    %w{
-      app/assets/images/rails.png
-    }.each { |file| remove_file file }
-  end
-  
+
   # add placeholder READMEs
   get "https://raw.github.com/RailsApps/rails3-application-templates/master/files/sample_readme.txt", "README"
   get "https://raw.github.com/RailsApps/rails3-application-templates/master/files/sample_readme.textile", "README.textile"
@@ -1382,31 +1226,6 @@ after_bundler do
 end
 
 
-# >------------------------------[ BanSpiders ]-------------------------------<
-
-@current_recipe = "ban_spiders"
-@before_configs["ban_spiders"].call if @before_configs["ban_spiders"]
-say_recipe 'BanSpiders'
-
-config = {}
-config['ban_spiders'] = yes_wizard?("Would you like to set a robots.txt file to ban spiders?") if true && true unless config.key?('ban_spiders')
-@configs[@current_recipe] = config
-
-# Application template recipe for the rails_apps_composer. Check for a newer version here:
-# https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/ban_spiders.rb
-
-if config['ban_spiders']
-  say_wizard "BanSpiders recipe running 'after bundler'"
-  after_bundler do
-    # ban spiders from your site by changing robots.txt
-    gsub_file 'public/robots.txt', /# User-Agent/, 'User-Agent'
-    gsub_file 'public/robots.txt', /# Disallow/, 'Disallow'
-  end
-else
-  recipes.delete('ban_spiders')
-end
-
-
 # >--------------------------------[ Extras ]---------------------------------<
 
 @current_recipe = "extras"
@@ -1415,6 +1234,7 @@ say_recipe 'Extras'
 
 config = {}
 config['footnotes'] = yes_wizard?("Would you like to use 'rails-footnotes' during development?") if true && true unless config.key?('footnotes')
+config['ban_spiders'] = yes_wizard?("Would you like to set a robots.txt file to ban spiders?") if true && true unless config.key?('ban_spiders')
 @configs[@current_recipe] = config
 
 # Application template recipe for the rails_apps_composer. Check for a newer version here:
@@ -1425,6 +1245,17 @@ if config['footnotes']
   gem 'rails-footnotes', '>= 3.7', :group => :development
 else
   recipes.delete('footnotes')
+end
+
+if config['ban_spiders']
+  say_wizard "BanSpiders recipe running 'after bundler'"
+  after_bundler do
+    # ban spiders from your site by changing robots.txt
+    gsub_file 'public/robots.txt', /# User-Agent/, 'User-Agent'
+    gsub_file 'public/robots.txt', /# Disallow/, 'Disallow'
+  end
+else
+  recipes.delete('ban_spiders')
 end
 
 
