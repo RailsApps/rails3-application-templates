@@ -167,10 +167,16 @@ if config['rspec']
     gem 'mongoid-rspec', '>= 1.4.4', :group => :test
   end
   if config['machinist']
-    gem 'machinist', group: :test
+    gem 'machinist', :group => :test
   end
   if config['factory_girl']
-    gem 'factory_girl_rails', '>= 1.6.0', :group => :test
+    gem 'factory_girl_rails', '>= 1.7.0', :group => :test
+  end
+  # add a collection of RSpec matchers and Cucumber steps to make testing email easy
+  gem 'email_spec', '>= 1.2.1', :group => :test
+  create_file 'features/support/email_spec.rb' do <<-RUBY
+require 'email_spec/cucumber'
+RUBY
   end
 else
   recipes.delete('rspec')
@@ -182,7 +188,13 @@ if config['rspec']
   after_bundler do
     say_wizard "RSpec recipe running 'after bundler'"
     generate 'rspec:install'
-    
+    generate 'email_spec:steps'
+    inject_into_file 'spec/spec_helper.rb', "require 'email_spec'\n", :after => "require 'rspec/rails'\n"
+    inject_into_file 'spec/spec_helper.rb', :after => "RSpec.configure do |config|\n" do <<-RUBY
+  config.include(EmailSpec::Helpers)
+  config.include(EmailSpec::Matchers)
+RUBY
+    end
     if config['machinist']
       say_wizard "Generating blueprints file for Machinist"
       generate 'machinist:install'
@@ -270,7 +282,7 @@ config['cucumber'] = yes_wizard?("Would you like to use Cucumber for your BDD?")
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/cucumber.rb
 
 if config['cucumber']
-  gem 'cucumber-rails', '>= 1.2.1', :group => :test
+  gem 'cucumber-rails', '>= 1.3.0', :group => :test
   gem 'capybara', '>= 1.1.2', :group => :test
   gem 'database_cleaner', '>= 0.7.1', :group => :test
   gem 'launchy', '>= 2.0.5', :group => :test
@@ -411,8 +423,8 @@ config['mongoid'] = yes_wizard?("Would you like to use Mongoid to connect to a M
 if config['mongoid']
   say_wizard "REMINDER: When creating a Rails app using Mongoid..."
   say_wizard "you should add the '-O' flag to 'rails new'"
-  gem 'bson_ext', '>= 1.3.1'
-  gem 'mongoid', '>= 2.4.3'
+  gem 'bson_ext', '>= 1.5.2'
+  gem 'mongoid', '>= 2.4.4'
 else
   recipes.delete('mongoid')
 end
@@ -550,6 +562,9 @@ ERB
     else
 
       # copy Haml versions of modified Devise views
+      inside 'app/views/devise' do
+        get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/rails3-mongoid-devise/app/views/devise/_links.erb', '_links.erb'
+      end
       inside 'app/views/devise/registrations' do
         get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/rails3-mongoid-devise/app/views/devise/registrations/edit.html.haml', 'edit.html.haml'
         get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/rails3-mongoid-devise/app/views/devise/registrations/new.html.haml', 'new.html.haml'
@@ -908,7 +923,7 @@ case config['css_option']
   when 'bootstrap'
     # https://github.com/thomas-mcdonald/bootstrap-sass
     # http://rubysource.com/twitter-bootstrap-less-and-sass-understanding-your-options-for-rails-3-1/
-    gem 'bootstrap-sass', '~> 2.0.0'
+    gem 'bootstrap-sass', '~> 2.0.1'
 end
 after_bundler do
   say_wizard "HTML5 recipe running 'after bundler'"
@@ -1428,6 +1443,7 @@ end
 
 say_wizard "Running 'bundle install'. This will take a while."
 run 'bundle install'
+run 'bundle update'
 say_wizard "Running 'after bundler' callbacks."
 require 'bundler/setup'
 @after_blocks.each{|b| config = @configs[b[0]] || {}; @current_recipe = b[0]; b[1].call}
