@@ -27,22 +27,28 @@ The application generator templates will ask you for various preferences:
 * Would you like to use Haml instead of ERB?
 * Would you like to use RSpec instead of TestUnit?
 * Would you like to use factory_girl for test fixtures with RSpec?
+* Would you like to use machinist for test fixtures with RSpec?
 * Would you like to use Cucumber for your BDD?
 * Would you like to use Guard to automate your workflow?
+* Would you like the app to use a GMail account to send email?
 * Would you like to use Mongoid to connect to a MongoDB database?
-* Would you like to use Devise for authentication?
 * Would you like to use OmniAuth for authentication?
-* Would you like to set a robots.txt file to ban spiders?
-* Would you like to use 'rails-footnotes' during development?
-* Would you like to add support for subdomains?
+* Would you like to use Devise for authentication?
 ## No
-## One subdomain per user (like Basecamp)
+## Devise with default modules
+## Devise with Confirmable module
+## Devise with Confirmable and Invitable modules
 * Which front-end framework would you like for HTML5 and CSS3?
 ## None
 ## Zurb Foundation
 ## Twitter Bootstrap
 ## Skeleton
 ## Normalize CSS for consistent styling
+* Would you like to use 'rails-footnotes' during development?
+* Would you like to set a robots.txt file to ban spiders?
+* Would you like to add support for subdomains?
+## No
+## One subdomain per user (like Basecamp)
 
 h2. !http://twitter-badges.s3.amazonaws.com/t_logo-a.png(Follow on Twitter)!:http://www.twitter.com/rails_apps Follow on Twitter
 

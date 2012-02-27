@@ -294,6 +294,8 @@ if config['cucumber']
   after_bundler do
     say_wizard "Cucumber recipe running 'after bundler'"
     generate "cucumber:install --capybara#{' --rspec' if recipes.include?('rspec')}#{' -D' if recipes.include?('mongoid')}"
+    # make it easy to run Cucumber for single features without adding "--require features" to the command line
+    gsub_file 'config/cucumber.yml', /std_opts = "/, 'std_opts = "-r features/support/ -r features/step_definitions '
     if recipes.include? 'mongoid'
       gsub_file 'features/support/env.rb', /transaction/, "truncation"
       inject_into_file 'features/support/env.rb', :after => 'begin' do
@@ -317,10 +319,23 @@ if config['cucumber']
         get 'https://raw.github.com/RailsApps/rails3-devise-rspec-cucumber/master/features/step_definitions/user_steps.rb', 'features/step_definitions/user_steps.rb'
         remove_file 'features/support/paths.rb'
         get 'https://raw.github.com/RailsApps/rails3-devise-rspec-cucumber/master/features/support/paths.rb', 'features/support/paths.rb'
+        if recipes.include? 'devise-confirmable'
+          gsub_file 'features/step_definitions/user_steps.rb', /Welcome! You have signed up successfully./, "A message with a confirmation link has been sent to your email address."
+          inject_into_file 'features/users/sign_in.feature', :before => '    Scenario: User signs in successfully' do
+<<-RUBY
+    Scenario: User has not confirmed account
+      Given I exist as an unconfirmed user
+      And I am not logged in
+      When I sign in with valid credentials
+      Then I see an unconfirmed account message
+      And I should be signed out
+RUBY
+          end
+        end
       rescue OpenURI::HTTPError
         say_wizard "Unable to obtain Cucumber example files from the repo"
       end
-    end
+    end 
   end
 end
 
@@ -332,11 +347,24 @@ end
 say_recipe 'guard'
 
 config = {}
-config['guard'] = yes_wizard?("Would you like to use Guard to automate your workflow?") if true && true unless config.key?('guard')
-config['livereload'] = yes_wizard?("Would you like to enable the LiveReload guard?") if true && true unless config.key?('livereload')
+config['guard'] = multiple_choice("Would you like to use Guard to automate your workflow?", [["No", false], ["Guard default configuration", "standard"], ["Guard with LiveReload", "LiveReload"]]) if true && true unless config.key?('guard')
 @configs[@current_recipe] = config
 
-if config['guard']
+case config['guard']
+  when 'no'
+    recipes.delete('guard')
+    say_wizard "Guard recipe skipped."
+  when 'standard'
+    # do nothing
+  when 'LiveReload'
+    recipes << 'guard-LiveReload'
+  else
+    recipes.delete('guard')
+    say_wizard "Guard recipe skipped."
+end
+
+
+if recipes.include? 'guard'
   gem 'guard', '>= 0.6.2', :group => :development
 
   prepend_file 'Gemfile' do <<-RUBY
@@ -382,8 +410,8 @@ end
   unless recipes.include? 'pow'
     guard 'rails', '>= 0.0.3'
   end
-
-  if config['livereload']
+  
+  if recipes.include? 'guard-LiveReload'
     guard 'livereload', '>= 0.3.0'
   end
 
@@ -458,10 +486,18 @@ after_bundler do
 
   say_wizard "SeedDatabase recipe running 'after bundler'"
 
-  unless recipes.include? 'mongoid'
-    run 'bundle exec rake db:migrate'
-  end
+  run 'bundle exec rake db:migrate' unless recipes.include? 'mongoid'
 
+  if recipes.include? 'devise-invitable'
+    generate 'devise_invitable user'
+    unless recipes.include? 'mongoid'
+      run 'bundle exec rake db:migrate'
+    end
+  end
+  
+  # clone the schema changes to the test database
+  run 'bundle exec rake db:test:prepare' unless recipes.include? 'mongoid'
+  
   if recipes.include? 'mongoid'
     append_file 'db/seeds.rb' do <<-FILE
 puts 'EMPTY THE MONGODB DATABASE'
@@ -477,6 +513,9 @@ puts 'SETTING UP DEFAULT USER LOGIN'
 user = User.create! :name => 'First User', :email => 'user@example.com', :password => 'please', :password_confirmation => 'please'
 puts 'New user created: ' << user.name
 FILE
+    end
+    if recipes.include? 'devise-confirmable'
+      gsub_file 'db/seeds.rb', /:password_confirmation => 'please'/, ":password_confirmation => 'please', :confirmed_at => DateTime.now"
     end
   end
 
@@ -512,12 +551,13 @@ RUBY
   end
 
   if recipes.include? 'devise'
-    
+
     # Generate models and routes for a User
     generate 'devise user'
 
     # Add a 'name' attribute to the User model
     if recipes.include? 'mongoid'
+      # for mongoid
       gsub_file 'app/models/user.rb', /end/ do
   <<-RUBY
   field :name
@@ -531,6 +571,9 @@ RUBY
       # for ActiveRecord
       # Devise created a Users database, we'll modify it
       generate 'migration AddNameToUsers name:string'
+      if recipes.include? 'devise-confirmable'
+        generate 'migration AddConfirmableToUsers confirmation_token:string confirmed_at:datetime confirmation_sent_at:datetime unconfirmed_email:string'
+      end
       # Devise created a Users model, we'll modify it
       gsub_file 'app/models/user.rb', /attr_accessible :email/, 'attr_accessible :name, :email'
       inject_into_file 'app/models/user.rb', :before => 'validates_uniqueness_of' do
@@ -539,8 +582,14 @@ RUBY
       gsub_file 'app/models/user.rb', /validates_uniqueness_of :email/, 'validates_uniqueness_of :name, :email'
     end
 
+    # needed for both mongoid and ActiveRecord
+    if recipes.include? 'devise-confirmable'
+      gsub_file 'app/models/user.rb', /:registerable,/, ":registerable, :confirmable,"
+      gsub_file 'app/models/user.rb', /:remember_me/, ':remember_me, :confirmed_at'
+    end
+
     unless recipes.include? 'haml'
-      
+
       # Generate Devise views (unless you are using Haml)
       run 'rails generate devise:views'
       
@@ -1367,7 +1416,7 @@ end
 say_recipe 'Extras'
 
 config = {}
-config['footnotes'] = yes_wizard?("Would you like to use 'rails-footnotes' (it's SLOW!')?") if true && true unless config.key?('footnotes')
+config['footnotes'] = yes_wizard?("Would you like to use 'rails-footnotes' (it's SLOW!)?") if true && true unless config.key?('footnotes')
 config['ban_spiders'] = yes_wizard?("Would you like to set a robots.txt file to ban spiders?") if true && true unless config.key?('ban_spiders')
 @configs[@current_recipe] = config
 

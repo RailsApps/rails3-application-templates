@@ -35,7 +35,6 @@
 # >---------------------------------------------------------------------------<
 
 # >----------------------------[ Initial Setup ]------------------------------<
-
 initializer 'generators.rb', <<-RUBY
 Rails.application.config.generators do |g|
 end
@@ -294,6 +293,8 @@ if config['cucumber']
   after_bundler do
     say_wizard "Cucumber recipe running 'after bundler'"
     generate "cucumber:install --capybara#{' --rspec' if recipes.include?('rspec')}#{' -D' if recipes.include?('mongoid')}"
+    # make it easy to run Cucumber for single features without adding "--require features" to the command line
+    gsub_file 'config/cucumber.yml', /std_opts = "/, 'std_opts = "-r features/support/ -r features/step_definitions '
     if recipes.include? 'mongoid'
       gsub_file 'features/support/env.rb', /transaction/, "truncation"
       inject_into_file 'features/support/env.rb', :after => 'begin' do
@@ -317,10 +318,23 @@ if config['cucumber']
         get 'https://raw.github.com/RailsApps/rails3-devise-rspec-cucumber/master/features/step_definitions/user_steps.rb', 'features/step_definitions/user_steps.rb'
         remove_file 'features/support/paths.rb'
         get 'https://raw.github.com/RailsApps/rails3-devise-rspec-cucumber/master/features/support/paths.rb', 'features/support/paths.rb'
+        if recipes.include? 'devise-confirmable'
+          gsub_file 'features/step_definitions/user_steps.rb', /Welcome! You have signed up successfully./, "A message with a confirmation link has been sent to your email address."
+          inject_into_file 'features/users/sign_in.feature', :before => '    Scenario: User signs in successfully' do
+<<-RUBY
+    Scenario: User has not confirmed account
+      Given I exist as an unconfirmed user
+      And I am not logged in
+      When I sign in with valid credentials
+      Then I see an unconfirmed account message
+      And I should be signed out
+RUBY
+          end
+        end
       rescue OpenURI::HTTPError
         say_wizard "Unable to obtain Cucumber example files from the repo"
       end
-    end
+    end 
   end
 end
 
@@ -332,11 +346,24 @@ end
 say_recipe 'guard'
 
 config = {}
-config['guard'] = yes_wizard?("Would you like to use Guard to automate your workflow?") if true && true unless config.key?('guard')
-config['livereload'] = yes_wizard?("Would you like to enable the LiveReload guard?") if true && true unless config.key?('livereload')
+config['guard'] = multiple_choice("Would you like to use Guard to automate your workflow?", [["No", false], ["Guard default configuration", "standard"], ["Guard with LiveReload", "LiveReload"]]) if true && true unless config.key?('guard')
 @configs[@current_recipe] = config
 
-if config['guard']
+case config['guard']
+  when 'no'
+    recipes.delete('guard')
+    say_wizard "Guard recipe skipped."
+  when 'standard'
+    # do nothing
+  when 'LiveReload'
+    recipes << 'guard-LiveReload'
+  else
+    recipes.delete('guard')
+    say_wizard "Guard recipe skipped."
+end
+
+
+if recipes.include? 'guard'
   gem 'guard', '>= 0.6.2', :group => :development
 
   prepend_file 'Gemfile' do <<-RUBY
@@ -382,8 +409,8 @@ end
   unless recipes.include? 'pow'
     guard 'rails', '>= 0.0.3'
   end
-
-  if config['livereload']
+  
+  if recipes.include? 'guard-LiveReload'
     guard 'livereload', '>= 0.3.0'
   end
 
@@ -413,31 +440,42 @@ end
 @before_configs["action_mailer"].call if @before_configs["action_mailer"]
 say_recipe 'ActionMailer'
 
-
+config = {}
+config['gmail'] = yes_wizard?("Would you like the app to use a GMail account to send email?") if true && true unless config.key?('gmail')
 @configs[@current_recipe] = config
 
 # Application template recipe for the rails_apps_composer. Check for a newer version here:
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/action_mailer.rb
 
 after_bundler do
+  ### modifying environment configuration files for ActionMailer
   say_wizard "ActionMailer recipe running 'after bundler'"
-  # modifying environment configuration files for ActionMailer
+  ### development environment
   gsub_file 'config/environments/development.rb', /# Don't care if the mailer can't send/, '# ActionMailer Config'
   gsub_file 'config/environments/development.rb', /config.action_mailer.raise_delivery_errors = false/ do
   <<-RUBY
 config.action_mailer.default_url_options = { :host => 'localhost:3000' }
-  # A dummy setup for development - no deliveries, but logged
   config.action_mailer.delivery_method = :smtp
-  config.action_mailer.perform_deliveries = false
+  # change to false to prevent email from being sent during development
+  config.action_mailer.perform_deliveries = true
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.default :charset => "utf-8"
 RUBY
   end
+  ### test environment
+  inject_into_file 'config/environments/test.rb', :before => "\nend" do 
+  <<-RUBY
+\n  
+  # ActionMailer Config
+  config.action_mailer.default_url_options = { :host => 'example.com' }
+RUBY
+  end
+  ### production environment
   gsub_file 'config/environments/production.rb', /config.active_support.deprecation = :notify/ do
   <<-RUBY
 config.active_support.deprecation = :notify
 
-  config.action_mailer.default_url_options = { :host => 'yourhost.com' }
+  config.action_mailer.default_url_options = { :host => 'example.com' }
   # ActionMailer Config
   # Setup for production - deliveries, no errors raised
   config.action_mailer.delivery_method = :smtp
@@ -445,6 +483,25 @@ config.active_support.deprecation = :notify
   config.action_mailer.raise_delivery_errors = false
   config.action_mailer.default :charset => "utf-8"
 RUBY
+  end
+
+  ### modifying environment configuration files to send email using a GMail account
+  if config['gmail']
+    gmail_configuration_text = <<-TEXT
+\n
+  config.action_mailer.smtp_settings = {
+    address: "smtp.gmail.com",
+    port: 587,
+    domain: "example.com",
+    authentication: "plain",
+    enable_starttls_auto: true,
+    user_name: ENV["GMAIL_USERNAME"],
+    password: ENV["GMAIL_PASSWORD"]
+  }
+TEXT
+    say_wizard gmail_configuration_text
+    inject_into_file 'config/environments/development.rb', gmail_configuration_text, :after => 'config.action_mailer.default :charset => "utf-8"'
+    inject_into_file 'config/environments/production.rb', gmail_configuration_text, :after => 'config.action_mailer.default :charset => "utf-8"'
   end
   
 end
@@ -457,25 +514,39 @@ end
 say_recipe 'Devise'
 
 config = {}
-config['devise'] = yes_wizard?("Would you like to use Devise for authentication?") if true && true unless config.key?('devise')
+config['devise'] = multiple_choice("Would you like to use Devise for authentication?", [["No", false], ["Devise with default modules", "standard"], ["Devise with Confirmable module", "confirmable"], ["Devise with Confirmable and Invitable modules", "invitable"]]) if true && true unless config.key?('devise')
 @configs[@current_recipe] = config
 
 # Application template recipe for the rails_apps_composer. Check for a newer version here:
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/devise.rb
 
-if config['devise']
-  gem 'devise', '>= 2.0.4'
-else
-  recipes.delete('devise')
+case config['devise']
+  when 'no'
+    recipes.delete('devise')
+    say_wizard "Devise recipe skipped."
+  when 'standard'
+    gem 'devise', '>= 2.0.4'
+  when 'confirmable'
+    gem 'devise', '>= 2.0.4'
+    recipes << 'devise-confirmable'
+  when 'invitable'
+    gem 'devise', '>= 2.0.4'
+    gem 'devise_invitable', '>= 1.0.0'
+    recipes << 'devise-confirmable'
+    recipes << 'devise-invitable'
+  else
+    recipes.delete('devise')
+    say_wizard "Devise recipe skipped."
 end
 
-if config['devise']
+if recipes.include? 'devise'
   after_bundler do
-    
+
     say_wizard "Devise recipe running 'after bundler'"
-    
+
     # Run the Devise generator
     generate 'devise:install'
+    generate 'devise_invitable:install' if recipes.include? 'devise-invitable'
 
     if recipes.include? 'mongo_mapper'
       gem 'mm-devise'
@@ -494,7 +565,7 @@ if config['devise']
       # (see https://github.com/RailsApps/rails3-devise-rspec-cucumber/issues/3)
       gsub_file 'config/initializers/devise.rb', 'config.sign_out_via = :delete', 'config.sign_out_via = Rails.env.test? ? :get : :delete'
     end
-    
+
   end
 
   after_everything do
@@ -554,12 +625,13 @@ RUBY
   end
 
   if recipes.include? 'devise'
-    
+
     # Generate models and routes for a User
     generate 'devise user'
 
     # Add a 'name' attribute to the User model
     if recipes.include? 'mongoid'
+      # for mongoid
       gsub_file 'app/models/user.rb', /end/ do
   <<-RUBY
   field :name
@@ -573,6 +645,9 @@ RUBY
       # for ActiveRecord
       # Devise created a Users database, we'll modify it
       generate 'migration AddNameToUsers name:string'
+      if recipes.include? 'devise-confirmable'
+        generate 'migration AddConfirmableToUsers confirmation_token:string confirmed_at:datetime confirmation_sent_at:datetime unconfirmed_email:string'
+      end
       # Devise created a Users model, we'll modify it
       gsub_file 'app/models/user.rb', /attr_accessible :email/, 'attr_accessible :name, :email'
       inject_into_file 'app/models/user.rb', :before => 'validates_uniqueness_of' do
@@ -581,8 +656,14 @@ RUBY
       gsub_file 'app/models/user.rb', /validates_uniqueness_of :email/, 'validates_uniqueness_of :name, :email'
     end
 
+    # needed for both mongoid and ActiveRecord
+    if recipes.include? 'devise-confirmable'
+      gsub_file 'app/models/user.rb', /:registerable,/, ":registerable, :confirmable,"
+      gsub_file 'app/models/user.rb', /:remember_me/, ':remember_me, :confirmed_at'
+    end
+
     unless recipes.include? 'haml'
-      
+
       # Generate Devise views (unless you are using Haml)
       run 'rails generate devise:views'
       
@@ -732,10 +813,18 @@ after_bundler do
 
   say_wizard "SeedDatabase recipe running 'after bundler'"
 
-  unless recipes.include? 'mongoid'
-    run 'bundle exec rake db:migrate'
-  end
+  run 'bundle exec rake db:migrate' unless recipes.include? 'mongoid'
 
+  if recipes.include? 'devise-invitable'
+    generate 'devise_invitable user'
+    unless recipes.include? 'mongoid'
+      run 'bundle exec rake db:migrate'
+    end
+  end
+  
+  # clone the schema changes to the test database
+  run 'bundle exec rake db:test:prepare' unless recipes.include? 'mongoid'
+  
   if recipes.include? 'mongoid'
     append_file 'db/seeds.rb' do <<-FILE
 puts 'EMPTY THE MONGODB DATABASE'
@@ -751,6 +840,9 @@ puts 'SETTING UP DEFAULT USER LOGIN'
 user = User.create! :name => 'First User', :email => 'user@example.com', :password => 'please', :password_confirmation => 'please'
 puts 'New user created: ' << user.name
 FILE
+    end
+    if recipes.include? 'devise-confirmable'
+      gsub_file 'db/seeds.rb', /:password_confirmation => 'please'/, ":password_confirmation => 'please', :confirmed_at => DateTime.now"
     end
   end
 
@@ -1219,7 +1311,7 @@ end
 say_recipe 'Extras'
 
 config = {}
-config['footnotes'] = yes_wizard?("Would you like to use 'rails-footnotes' (it's SLOW!')?") if true && true unless config.key?('footnotes')
+config['footnotes'] = yes_wizard?("Would you like to use 'rails-footnotes' (it's SLOW!)?") if true && true unless config.key?('footnotes')
 config['ban_spiders'] = yes_wizard?("Would you like to set a robots.txt file to ban spiders?") if true && true unless config.key?('ban_spiders')
 @configs[@current_recipe] = config
 
