@@ -24,27 +24,27 @@ h4. Options
 
 The application generator templates will ask you for various preferences:
 
-* Would you like to use Haml instead of ERB?
-* Would you like to use RSpec instead of TestUnit?
-* Would you like to use factory_girl for test fixtures with RSpec?
-* Would you like to use machinist for test fixtures with RSpec?
-* Would you like to use Cucumber for your BDD?
-* Would you like to use Guard to automate your workflow?
+* Would you like to use "Haml":http://en.wikipedia.org/wiki/Haml instead of ERB?
+* Would you like to use "RSpec":http://rspec.info/ instead of TestUnit?
+* Would you like to use "factory_girl":https://github.com/thoughtbot/factory_girl for test fixtures with RSpec?
+* Would you like to use "machinist":https://github.com/notahat/machinist for test fixtures with RSpec?
+* Would you like to use "Cucumber":http://cukes.info/ for your BDD?
+* Would you like to use "Guard":http://intridea.com/posts/hire-a-guard-for-your-project to automate your workflow?
 * Would you like the app to use a GMail account to send email?
-* Would you like to use Mongoid to connect to a MongoDB database?
-* Would you like to use OmniAuth for authentication?
-* Would you like to use Devise for authentication?
+* Would you like to use "Mongoid":http://mongoid.org/ to connect to a "MongoDB":http://www.mongodb.org/ database?
+* Would you like to use "OmniAuth":https://github.com/intridea/omniauth for authentication?
+* Would you like to use "Devise":http://github.com/plataformatec/devise for authentication?
 ## No
 ## Devise with default modules
 ## Devise with Confirmable module
 ## Devise with Confirmable and Invitable modules
 * Which front-end framework would you like for HTML5 and CSS3?
 ## None
-## Zurb Foundation
-## Twitter Bootstrap
-## Skeleton
+## "Zurb Foundation":http://foundation.zurb.com/
+## "Twitter Bootstrap":http://twitter.github.com/bootstrap/
+## "Skeleton":http://www.getskeleton.com/
 ## Normalize CSS for consistent styling
-* Would you like to use 'rails-footnotes' during development?
+* Would you like to use "rails-footnotes":https://github.com/josevalim/rails-footnotes during development?
 * Would you like to set a robots.txt file to ban spiders?
 * Would you like to add support for subdomains?
 ## No
