@@ -41,7 +41,8 @@ The application generator templates will ask you for various preferences:
 * Which front-end framework would you like for HTML5 and CSS3?
 ## None
 ## "Zurb Foundation":http://foundation.zurb.com/
-## "Twitter Bootstrap":http://twitter.github.com/bootstrap/
+## "Twitter Bootstrap (less)":http://twitter.github.com/bootstrap/
+## "Twitter Bootstrap (sass)":http://twitter.github.com/bootstrap/
 ## "Skeleton":http://www.getskeleton.com/
 ## Normalize CSS for consistent styling
 * Would you like to use "rails-footnotes":https://github.com/josevalim/rails-footnotes during development?
