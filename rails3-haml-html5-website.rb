@@ -41,7 +41,7 @@ Rails.application.config.generators do |g|
 end
 RUBY
 
-@recipes = ["haml", "home_page", "html5", "cleanup", "git"]
+@recipes = ["haml", "home_page", "html5", "cleanup", "extras", "git"]
 
 def recipes; @recipes end
 def recipe?(name); @recipes.include?(name) end
@@ -142,6 +142,7 @@ else
   recipes.delete('haml')
 end
 
+
 # >-------------------------------[ HomePage ]--------------------------------<
 
 @current_recipe = "home_page"
@@ -198,6 +199,7 @@ RUBY
   end
 
 end
+
 
 # >---------------------------------[ html5 ]---------------------------------<
 
@@ -310,7 +312,6 @@ RUBY
 end
 
 
-
 # >--------------------------------[ Cleanup ]--------------------------------<
 
 @current_recipe = "cleanup"
@@ -350,6 +351,39 @@ after_bundler do
   gsub_file 'config/routes.rb', /  #.*\n/, "\n"
   gsub_file 'config/routes.rb', /\n^\s*\n/, "\n"
   
+end
+
+
+# >--------------------------------[ Extras ]---------------------------------<
+
+@current_recipe = "extras"
+@before_configs["extras"].call if @before_configs["extras"]
+say_recipe 'Extras'
+
+config = {}
+config['footnotes'] = yes_wizard?("Would you like to use 'rails-footnotes' (it's SLOW!)?") if true && true unless config.key?('footnotes')
+config['ban_spiders'] = yes_wizard?("Would you like to set a robots.txt file to ban spiders?") if true && true unless config.key?('ban_spiders')
+@configs[@current_recipe] = config
+
+# Application template recipe for the rails_apps_composer. Check for a newer version here:
+# https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/extras.rb
+
+if config['footnotes']
+  say_wizard "Extras recipe running 'after bundler'"
+  gem 'rails-footnotes', '>= 3.7', :group => :development
+else
+  recipes.delete('footnotes')
+end
+
+if config['ban_spiders']
+  say_wizard "BanSpiders recipe running 'after bundler'"
+  after_bundler do
+    # ban spiders from your site by changing robots.txt
+    gsub_file 'public/robots.txt', /# User-Agent/, 'User-Agent'
+    gsub_file 'public/robots.txt', /# Disallow/, 'Disallow'
+  end
+else
+  recipes.delete('ban_spiders')
 end
 
 
