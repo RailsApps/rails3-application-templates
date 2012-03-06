@@ -16,8 +16,8 @@
     <header class="navbar navbar-fixed-top">
       <nav class="navbar-inner">
         <div class="container">
-          <%= link_to "App_Name", root_path %>
-          <ul class="pull-right nav">
+          <%= link_to "App_Name", root_path, :class => 'brand' %>
+          <ul class="nav">
             <%= render 'shared/navigation' %>
           </ul>
         </div>
@@ -28,9 +28,12 @@
         <div class="content">
            <div class="row">
             <div class="span12">
-              <%- flash.each do |name, msg| -%>
-                <%= content_tag :div, msg, :id => "flash_#{name}" if msg.is_a?(String) %>
-              <%- end -%>
+              <% flash.each do |name, msg| %>
+                <div class="alert alert-<%= name == :notice ? "success" : "error" %>">
+                  <a class="close" data-dismiss="alert">×</a>
+                  <%= msg %>
+                </div>
+              <% end %>
               <%= yield %>
             </div>
           </div>
