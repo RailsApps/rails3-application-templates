@@ -15,9 +15,7 @@
     %header.navbar.navbar-fixed-top
       %nav.navbar-inner
         .container
-          = link_to "App_Name", root_path, :class => 'brand'
-          %ul.nav
-            = render 'shared/navigation'
+          = render 'navigation'
     #main{:role => "main"}
       .container
         .content
