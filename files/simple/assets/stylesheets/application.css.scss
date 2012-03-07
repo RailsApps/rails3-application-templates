@@ -11,13 +11,16 @@
  *= require_self
  *= require_tree .
 */
-
-header nav ul {
+.brand {
+  float: left;
+  padding-right: 8px;
+}
+ul.nav {
   list-style: none;
   margin: 0 0 2em;
   padding: 0;
 }
-header nav ul li {
+ul.nav li {
   display: inline;
 }
 #flash_notice, #flash_alert {
