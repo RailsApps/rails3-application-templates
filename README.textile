@@ -2,25 +2,22 @@ h1. Rails 3.2 Application Templates
 
 These application generator templates give you a Rails 3.2 starter app you can deploy in minutes.
 
-h4. Applications
+h4. Templates
 
-The templates can be used to build the following complete applications:
+These Rails application templates from the <a href="https://github.com/RailsApps">RailsApps project</a> generate an example Rails app that can be used as a starter app.
 
-* "Rails 3 + Devise + RSpec + Cucumber":https://github.com/RailsApps/rails3-devise-rspec-cucumber
-* "Rails 3 + Mongoid + Devise":https://github.com/railsapps/rails3-mongoid-devise/
-* "Rails 3 + Mongoid + OmniAuth":https://github.com/railsapps/rails3-mongoid-omniauth/
-* "Rails 3 + Subdomains":https://github.com/RailsApps/rails3-subdomains
+|_. Author |_. Example App |_. Tutorial |_. Comments |
+| Daniel Kehoe | Haml, HTML5, Twitter Bootstrap | | Uses ActiveRecord and SQLite |
+| Daniel Kehoe | "Devise, RSpec, Cucumber":https://github.com/RailsApps/rails3-devise-rspec-cucumber | "Tutorial":http://railsapps.github.com/tutorial-rails-devise-rspec-cucumber.html | Uses ActiveRecord and SQLite |
+| Daniel Kehoe | "Devise, Mongoid":https://github.com/RailsApps/rails3-mongoid-devise | "Tutorial":http://railsapps.github.com/tutorial-rails-mongoid-devise.html | Combines Devise with MongoDB |
+| Daniel Kehoe | "OmniAuth, Mongoid":https://github.com/RailsApps/rails3-mongoid-omniauth | "Tutorial":http://railsapps.github.com/tutorial-rails-mongoid-omniauth.html | OmniAuth for authentication with a MongoDB datastore |
+| Daniel Kehoe | "Subdomains, Devise, Mongoid":https://github.com/RailsApps/rails3-subdomains | "Tutorial":http://railsapps.github.com/tutorial-rails-subdomains.html | Basecamp-style subdomains with Devise and MongoDB |
 
-h4. Tutorials
+h2. !http://twitter-badges.s3.amazonaws.com/t_logo-a.png(Follow on Twitter)!:http://www.twitter.com/rails_apps Follow on Twitter
 
-There are detailed tutorials to show how each application is built:
+Follow the project on Twitter: "@rails_apps":http://twitter.com/rails_apps. Please tweet some praise if you like what you've found.
 
-* "Tutorial for Rails 3 + Devise + RSpec + Cucumber":http://railsapps.github.com/tutorial-rails-devise-rspec-cucumber.html
-* "Tutorial for Rails 3 + Mongoid + Devise":http://railsapps.github.com/tutorial-rails-mongoid-devise.html
-* "Tutorial for Rails 3 + Mongoid + OmniAuth":http://railsapps.github.com/tutorial-rails-mongoid-omniauth.html
-* "Tutorial for Rails 3 + Subdomains":http://railsapps.github.com/tutorial-rails-subdomains.html
-
-h4. Options
+h2. Template Options
 
 The application generator templates will ask you for various preferences:
 
@@ -50,10 +47,6 @@ The application generator templates will ask you for various preferences:
 * Would you like to add support for subdomains?
 ## No
 ## One subdomain per user (like Basecamp)
-
-h2. !http://twitter-badges.s3.amazonaws.com/t_logo-a.png(Follow on Twitter)!:http://www.twitter.com/rails_apps Follow on Twitter
-
-Follow the project on Twitter: "@rails_apps":http://twitter.com/rails_apps. Please tweet some praise if you like what you've found.
 
 h2. Suggested Use
 
