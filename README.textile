@@ -84,9 +84,17 @@ This creates a new Rails app (with the @myapp@ name you provide) on your compute
 
 You can add the @-T -O@ flags to skip Test::Unit files and Active Record files.
 
+h4. Template for Rails 3 + Haml + HTML5
+
+This application template will offer you a choice of Haml or ERB, give you options for a CSS front-end framework such as Twitter Bootstrap, and create a default application layout using HTML5:
+
+<pre>
+$ rails new myapp -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-haml-html5-template.rb
+</pre>
+
 h4. Template for Rails 3 + Devise + RSpec + Cucumber
 
-To build the "rails3-devise-rspec-cucumber" example application, run the command:
+To build the "rails3-devise-rspec-cucumber":http://github.com/RailsApps/rails3-devise-rspec-cucumber/  example application, run the command:
 
 <pre>
 $ rails new myapp -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-devise-rspec-cucumber-template.rb -T
@@ -96,7 +104,7 @@ Use the @-T@ flag to skip Test::Unit files.
 
 h4. Template for Rails 3 + Mongoid + Devise
 
-To build the "rails3-mongoid-devise" example application, run the command:
+To build the "rails3-mongoid-devise":http://github.com/RailsApps/rails3-mongoid-devise/ example application, run the command:
 
 <pre>
 $ rails new myapp -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-mongoid-devise-template.rb -T -O
@@ -106,7 +114,7 @@ Use the @-T -O@ flags to skip Test::Unit files and Active Record files.
 
 h4. Template for Rails 3 + Mongoid + OmniAuth
 
-To build the "rails3-mongoid-omniauth" example application, run the command:
+To build the "rails3-mongoid-omniauth":http://github.com/RailsApps/rails3-mongoid-omniauth/ example application, run the command:
 
 <pre>
 $ rails new myapp -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-mongoid-omniauth-template.rb -T -O
@@ -116,13 +124,22 @@ Use the @-T -O@ flags to skip Test::Unit files and Active Record files.
 
 h4. Template for Rails 3 + Subdomains
 
-To build the "rails3-subdomains" example application, run the command:
+To build the "rails3-subdomains":https://github.com/RailsApps/rails3-subdomains example application, run the command:
 
 <pre>
 $ rails new myapp -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-subdomains-template.rb -T -O
 </pre>
 
 Use the @-T -O@ flags to skip Test::Unit files and Active Record files.
+
+h2. Application Template Default
+
+The @rails new@ command creates a new Rails application. If you want to use a template for every Rails application you build, you can set options for the @rails new@ command in a *.railsrc* file in your home directory. Here's how to set up a *.railsrc* file to use the rails3-haml-html5 template when you create a new Rails application:
+
+<pre>
+# ~/.railsrc
+-m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-haml-html5-template.rb
+</pre>
 
 h2. Troubleshooting
 
