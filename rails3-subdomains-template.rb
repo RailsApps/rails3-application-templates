@@ -41,7 +41,7 @@ Rails.application.config.generators do |g|
 end
 RUBY
 
-@recipes = ["haml", "rspec", "cucumber", "guard", "mongoid", "action_mailer", "devise", "add_user", "home_page", "home_page_users", "seed_database", "users_page", "subdomains", "html5", "navigation", "cleanup", "extras", "git"]
+@recipes = ["haml", "rspec", "cucumber", "guard", "mongoid", "action_mailer", "devise", "add_user", "home_page", "home_page_users", "seed_database", "users_page", "subdomains", "html5", "cleanup", "extras", "git"]
 
 def recipes; @recipes end
 def recipe?(name); @recipes.include?(name) end
@@ -1186,10 +1186,34 @@ after_bundler do
     # complex css styles using Twitter Bootstrap
     get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/twitter-bootstrap/assets/stylesheets/application.css.scss', 'app/assets/stylesheets/application.css.scss'
   end
+  # get an appropriate navigation partial
+  if recipes.include? 'haml'
+    if recipes.include? 'devise'
+      get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/navigation/devise/_navigation.html.haml', 'app/views/layouts/_navigation.html.haml'
+    elsif recipes.include? 'omniauth'
+      get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/navigation/omniauth/_navigation.html.haml', 'app/views/layouts/_navigation.html.haml'
+    elsif recipes.include? 'subdomains'
+      get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/navigation/subdomains/_navigation.html.haml', 'app/views/layouts/_navigation.html.haml'
+    else
+      get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/navigation/none/_navigation.html.haml', 'app/views/layouts/_navigation.html.haml'
+    end
+  else
+    if recipes.include? 'devise'
+      get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/navigation/devise/_navigation.html.erb', 'app/views/layouts/_navigation.html.erb'
+    elsif recipes.include? 'omniauth'
+      get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/navigation/omniauth/_navigation.html.erb', 'app/views/layouts/_navigation.html.erb'
+    elsif recipes.include? 'subdomains'
+      get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/navigation/subdomains/_navigation.html.erb', 'app/views/layouts/_navigation.html.erb'
+    else
+      get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/navigation/none/_navigation.html.erb', 'app/views/layouts/_navigation.html.erb'
+    end
+  end
   if recipes.include? 'haml'
     gsub_file 'app/views/layouts/application.html.haml', /App_Name/, "#{app_name.humanize.titleize}"
+    gsub_file 'app/views/layouts/_navigation.html.haml', /App_Name/, "#{app_name.humanize.titleize}"
   else
     gsub_file 'app/views/layouts/application.html.erb', /App_Name/, "#{app_name.humanize.titleize}"
+    gsub_file 'app/views/layouts/_navigation.html.erb', /App_Name/, "#{app_name.humanize.titleize}"
   end
   case config['css_option']
 
@@ -1232,170 +1256,6 @@ RUBY
       say_wizard 'no HTML5 front-end framework selected'
 
   end
-
-end
-
-
-# >------------------------------[ Navigation ]-------------------------------<
-
-@current_recipe = "navigation"
-@before_configs["navigation"].call if @before_configs["navigation"]
-say_recipe 'Navigation'
-
-
-@configs[@current_recipe] = config
-
-# Application template recipe for the rails_apps_composer. Check for a newer version here:
-# https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/navigation.rb
-
-after_bundler do
-
-  say_wizard "Navigation recipe running 'after bundler'"
-  
-    if recipes.include? 'devise'
-      # Create navigation links for Devise
-      if recipes.include? 'haml'
-        # There is Haml code in this script. Changing the indentation is perilous between HAMLs.
-        # We have to use single-quote-style-heredoc to avoid interpolation.
-        create_file "app/views/shared/_navigation.html.haml" do <<-'HAML'
-- if user_signed_in?
-  %li
-    = link_to('Logout', destroy_user_session_path, :method=>'delete')
-- else
-  %li
-    = link_to('Login', new_user_session_path)
-- if user_signed_in?
-  %li
-    = link_to('Edit account', edit_user_registration_path)
-- else
-  %li
-    = link_to('Sign up', new_user_registration_path)
-HAML
-        end
-      else
-        create_file "app/views/shared/_navigation.html.erb" do <<-ERB
-<% if user_signed_in? %>
-  <li>
-  <%= link_to('Logout', destroy_user_session_path, :method=>'delete') %>        
-  </li>
-<% else %>
-  <li>
-  <%= link_to('Login', new_user_session_path)  %>  
-  </li>
-<% end %>
-<% if user_signed_in? %>
-  <li>
-  <%= link_to('Edit account', edit_user_registration_path) %>
-  </li>
-<% else %>
-  <li>
-  <%= link_to('Sign up', new_user_registration_path)  %>
-  </li>
-<% end %>
-ERB
-        end
-      end
-
-    else
-      # Create navigation links
-      if recipes.include? 'haml'
-        # There is Haml code in this script. Changing the indentation is perilous between HAMLs.
-        # We have to use single-quote-style-heredoc to avoid interpolation.
-        create_file "app/views/shared/_navigation.html.haml" do <<-'HAML'
-- if user_signed_in?
-  %li
-    Logged in as #{current_user.name}
-  %li
-    = link_to('Logout', signout_path)
-- else
-  %li
-    = link_to('Login', signin_path)
-HAML
-        end
-      else
-        create_file "app/views/shared/_navigation.html.erb" do <<-ERB
-<% if user_signed_in? %>
-  <li>
-  Logged in as <%= current_user.name %>
-  </li>
-  <li>
-  <%= link_to('Logout', signout_path) %>        
-  </li>
-<% else %>
-  <li>
-  <%= link_to('Login', signin_path)  %>  
-  </li>
-<% end %>
-ERB
-        end
-      end
-    end
-
-    # Add navigation links to the default application layout
-    if recipes.include? 'html5'
-      if recipes.include? 'haml'
-        # There is Haml code in this script. Changing the indentation is perilous between HAMLs.
-        inject_into_file 'app/views/layouts/application.html.haml', :after => "%header\n" do <<-HAML
-        %nav
-          %ul.hmenu
-            = render 'shared/navigation'
-HAML
-        end
-      else
-        inject_into_file 'app/views/layouts/application.html.erb', :after => "<header>\n" do <<-ERB
-        <nav>
-          <ul class="hmenu">
-            <%= render 'shared/navigation' %>
-          </ul>
-        </nav>
-ERB
-        end
-      end
-    else
-      if recipes.include? 'haml'
-        # There is Haml code in this script. Changing the indentation is perilous between HAMLs.
-        inject_into_file 'app/views/layouts/application.html.haml', :after => "%body\n" do <<-HAML
-    %ul.hmenu
-      = render 'shared/navigation'
-HAML
-        end
-      else
-        inject_into_file 'app/views/layouts/application.html.erb', :after => "<body>\n" do
-  <<-ERB
-  <ul class="hmenu">
-    <%= render 'shared/navigation' %>
-  </ul>
-ERB
-        end
-      end
-    end
-
-    # Throw it all away and create new navigation if we're enabling subdomains
-    if recipes.include? 'subdomains'
-      remove_file 'app/views/shared/_navigation.html.haml'
-      # There is Haml code in this script. Changing the indentation is perilous between HAMLs.
-      # We have to use single-quote-style-heredoc to avoid interpolation.
-      create_file 'app/views/shared/_navigation.html.haml' do <<-'HAML'
-%li
-  = link_to 'Main', root_url(:host => request.domain)
-- if request.subdomain.present? && request.subdomain != "www"
-  - if user_signed_in?
-    %li
-      = link_to('Edit account', edit_user_registration_url)
-    %li
-      = link_to('Logout', destroy_user_session_url, :method=>'delete')
-  - else
-    %li
-      = link_to('Login', new_user_session_url)
-- else
-  %li
-    = link_to('Sign up', new_user_registration_url(:host => request.domain))
-  - if user_signed_in?
-    %li
-      = link_to('Logout', destroy_user_session_url, :method=>'delete')
-HAML
-      end
-    end
 
 end
 
