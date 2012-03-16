@@ -41,7 +41,7 @@ Rails.application.config.generators do |g|
 end
 RUBY
 
-@recipes = ["haml", "rspec", "cucumber", "guard", "mongoid", "seed_database", "add_user", "omniauth", "home_page", "home_page_users", "html5", "users_page", "omniauth_email", "cleanup", "extras", "git"]
+@recipes = ["haml", "rspec", "cucumber", "guard", "mongoid", "seed_database", "omniauth", "home_page", "home_page_users", "html5", "users_page", "omniauth_email", "cleanup", "extras", "git", "add_user"]
 
 def recipes; @recipes end
 def recipe?(name); @recipes.include?(name) end
@@ -159,7 +159,7 @@ config['machinist'] = yes_wizard?("Would you like to use machinist for test fixt
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/rspec.rb
 
 if config['rspec']
-  gem 'rspec-rails', '>= 2.8.1', :group => [:development, :test]
+  gem 'rspec-rails', '>= 2.9.0.rc2', :group => [:development, :test]
   if recipes.include? 'mongoid'
     # use the database_cleaner gem to reset the test database
     gem 'database_cleaner', '>= 0.7.1', :group => :test
@@ -170,7 +170,7 @@ if config['rspec']
     gem 'machinist', :group => :test
   end
   if config['factory_girl']
-    gem 'factory_girl_rails', '>= 1.7.0', :group => :test
+    gem 'factory_girl_rails', '>= 2.0.0.rc', :group => [:development, :test]
   end
   # add a collection of RSpec matchers and Cucumber steps to make testing email easy
   gem 'email_spec', '>= 1.2.1', :group => :test
@@ -451,7 +451,7 @@ config['mongoid'] = yes_wizard?("Would you like to use Mongoid to connect to a M
 if config['mongoid']
   say_wizard "REMINDER: When creating a Rails app using Mongoid..."
   say_wizard "you should add the '-O' flag to 'rails new'"
-  gem 'bson_ext', '>= 1.5.2'
+  gem 'bson_ext', '>= 1.6.1'
   gem 'mongoid', '>= 2.4.6'
 else
   recipes.delete('mongoid')
@@ -529,108 +529,6 @@ FILE
 end
 
 
-# >--------------------------------[ AddUser ]--------------------------------<
-
-@current_recipe = "add_user"
-@before_configs["add_user"].call if @before_configs["add_user"]
-say_recipe 'AddUser'
-
-
-@configs[@current_recipe] = config
-
-# Application template recipe for the rails_apps_composer. Check for a newer version here:
-# https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/add_user.rb
-
-after_bundler do
-  
-  say_wizard "AddUser recipe running 'after bundler'"
-  
-  if recipes.include? 'omniauth'
-    generate(:model, "user provider:string uid:string name:string email:string")
-    gsub_file 'app/models/user.rb', /end/ do
-<<-RUBY
-  attr_accessible :provider, :uid, :name, :email
-end
-RUBY
-    end
-  end
-
-  if recipes.include? 'devise'
-
-    # Generate models and routes for a User
-    generate 'devise user'
-
-    # Add a 'name' attribute to the User model
-    if recipes.include? 'mongoid'
-      # for mongoid
-      gsub_file 'app/models/user.rb', /end/ do
-  <<-RUBY
-  field :name
-  validates_presence_of :name
-  validates_uniqueness_of :name, :email, :case_sensitive => false
-  attr_accessible :name, :email, :password, :password_confirmation, :remember_me
-end
-RUBY
-      end
-    else
-      # for ActiveRecord
-      # Devise created a Users database, we'll modify it
-      generate 'migration AddNameToUsers name:string'
-      if recipes.include? 'devise-confirmable'
-        generate 'migration AddConfirmableToUsers confirmation_token:string confirmed_at:datetime confirmation_sent_at:datetime unconfirmed_email:string'
-      end
-      # Devise created a Users model, we'll modify it
-      gsub_file 'app/models/user.rb', /attr_accessible :email/, 'attr_accessible :name, :email'
-      inject_into_file 'app/models/user.rb', :before => 'validates_uniqueness_of' do
-        "validates_presence_of :name\n"
-      end
-      gsub_file 'app/models/user.rb', /validates_uniqueness_of :email/, 'validates_uniqueness_of :name, :email'
-    end
-
-    # needed for both mongoid and ActiveRecord
-    if recipes.include? 'devise-confirmable'
-      gsub_file 'app/models/user.rb', /:registerable,/, ":registerable, :confirmable,"
-      gsub_file 'app/models/user.rb', /:remember_me/, ':remember_me, :confirmed_at'
-    end
-
-    unless recipes.include? 'haml'
-
-      # Generate Devise views (unless you are using Haml)
-      run 'rails generate devise:views'
-      
-      # Modify Devise views to add 'name'
-      inject_into_file "app/views/devise/registrations/edit.html.erb", :after => "<%= devise_error_messages! %>\n" do
-      <<-ERB
-<p><%= f.label :name %><br />
-<%= f.text_field :name %></p>
-ERB
-      end
-
-      inject_into_file "app/views/devise/registrations/new.html.erb", :after => "<%= devise_error_messages! %>\n" do
-      <<-ERB
-<p><%= f.label :name %><br />
-<%= f.text_field :name %></p>
-ERB
-      end
-
-    else
-
-      # copy Haml versions of modified Devise views
-      inside 'app/views/devise' do
-        get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/rails3-mongoid-devise/app/views/devise/_links.erb', '_links.erb'
-      end
-      inside 'app/views/devise/registrations' do
-        get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/rails3-mongoid-devise/app/views/devise/registrations/edit.html.haml', 'edit.html.haml'
-        get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/rails3-mongoid-devise/app/views/devise/registrations/new.html.haml', 'new.html.haml'
-      end
-
-    end
-
-  end
-
-end
-
-
 # >-------------------------------[ OmniAuth ]--------------------------------<
 
 @current_recipe = "omniauth"
@@ -639,14 +537,14 @@ say_recipe 'OmniAuth'
 
 config = {}
 config['omniauth'] = yes_wizard?("Would you like to use OmniAuth for authentication?") if true && true unless config.key?('omniauth')
-config['provider'] = multiple_choice("Which service provider will you use?", [["Twitter", "twitter"], ["Facebook", "facebook"], ["GitHub", "github"], ["LinkedIn", "linkedin"]]) if true && true unless config.key?('provider')
+config['provider'] = multiple_choice("Which service provider will you use?", [["Twitter", "twitter"], ["Facebook", "facebook"], ["GitHub", "github"], ["LinkedIn", "linkedin"], ["Google", "google"]]) if true && true unless config.key?('provider')
 @configs[@current_recipe] = config
 
 # Application template recipe for the rails_apps_composer. Check for a newer version here:
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/omniauth.rb
 
 if config['omniauth']
-  gem 'omniauth', '>= 1.0.2'
+  gem 'omniauth', '>= 1.0.3'
   # for available gems, see https://github.com/intridea/omniauth/wiki/List-of-Strategies
   case config['provider']
     when 'twitter'
@@ -657,6 +555,8 @@ if config['omniauth']
      gem 'omniauth-github'
     when 'linkedin'
       gem 'omniauth-linkedin'
+    when 'google'
+      gem 'omniauth-google'
   end
 else
   recipes.delete('omniauth')
@@ -1325,6 +1225,108 @@ TXT
   git :add => '.'
   git :commit => "-m 'Initial commit of working_branch'"
   git :checkout => 'master'
+end
+
+
+# >--------------------------------[ AddUser ]--------------------------------<
+
+@current_recipe = "add_user"
+@before_configs["add_user"].call if @before_configs["add_user"]
+say_recipe 'AddUser'
+
+
+@configs[@current_recipe] = config
+
+# Application template recipe for the rails_apps_composer. Check for a newer version here:
+# https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/add_user.rb
+
+after_bundler do
+  
+  say_wizard "AddUser recipe running 'after bundler'"
+  
+  if recipes.include? 'omniauth'
+    generate(:model, "user provider:string uid:string name:string email:string")
+    gsub_file 'app/models/user.rb', /end/ do
+<<-RUBY
+  attr_accessible :provider, :uid, :name, :email
+end
+RUBY
+    end
+  end
+
+  if recipes.include? 'devise'
+
+    # Generate models and routes for a User
+    generate 'devise user'
+
+    # Add a 'name' attribute to the User model
+    if recipes.include? 'mongoid'
+      # for mongoid
+      gsub_file 'app/models/user.rb', /end/ do
+  <<-RUBY
+  field :name
+  validates_presence_of :name
+  validates_uniqueness_of :name, :email, :case_sensitive => false
+  attr_accessible :name, :email, :password, :password_confirmation, :remember_me
+end
+RUBY
+      end
+    else
+      # for ActiveRecord
+      # Devise created a Users database, we'll modify it
+      generate 'migration AddNameToUsers name:string'
+      if recipes.include? 'devise-confirmable'
+        generate 'migration AddConfirmableToUsers confirmation_token:string confirmed_at:datetime confirmation_sent_at:datetime unconfirmed_email:string'
+      end
+      # Devise created a Users model, we'll modify it
+      gsub_file 'app/models/user.rb', /attr_accessible :email/, 'attr_accessible :name, :email'
+      inject_into_file 'app/models/user.rb', :before => 'validates_uniqueness_of' do
+        "validates_presence_of :name\n"
+      end
+      gsub_file 'app/models/user.rb', /validates_uniqueness_of :email/, 'validates_uniqueness_of :name, :email'
+    end
+
+    # needed for both mongoid and ActiveRecord
+    if recipes.include? 'devise-confirmable'
+      gsub_file 'app/models/user.rb', /:registerable,/, ":registerable, :confirmable,"
+      gsub_file 'app/models/user.rb', /:remember_me/, ':remember_me, :confirmed_at'
+    end
+
+    unless recipes.include? 'haml'
+
+      # Generate Devise views (unless you are using Haml)
+      run 'rails generate devise:views'
+      
+      # Modify Devise views to add 'name'
+      inject_into_file "app/views/devise/registrations/edit.html.erb", :after => "<%= devise_error_messages! %>\n" do
+      <<-ERB
+<p><%= f.label :name %><br />
+<%= f.text_field :name %></p>
+ERB
+      end
+
+      inject_into_file "app/views/devise/registrations/new.html.erb", :after => "<%= devise_error_messages! %>\n" do
+      <<-ERB
+<p><%= f.label :name %><br />
+<%= f.text_field :name %></p>
+ERB
+      end
+
+    else
+
+      # copy Haml versions of modified Devise views
+      inside 'app/views/devise' do
+        get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/rails3-mongoid-devise/app/views/devise/_links.erb', '_links.erb'
+      end
+      inside 'app/views/devise/registrations' do
+        get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/rails3-mongoid-devise/app/views/devise/registrations/edit.html.haml', 'edit.html.haml'
+        get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/rails3-mongoid-devise/app/views/devise/registrations/new.html.haml', 'new.html.haml'
+      end
+
+    end
+
+  end
+
 end
 
 

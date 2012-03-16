@@ -159,7 +159,7 @@ config['machinist'] = yes_wizard?("Would you like to use machinist for test fixt
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/rspec.rb
 
 if config['rspec']
-  gem 'rspec-rails', '>= 2.8.1', :group => [:development, :test]
+  gem 'rspec-rails', '>= 2.9.0.rc2', :group => [:development, :test]
   if recipes.include? 'mongoid'
     # use the database_cleaner gem to reset the test database
     gem 'database_cleaner', '>= 0.7.1', :group => :test
@@ -170,7 +170,7 @@ if config['rspec']
     gem 'machinist', :group => :test
   end
   if config['factory_girl']
-    gem 'factory_girl_rails', '>= 1.7.0', :group => :test
+    gem 'factory_girl_rails', '>= 2.0.0.rc', :group => [:development, :test]
   end
   # add a collection of RSpec matchers and Cucumber steps to make testing email easy
   gem 'email_spec', '>= 1.2.1', :group => :test
@@ -526,12 +526,12 @@ case config['devise']
     recipes.delete('devise')
     say_wizard "Devise recipe skipped."
   when 'standard'
-    gem 'devise', '>= 2.0.4'
+    gem 'devise', '>= 2.1.0.rc'
   when 'confirmable'
-    gem 'devise', '>= 2.0.4'
+    gem 'devise', '>= 2.1.0.rc'
     recipes << 'devise-confirmable'
   when 'invitable'
-    gem 'devise', '>= 2.0.4'
+    gem 'devise', '>= 2.1.0.rc'
     gem 'devise_invitable', '>= 1.0.0'
     recipes << 'devise-confirmable'
     recipes << 'devise-invitable'
@@ -577,8 +577,8 @@ if recipes.include? 'devise'
       say_wizard "Copying RSpec files from the rails3-devise-rspec-cucumber examples"
       begin
         # copy all the RSpec specs files from the rails3-devise-rspec-cucumber example app
-        get 'https://raw.github.com/RailsApps/rails3-devise-rspec-cucumber/master/spec/factories.rb', 'spec/factories.rb'
-        gsub_file 'spec/factories.rb', /# confirmed_at/, "confirmed_at" if recipes.include? 'devise-confirmable'
+        get 'https://raw.github.com/RailsApps/rails3-devise-rspec-cucumber/master/spec/factories/users.rb', 'spec/factories/users.rb'
+        gsub_file 'spec/factories/users.rb', /# confirmed_at/, "confirmed_at" if recipes.include? 'devise-confirmable'
         remove_file 'spec/controllers/home_controller_spec.rb'
         remove_file 'spec/controllers/users_controller_spec.rb'
         get 'https://raw.github.com/RailsApps/rails3-devise-rspec-cucumber/master/spec/controllers/home_controller_spec.rb', 'spec/controllers/home_controller_spec.rb'
