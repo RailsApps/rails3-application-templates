@@ -162,7 +162,7 @@ if config['rspec']
   gem 'rspec-rails', '>= 2.9.0.rc2', :group => [:development, :test]
   if recipes.include? 'mongoid'
     # use the database_cleaner gem to reset the test database
-    gem 'database_cleaner', '>= 0.7.1', :group => :test
+    gem 'database_cleaner', '>= 0.7.2', :group => :test
     # include RSpec matchers from the mongoid-rspec gem
     gem 'mongoid-rspec', '>= 1.4.4', :group => :test
   end
@@ -170,7 +170,7 @@ if config['rspec']
     gem 'machinist', :group => :test
   end
   if config['factory_girl']
-    gem 'factory_girl_rails', '>= 2.0.0.rc', :group => [:development, :test]
+    gem 'factory_girl_rails', '>= 3.0.0', :group => [:development, :test]
   end
   # add a collection of RSpec matchers and Cucumber steps to make testing email easy
   gem 'email_spec', '>= 1.2.1', :group => :test
@@ -284,8 +284,8 @@ config['cucumber'] = yes_wizard?("Would you like to use Cucumber for your BDD?")
 if config['cucumber']
   gem 'cucumber-rails', '>= 1.3.0', :group => :test
   gem 'capybara', '>= 1.1.2', :group => :test
-  gem 'database_cleaner', '>= 0.7.1', :group => :test
-  gem 'launchy', '>= 2.0.5', :group => :test
+  gem 'database_cleaner', '>= 0.7.2', :group => :test
+  gem 'launchy', '>= 2.1.0', :group => :test
 else
   recipes.delete('cucumber')
 end
@@ -531,7 +531,7 @@ case config['devise']
     gem 'devise', '>= 2.1.0.rc'
     recipes << 'devise-confirmable'
   when 'invitable'
-    gem 'devise', '>= 2.1.0.rc'
+    gem 'devise', '>= 2.0.4'
     gem 'devise_invitable', '>= 1.0.0'
     recipes << 'devise-confirmable'
     recipes << 'devise-invitable'
@@ -546,7 +546,7 @@ if recipes.include? 'devise'
     say_wizard "Devise recipe running 'after bundler'"
 
     # Run the Devise generator
-    generate 'devise:install'
+    generate 'devise:install' unless recipes.include? 'datamapper'
     generate 'devise_invitable:install' if recipes.include? 'devise-invitable'
 
     if recipes.include? 'mongo_mapper'
@@ -663,6 +663,12 @@ RUBY
     if recipes.include? 'devise-confirmable'
       gsub_file 'app/models/user.rb', /:registerable,/, ":registerable, :confirmable,"
       gsub_file 'app/models/user.rb', /:remember_me/, ':remember_me, :confirmed_at'
+      if recipes.include? 'mongoid'
+        gsub_file 'app/models/user.rb', /# field :confirmation_token/, "field :confirmation_token"
+        gsub_file 'app/models/user.rb', /# field :confirmed_at/, "field :confirmed_at"
+        gsub_file 'app/models/user.rb', /# field :confirmation_sent_at/, "field :confirmation_sent_at"
+        gsub_file 'app/models/user.rb', /# field :unconfirmed_email/, "field :unconfirmed_email"
+      end
     end
 
     unless recipes.include? 'haml'
@@ -851,7 +857,7 @@ FILE
     if recipes.include? 'devise-confirmable'
       append_file 'db/seeds.rb' do <<-FILE
 puts 'SETTING UP DEFAULT USER LOGIN'
-user = User.create! :name => 'First User', :email => 'user@example.com', :password => 'please', :password_confirmation => 'please', :confirmed_at => DateTime.now
+user = User.create! :name => 'First User', :email => 'user@example.com', :password => 'please', :password_confirmation => 'please', :confirmed_at => Time.now.utc
 puts 'New user created: ' << user.name
 FILE
       end
@@ -1169,6 +1175,9 @@ config['ban_spiders'] = yes_wizard?("Would you like to set a robots.txt file to 
 if config['footnotes']
   say_wizard "Extras recipe running 'after bundler'"
   gem 'rails-footnotes', '>= 3.7', :group => :development
+  after_bundler do
+    generate 'rails_footnotes:install'
+  end
 else
   recipes.delete('footnotes')
 end

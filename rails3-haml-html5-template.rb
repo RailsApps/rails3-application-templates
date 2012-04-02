@@ -30,7 +30,6 @@
 # >---------------------------------------------------------------------------<
 
 # >----------------------------[ Initial Setup ]------------------------------<
-
 initializer 'generators.rb', <<-RUBY
 Rails.application.config.generators do |g|
 end
@@ -390,6 +389,9 @@ config['ban_spiders'] = yes_wizard?("Would you like to set a robots.txt file to 
 if config['footnotes']
   say_wizard "Extras recipe running 'after bundler'"
   gem 'rails-footnotes', '>= 3.7', :group => :development
+  after_bundler do
+    generate 'rails_footnotes:install'
+  end
 else
   recipes.delete('footnotes')
 end
