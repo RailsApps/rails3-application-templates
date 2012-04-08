@@ -42,6 +42,10 @@ The application generator templates will ask you for various preferences:
 ## "Twitter Bootstrap - sass":http://twitter.github.com/bootstrap/
 ## "Skeleton":http://www.getskeleton.com/
 ## Normalize CSS for consistent styling
+* Which form gem would you like?
+## None
+## simple form
+## simple form (bootstrap)
 * Would you like to use "rails-footnotes":https://github.com/josevalim/rails-footnotes during development?
 * Would you like to set a robots.txt file to ban spiders?
 * Would you like to add support for subdomains?

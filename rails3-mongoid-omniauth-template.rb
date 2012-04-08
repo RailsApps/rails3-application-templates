@@ -41,7 +41,7 @@ Rails.application.config.generators do |g|
 end
 RUBY
 
-@recipes = ["haml", "rspec", "cucumber", "guard", "mongoid", "seed_database", "omniauth", "home_page", "home_page_users", "html5", "users_page", "omniauth_email", "cleanup", "extras", "git"]
+@recipes = ["haml", "rspec", "cucumber", "guard", "mongoid", "seed_database", "omniauth", "home_page", "home_page_users", "html5", "simple_form", "users_page", "omniauth_email", "cleanup", "extras", "git"]
 
 def recipes; @recipes end
 def recipe?(name); @recipes.include?(name) end
@@ -170,7 +170,7 @@ if config['rspec']
     gem 'machinist', :group => :test
   end
   if config['factory_girl']
-    gem 'factory_girl_rails', '>= 3.0.0', :group => [:development, :test]
+    gem 'factory_girl_rails', '>= 3.1.0', :group => [:development, :test]
   end
   # add a collection of RSpec matchers and Cucumber steps to make testing email easy
   gem 'email_spec', '>= 1.2.1', :group => :test
@@ -451,7 +451,7 @@ config['mongoid'] = yes_wizard?("Would you like to use Mongoid to connect to a M
 if config['mongoid']
   say_wizard "REMINDER: When creating a Rails app using Mongoid..."
   say_wizard "you should add the '-O' flag to 'rails new'"
-  gem 'bson_ext', '>= 1.6.1'
+  gem 'bson_ext', '>= 1.6.2'
   gem 'mongoid', '>= 2.4.7'
 else
   recipes.delete('mongoid')
@@ -922,6 +922,54 @@ RUBY
 
   end
 
+end
+
+
+# >------------------------------[ SimpleForm ]-------------------------------<
+
+@current_recipe = "simple_form"
+@before_configs["simple_form"].call if @before_configs["simple_form"]
+say_recipe 'SimpleForm'
+
+config = {}
+config['form_option'] = multiple_choice("Which form gem would you like?", [["None", false], ["simple form", "simple_form"], ["simple form (bootstrap)", "simple_form_bootstrap"]]) if true && true unless config.key?('form_option')
+@configs[@current_recipe] = config
+
+# Application template recipe for the rails_apps_composer. Check for a newer version here:
+# https://github.com/gmgp/rails_apps_composer/blob/master/recipes/simple_form.rb
+
+case config['form_option']
+  when 'no'
+    say_wizard "Form help recipe skipped."
+  when 'simple_form'
+    gem 'simple_form'
+    # for external test
+    recipes << 'simple_form'
+  when 'simple_form_bootstrap'
+    gem 'simple_form'
+    # for external test
+    recipes << 'simple_form'
+    recipes << 'simple_form_bootstrap'
+  else
+    say_wizard "Form help recipe skipped."
+end
+
+
+
+after_bundler do
+
+  say_wizard "Simple form recipe running 'after bundler'"
+
+  case config['form_option']
+    when 'simple_form'
+      generate 'simple_form:install'
+    when 'simple_form_bootstrap'
+      if recipes.include? 'bootstrap'
+        generate 'simple_form:install --bootstrap'
+      else
+        say_wizard "Bootstrap not found."
+      end
+  end
 end
 
 
