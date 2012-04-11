@@ -452,7 +452,7 @@ if config['mongoid']
   say_wizard "REMINDER: When creating a Rails app using Mongoid..."
   say_wizard "you should add the '-O' flag to 'rails new'"
   gem 'bson_ext', '>= 1.6.2'
-  gem 'mongoid', '>= 2.4.7'
+  gem 'mongoid', '>= 2.4.8'
 else
   recipes.delete('mongoid')
 end
@@ -550,7 +550,7 @@ say_recipe 'Devise'
 
 config = {}
 config['devise'] = multiple_choice("Would you like to use Devise for authentication?", [["No", false], ["Devise with default modules", "standard"], ["Devise with Confirmable module", "confirmable"], ["Devise with Confirmable and Invitable modules", "invitable"]]) if true && true unless config.key?('devise')
-config['canard'] = yes_wizard?("Would you like to manage authorization with CanCan, RoleModel, and Canard?") if true && true unless config.key?('canard')
+config['authorization'] = yes_wizard?("Would you like to manage authorization with CanCan & Rolify?") if true && true unless config.key?('authorization')
 @configs[@current_recipe] = config
 
 # Application template recipe for the rails_apps_composer. Check for a newer version here:
@@ -575,9 +575,10 @@ case config['devise']
     say_wizard "Devise recipe skipped."
 end
 
-if config['canard']
-  gem 'cancan', '>= 0.2.7'
-  recipes << 'canard'
+if config['authorization']
+  gem 'cancan', '>= 1.6.7'
+  gem 'rolify', '>= 3.1.0'
+  recipes << 'authorization'
 end
 
 if recipes.include? 'devise'
@@ -606,7 +607,16 @@ if recipes.include? 'devise'
       # (see https://github.com/RailsApps/rails3-devise-rspec-cucumber/issues/3)
       gsub_file 'config/initializers/devise.rb', 'config.sign_out_via = :delete', 'config.sign_out_via = Rails.env.test? ? :get : :delete'
     end
-
+    
+    if config['authorization']
+      inject_into_file 'app/controllers/application_controller.rb', :before => 'end' do <<-RUBY
+  rescue_from CanCan::AccessDenied do |exception|
+    redirect_to root_path, :error => exception.message
+  end
+RUBY
+      end
+    end
+    
   end
 
   after_everything do
@@ -671,6 +681,20 @@ RUBY
 
     # Generate models and routes for a User
     generate 'devise user'
+    
+    if recipes.include? 'authorization'
+      # create'app/models/ability.rb'
+      generate 'cancan:ability'
+      # create 'app/models/role.rb'
+      # create 'config/initializers/rolify.rb'
+      # create 'db/migrate/...rolify_create_roles.rb'
+      # insert 'rolify' method in 'app/models/users.rb'
+      if recipes.include? 'mongoid'
+        generate 'rolify:role Role User mongoid'
+      else
+        generate 'rolify:role Role User'
+      end
+    end
 
     # Add a 'name' attribute to the User model
     if recipes.include? 'mongoid'
@@ -708,13 +732,6 @@ RUBY
         gsub_file 'app/models/user.rb', /# field :confirmed_at/, "field :confirmed_at"
         gsub_file 'app/models/user.rb', /# field :confirmation_sent_at/, "field :confirmation_sent_at"
         gsub_file 'app/models/user.rb', /# field :unconfirmed_email/, "field :unconfirmed_email"
-      end
-    end
-    
-    if recipes.include? 'canard'
-      say_wizard "modifying User class to add an admin role"
-      inject_into_file 'app/models/user.rb', :after => 'ActiveRecord::Base' do
-        "\n  acts_as_user :roles => :admin\n"
       end
     end
 
@@ -906,6 +923,8 @@ FILE
 puts 'SETTING UP DEFAULT USER LOGIN'
 user = User.create! :name => 'First User', :email => 'user@example.com', :password => 'please', :password_confirmation => 'please', :confirmed_at => Time.now.utc
 puts 'New user created: ' << user.name
+user2 = User.create! :name => 'Second User', :email => 'user2@example.com', :password => 'please', :password_confirmation => 'please', :confirmed_at => Time.now.utc
+puts 'New user created: ' << user2.name
 FILE
       end
     else
@@ -913,19 +932,28 @@ FILE
 puts 'SETTING UP DEFAULT USER LOGIN'
 user = User.create! :name => 'First User', :email => 'user@example.com', :password => 'please', :password_confirmation => 'please'
 puts 'New user created: ' << user.name
+user2 = User.create! :name => 'Second User', :email => 'user2@example.com', :password => 'please', :password_confirmation => 'please'
+puts 'New user created: ' << user2.name
 FILE
       end
     end
-    if recipes.include? 'canard'
+    if recipes.include? 'authorization'
       append_file 'db/seeds.rb' do <<-FILE
-user.roles = [:admin]
+user.add_role :admin
 FILE
       end
     end
   end
   
-  run 'bundle exec rake db:seed'
+
   
+end
+
+after_everything do
+  
+  say_wizard "seeding the database"
+  run 'bundle exec rake db:seed'
+
 end
 
 
@@ -948,14 +976,41 @@ after_bundler do
     #----------------------------------------------------------------------------
     # Create a users controller
     #----------------------------------------------------------------------------
-    generate(:controller, "users show")
-    gsub_file 'app/controllers/users_controller.rb', /def show/ do
-    <<-RUBY
-before_filter :authenticate_user!
+    generate(:controller, "users show index")
+    remove_file 'app/controllers/users_controller.rb'
+    create_file 'app/controllers/users_controller.rb' do <<-RUBY
+class UsersController < ApplicationController
+  before_filter :authenticate_user!
+
+  def index
+    @users = User.all
+  end
 
   def show
     @user = User.find(params[:id])
+  end
+
+end
 RUBY
+    end
+    if recipes.include? 'authorization'
+      inject_into_file 'app/controllers/users_controller.rb', "    authorize! :index, @user, :message => 'Not authorized as an administrator.'\n", :after => "def index\n"
+    end
+    if recipes.include? 'paginate'
+      gsub_file 'app/controllers/users_controller.rb', /@users = User.all/, '@users = User.paginate(:page => params[:page])'
+    end
+
+    #----------------------------------------------------------------------------
+    # Limit access to the users#index page
+    #----------------------------------------------------------------------------
+    if recipes.include? 'authorization'
+      inject_into_file 'app/models/ability.rb', :after => "def initialize(user)\n" do <<-RUBY
+    user ||= User.new # guest user (not logged in)
+    if user.has_role? :admin
+      can :manage, :all
+    end
+RUBY
+      end
     end
 
     #----------------------------------------------------------------------------
@@ -963,11 +1018,45 @@ RUBY
     #----------------------------------------------------------------------------
     # @devise_for :users@ route must be placed above @resources :users, :only => :show@.
     gsub_file 'config/routes.rb', /get \"users\/show\"/, ''
+    gsub_file 'config/routes.rb', /get \"users\/index\"/, ''
     gsub_file 'config/routes.rb', /devise_for :users/ do
     <<-RUBY
 devise_for :users
-  resources :users, :only => :show
+  resources :users, :only => [:show, :index]
 RUBY
+    end
+
+    #----------------------------------------------------------------------------
+    # Create a users index page
+    #----------------------------------------------------------------------------
+    if recipes.include? 'haml'
+      remove_file 'app/views/users/index.html.haml'
+      # There is Haml code in this script. Changing the indentation is perilous between HAMLs.
+      # We have to use single-quote-style-heredoc to avoid interpolation.
+      create_file 'app/views/users/index.html.haml' do <<-'HAML'
+%h2 Users
+- @users.each do |user|
+  %br/
+  #{link_to user.email, user} signed up #{user.created_at.to_date}
+HAML
+      end
+      if recipes.include? 'paginate'
+        append_file 'app/views/users/index.html.haml', "\n= will_paginate\n"
+      end
+    else
+      append_file 'app/views/users/index.html.erb' do <<-ERB
+<ul class="users">
+  <% @users.each do |user| %>
+    <li>
+      <%= link_to user.name, user %> signed up <%= user.created_at.to_date %>
+    </li>
+  <% end %>
+</ul>
+ERB
+      end
+      if recipes.include? 'paginate'
+        append_file 'app/views/users/index.html.erb', "\n<%= will_paginate %>\n"
+      end
     end
 
     #----------------------------------------------------------------------------
@@ -1098,7 +1187,11 @@ after_bundler do
   # get an appropriate navigation partial
   if recipes.include? 'haml'
     if recipes.include? 'devise'
-      get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/navigation/devise/_navigation.html.haml', 'app/views/layouts/_navigation.html.haml'
+      if recipes.include? 'authorization'
+        get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/navigation/devise/authorization/_navigation.html.haml', 'app/views/layouts/_navigation.html.haml'
+      else
+        get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/navigation/devise/_navigation.html.haml', 'app/views/layouts/_navigation.html.haml'        
+      end
     elsif recipes.include? 'omniauth'
       get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/navigation/omniauth/_navigation.html.haml', 'app/views/layouts/_navigation.html.haml'
     elsif recipes.include? 'subdomains'
@@ -1108,7 +1201,11 @@ after_bundler do
     end
   else
     if recipes.include? 'devise'
-      get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/navigation/devise/_navigation.html.erb', 'app/views/layouts/_navigation.html.erb'
+      if recipes.include? 'authorization'
+        get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/navigation/devise/authorization/_navigation.html.erb', 'app/views/layouts/_navigation.html.erb'
+      else
+        get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/navigation/devise/_navigation.html.erb', 'app/views/layouts/_navigation.html.erb'        
+      end
     elsif recipes.include? 'omniauth'
       get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/navigation/omniauth/_navigation.html.erb', 'app/views/layouts/_navigation.html.erb'
     elsif recipes.include? 'subdomains'
@@ -1268,30 +1365,33 @@ say_recipe 'Extras'
 config = {}
 config['footnotes'] = yes_wizard?("Would you like to use 'rails-footnotes' (it's SLOW!)?") if true && true unless config.key?('footnotes')
 config['ban_spiders'] = yes_wizard?("Would you like to set a robots.txt file to ban spiders?") if true && true unless config.key?('ban_spiders')
+config['paginate'] = yes_wizard?("Would you like to add 'will_paginate' for pagination?") if true && true unless config.key?('paginate')
 @configs[@current_recipe] = config
 
 # Application template recipe for the rails_apps_composer. Check for a newer version here:
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/extras.rb
 
 if config['footnotes']
-  say_wizard "Extras recipe running 'after bundler'"
+  say_wizard "Adding 'rails-footnotes'"
   gem 'rails-footnotes', '>= 3.7', :group => :development
   after_bundler do
     generate 'rails_footnotes:install'
   end
-else
-  recipes.delete('footnotes')
 end
 
 if config['ban_spiders']
-  say_wizard "BanSpiders recipe running 'after bundler'"
+  say_wizard "Banning spiders by modifying 'public/robots.txt'"
   after_bundler do
     # ban spiders from your site by changing robots.txt
     gsub_file 'public/robots.txt', /# User-Agent/, 'User-Agent'
     gsub_file 'public/robots.txt', /# Disallow/, 'Disallow'
   end
-else
-  recipes.delete('ban_spiders')
+end
+
+if config['paginate']
+  say_wizard "Adding 'will_paginate'"
+  gem 'will_paginate', '>= 3.0.3'
+  recipes << 'paginate'
 end
 
 
