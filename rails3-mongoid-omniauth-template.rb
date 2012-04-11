@@ -522,6 +522,12 @@ puts 'New user created: ' << user.name
 FILE
       end
     end
+    if recipes.include? 'canard'
+      append_file 'db/seeds.rb' do <<-FILE
+user.roles = [:admin]
+FILE
+      end
+    end
   end
   
   run 'bundle exec rake db:seed'

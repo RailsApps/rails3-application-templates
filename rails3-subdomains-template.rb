@@ -36,6 +36,7 @@
 
 # >----------------------------[ Initial Setup ]------------------------------<
 
+
 initializer 'generators.rb', <<-RUBY
 Rails.application.config.generators do |g|
 end
@@ -550,6 +551,7 @@ say_recipe 'Devise'
 
 config = {}
 config['devise'] = multiple_choice("Would you like to use Devise for authentication?", [["No", false], ["Devise with default modules", "standard"], ["Devise with Confirmable module", "confirmable"], ["Devise with Confirmable and Invitable modules", "invitable"]]) if true && true unless config.key?('devise')
+config['canard'] = yes_wizard?("Would you like to manage authorization with CanCan, RoleModel, and Canard?") if true && true unless config.key?('canard')
 @configs[@current_recipe] = config
 
 # Application template recipe for the rails_apps_composer. Check for a newer version here:
@@ -572,6 +574,11 @@ case config['devise']
   else
     recipes.delete('devise')
     say_wizard "Devise recipe skipped."
+end
+
+if config['canard']
+  gem 'cancan', '>= 0.2.7'
+  recipes << 'canard'
 end
 
 if recipes.include? 'devise'
@@ -630,7 +637,7 @@ if recipes.include? 'devise'
       remove_file 'spec/helpers/home_helper_spec.rb'
       remove_file 'spec/helpers/users_helper_spec.rb'
     end
-
+    
   end
 end
 
@@ -702,6 +709,13 @@ RUBY
         gsub_file 'app/models/user.rb', /# field :confirmed_at/, "field :confirmed_at"
         gsub_file 'app/models/user.rb', /# field :confirmation_sent_at/, "field :confirmation_sent_at"
         gsub_file 'app/models/user.rb', /# field :unconfirmed_email/, "field :unconfirmed_email"
+      end
+    end
+    
+    if recipes.include? 'canard'
+      say_wizard "modifying User class to add an admin role"
+      inject_into_file 'app/models/user.rb', :after => 'ActiveRecord::Base' do
+        "\n  acts_as_user :roles => :admin\n"
       end
     end
 
@@ -900,6 +914,12 @@ FILE
 puts 'SETTING UP DEFAULT USER LOGIN'
 user = User.create! :name => 'First User', :email => 'user@example.com', :password => 'please', :password_confirmation => 'please'
 puts 'New user created: ' << user.name
+FILE
+      end
+    end
+    if recipes.include? 'canard'
+      append_file 'db/seeds.rb' do <<-FILE
+user.roles = [:admin]
 FILE
       end
     end
