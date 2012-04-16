@@ -13,6 +13,8 @@ These Rails application templates from the <a href="https://github.com/RailsApps
 | Daniel Kehoe | "OmniAuth, Mongoid":https://github.com/RailsApps/rails3-mongoid-omniauth | "Tutorial":http://railsapps.github.com/tutorial-rails-mongoid-omniauth.html | OmniAuth for authentication with a MongoDB datastore |
 | Daniel Kehoe | "Subdomains, Devise, Mongoid":https://github.com/RailsApps/rails3-subdomains | "Tutorial":http://railsapps.github.com/tutorial-rails-subdomains.html | Basecamp-style subdomains with Devise and MongoDB |
 
+These application templates were created using the "Rails Apps Composer":https://github.com/RailsApps/rails_apps_composer gem which provides a convenient way to assemble a reusable application template by selecting various "recipes" to include popular Rails development gems.
+
 h2. !http://twitter-badges.s3.amazonaws.com/t_logo-a.png(Follow on Twitter)!:http://www.twitter.com/rails_apps Follow on Twitter
 
 Follow the project on Twitter: "@rails_apps":http://twitter.com/rails_apps. Please tweet some praise if you like what you've found.
@@ -35,6 +37,7 @@ The application generator templates will ask you for various preferences:
 ## Devise with default modules
 ## Devise with Confirmable module
 ## Devise with Confirmable and Invitable modules
+* Would you like to manage authorization with CanCan & Rolify?
 * Which front-end framework would you like for HTML5 and CSS3?
 ## None
 ## "Zurb Foundation":http://foundation.zurb.com/
@@ -59,8 +62,6 @@ You can quickly generate a Rails web application using just the @rails new@ comm
 Rails application templates are Ruby scripts used with the @"rails new myapp -m"@ command to generate a Rails web application.
 
 Application templates commonly integrate popular gems that many Rails developers include in a starter app. It can be a hassle to integrate some of the most commonly used gems, particularly when new versions are released and there are minor "gotchas" that interfere with gems working together. By using these  application templates, you'll have a ready-to-run app without the integration "gotchas". Each has a detailed tutorial so you'll see exactly how the application was assembled.
-
-These application templates were created using the "Rails Apps Composer":https://github.com/RailsApps/rails_apps_composer gem which provides a convenient way to assemble a reusable application template by selecting various "recipes" for popular Rails development gems.
 
 You can use the application templates from this repository to generate a starter app directly. You can edit the templates to customize the script to generate a customized starter app. Or you can use the "Rails Apps Composer":https://github.com/RailsApps/rails_apps_composer gem to assemble a selection of recipes for a customized starter app.
 
