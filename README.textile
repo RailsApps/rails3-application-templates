@@ -100,12 +100,12 @@ $ rails new myapp -m https://raw.github.com/RailsApps/rails3-application-templat
 
 Use the @-T@ flag to skip Test::Unit files.
 
-h4. Template for Rails 3 + Devise + CanCan + Twitter Bootstrap
+h4. Template for Rails 3 + Twitter Bootstrap + Devise + CanCan
 
-To build the "rails3-devise-cancan-bootstrap":http://github.com/RailsApps/rails3-devise-cancan-bootstrap/  example application, run the command:
+To build the "rails3-bootstrap-devise-cancan":http://github.com/RailsApps/rails3-bootstrap-devise-cancan/  example application, run the command:
 
 <pre>
-$ rails new myapp -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-devise-cancan-bootstrap-template.rb -T
+$ rails new myapp -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-bootstrap-devise-cancan-template.rb -T
 </pre>
 
 Use the @-T@ flag to skip Test::Unit files.

@@ -1,9 +1,9 @@
 # Application Generator Template
 # Modifies a Rails app to use Devise with CanCan and Twitter Bootstrap
-# Usage: rails new APP_NAME -m https://github.com/RailsApps/rails3-application-templates/raw/master/rails3-devise-cancan-bootstrap-template.rb -T
+# Usage: rails new APP_NAME -m https://github.com/RailsApps/rails3-application-templates/raw/master/rails3-bootstrap-devise-cancan-template.rb -T
 
 # Information and a tutorial: 
-# https://github.com/RailsApps/rails3-devise-cancan-bootstrap
+# https://github.com/RailsApps/rails3-bootstrap-devise-cancan
 
 # Generated using the rails_apps_composer gem:
 # https://github.com/RailsApps/rails_apps_composer/
