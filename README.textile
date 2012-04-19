@@ -9,6 +9,7 @@ These Rails application templates from the <a href="https://github.com/RailsApps
 |_. Author |_. Example App |_. Tutorial |_. Comments |
 | Brook Riggio | Haml, HTML5, Twitter Bootstrap | | Uses ActiveRecord and SQLite |
 | Daniel Kehoe | "Devise, RSpec, Cucumber":https://github.com/RailsApps/rails3-devise-rspec-cucumber | "Tutorial":http://railsapps.github.com/tutorial-rails-devise-rspec-cucumber.html | Uses ActiveRecord and SQLite |
+| Daniel Kehoe | "Devise, CanCan, Twitter Bootstrap ":https://github.com/RailsApps/rails3-bootstrap-devise-cancan | "Tutorial":http://railsapps.github.com/tutorial-rails-bootstrap-devise-cancan.html | CanCan for admin authorization |
 | Daniel Kehoe | "Devise, Mongoid":https://github.com/RailsApps/rails3-mongoid-devise | "Tutorial":http://railsapps.github.com/tutorial-rails-mongoid-devise.html | Combines Devise with MongoDB |
 | Daniel Kehoe | "OmniAuth, Mongoid":https://github.com/RailsApps/rails3-mongoid-omniauth | "Tutorial":http://railsapps.github.com/tutorial-rails-mongoid-omniauth.html | OmniAuth for authentication with a MongoDB datastore |
 | Daniel Kehoe | "Subdomains, Devise, Mongoid":https://github.com/RailsApps/rails3-subdomains | "Tutorial":http://railsapps.github.com/tutorial-rails-subdomains.html | Basecamp-style subdomains with Devise and MongoDB |
