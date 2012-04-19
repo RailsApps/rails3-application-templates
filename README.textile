@@ -38,7 +38,7 @@ The application generator templates will ask you for various preferences:
 ## Devise with default modules
 ## Devise with Confirmable module
 ## Devise with Confirmable and Invitable modules
-* Would you like to manage authorization with CanCan & Rolify?
+* Would you like to manage authorization with "CanCan":https://github.com/ryanb/cancan & "Rolify":https://github.com/EppO/rolify?
 * Which front-end framework would you like for HTML5 and CSS3?
 ## None
 ## "Zurb Foundation":http://foundation.zurb.com/
