@@ -554,7 +554,7 @@ say_recipe 'OmniAuth'
 
 config = {}
 config['omniauth'] = yes_wizard?("Would you like to use OmniAuth for authentication?") if true && true unless config.key?('omniauth')
-config['provider'] = multiple_choice("Which service provider will you use?", [["Twitter", "twitter"], ["Facebook", "facebook"], ["GitHub", "github"], ["LinkedIn", "linkedin"], ["Google", "google"]]) if true && true unless config.key?('provider')
+config['provider'] = multiple_choice("Which service provider will you use?", [["Twitter", "twitter"], ["Facebook", "facebook"], ["GitHub", "github"], ["LinkedIn", "linkedin"], ["Google", "google"], ["Tumblr", "tumblr"]]) if true && true unless config.key?('provider')
 @configs[@current_recipe] = config
 
 # Application template recipe for the rails_apps_composer. Check for a newer version here:
@@ -574,6 +574,8 @@ if config['omniauth']
       gem 'omniauth-linkedin'
     when 'google'
       gem 'omniauth-google'
+    when 'tumblr'
+      gem 'omniauth-tumblr'
   end
 else
   recipes.delete('omniauth')
