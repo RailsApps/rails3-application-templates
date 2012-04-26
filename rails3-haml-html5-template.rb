@@ -30,6 +30,7 @@
 # >---------------------------------------------------------------------------<
 
 # >----------------------------[ Initial Setup ]------------------------------<
+
 initializer 'generators.rb', <<-RUBY
 Rails.application.config.generators do |g|
 end
@@ -169,6 +170,8 @@ after_bundler do
 %h3 Home
 HAML
     end
+  elsif recipes.include? 'slim'
+    # skip
   else
     remove_file 'app/views/home/index.html.erb'
     create_file 'app/views/home/index.html.erb' do 
@@ -239,9 +242,11 @@ after_bundler do
     if recipes.include? 'haml'
       # Haml version of a simple application layout
       get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/simple/views/layouts/application.html.haml', 'app/views/layouts/application.html.haml'
+      get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/simple/views/layouts/_messages.html.haml', 'app/views/layouts/_messages.html.haml'
     else
       # ERB version of a simple application layout
       get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/simple/views/layouts/application.html.erb', 'app/views/layouts/application.html.erb'
+      get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/simple/views/layouts/_messages.html.erb', 'app/views/layouts/_messages.html.erb'
     end
     # simple css styles
     get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/simple/assets/stylesheets/application.css.scss', 'app/assets/stylesheets/application.css.scss'  
@@ -249,9 +254,11 @@ after_bundler do
     if recipes.include? 'haml'
       # Haml version of a complex application layout using Twitter Bootstrap
       get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/twitter-bootstrap/views/layouts/application.html.haml', 'app/views/layouts/application.html.haml'
+      get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/twitter-bootstrap/views/layouts/_messages.html.haml', 'app/views/layouts/_messages.html.haml'
     else
       # ERB version of a complex application layout using Twitter Bootstrap
       get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/twitter-bootstrap/views/layouts/application.html.erb', 'app/views/layouts/application.html.erb'
+      get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/twitter-bootstrap/views/layouts/_messages.html.erb', 'app/views/layouts/_messages.html.erb'
     end
     # complex css styles using Twitter Bootstrap
     get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/twitter-bootstrap/assets/stylesheets/application.css.scss', 'app/assets/stylesheets/application.css.scss'
@@ -259,7 +266,11 @@ after_bundler do
   # get an appropriate navigation partial
   if recipes.include? 'haml'
     if recipes.include? 'devise'
-      get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/navigation/devise/_navigation.html.haml', 'app/views/layouts/_navigation.html.haml'
+      if recipes.include? 'authorization'
+        get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/navigation/devise/authorization/_navigation.html.haml', 'app/views/layouts/_navigation.html.haml'
+      else
+        get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/navigation/devise/_navigation.html.haml', 'app/views/layouts/_navigation.html.haml'        
+      end
     elsif recipes.include? 'omniauth'
       get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/navigation/omniauth/_navigation.html.haml', 'app/views/layouts/_navigation.html.haml'
     elsif recipes.include? 'subdomains'
@@ -269,7 +280,11 @@ after_bundler do
     end
   else
     if recipes.include? 'devise'
-      get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/navigation/devise/_navigation.html.erb', 'app/views/layouts/_navigation.html.erb'
+      if recipes.include? 'authorization'
+        get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/navigation/devise/authorization/_navigation.html.erb', 'app/views/layouts/_navigation.html.erb'
+      else
+        get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/navigation/devise/_navigation.html.erb', 'app/views/layouts/_navigation.html.erb'        
+      end
     elsif recipes.include? 'omniauth'
       get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/navigation/omniauth/_navigation.html.erb', 'app/views/layouts/_navigation.html.erb'
     elsif recipes.include? 'subdomains'
@@ -381,30 +396,37 @@ say_recipe 'Extras'
 config = {}
 config['footnotes'] = yes_wizard?("Would you like to use 'rails-footnotes' (it's SLOW!)?") if true && true unless config.key?('footnotes')
 config['ban_spiders'] = yes_wizard?("Would you like to set a robots.txt file to ban spiders?") if true && true unless config.key?('ban_spiders')
+config['paginate'] = yes_wizard?("Would you like to add 'will_paginate' for pagination?") if true && true unless config.key?('paginate')
 @configs[@current_recipe] = config
 
 # Application template recipe for the rails_apps_composer. Check for a newer version here:
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/extras.rb
 
 if config['footnotes']
-  say_wizard "Extras recipe running 'after bundler'"
+  say_wizard "Adding 'rails-footnotes'"
   gem 'rails-footnotes', '>= 3.7', :group => :development
   after_bundler do
     generate 'rails_footnotes:install'
   end
-else
-  recipes.delete('footnotes')
 end
 
 if config['ban_spiders']
-  say_wizard "BanSpiders recipe running 'after bundler'"
+  say_wizard "Banning spiders by modifying 'public/robots.txt'"
   after_bundler do
     # ban spiders from your site by changing robots.txt
     gsub_file 'public/robots.txt', /# User-Agent/, 'User-Agent'
     gsub_file 'public/robots.txt', /# Disallow/, 'Disallow'
   end
-else
-  recipes.delete('ban_spiders')
+end
+
+if config['paginate']
+  say_wizard "Adding 'will_paginate'"
+  if recipes.include? 'mongoid'
+    gem 'will_paginate_mongoid'
+  else
+    gem 'will_paginate', '>= 3.0.3'
+  end
+  recipes << 'paginate'
 end
 
 

@@ -170,7 +170,7 @@ if config['rspec']
     gem 'machinist', :group => :test
   end
   if config['factory_girl']
-    gem 'factory_girl_rails', '>= 3.1.0', :group => [:development, :test]
+    gem 'factory_girl_rails', '>= 3.2.0', :group => [:development, :test]
   end
   # add a collection of RSpec matchers and Cucumber steps to make testing email easy
   gem 'email_spec', '>= 1.2.1', :group => :test
@@ -452,7 +452,7 @@ if config['mongoid']
   say_wizard "REMINDER: When creating a Rails app using Mongoid..."
   say_wizard "you should add the '-O' flag to 'rails new'"
   gem 'bson_ext', '>= 1.6.2'
-  gem 'mongoid', '>= 2.4.8'
+  gem 'mongoid', '>= 2.4.9'
 else
   recipes.delete('mongoid')
 end
@@ -554,14 +554,14 @@ say_recipe 'OmniAuth'
 
 config = {}
 config['omniauth'] = yes_wizard?("Would you like to use OmniAuth for authentication?") if true && true unless config.key?('omniauth')
-config['provider'] = multiple_choice("Which service provider will you use?", [["Twitter", "twitter"], ["Facebook", "facebook"], ["GitHub", "github"], ["LinkedIn", "linkedin"], ["Google", "google"]]) if true && true unless config.key?('provider')
+config['provider'] = multiple_choice("Which service provider will you use?", [["Twitter", "twitter"], ["Facebook", "facebook"], ["GitHub", "github"], ["LinkedIn", "linkedin"], ["Google", "google"], ["Tumblr", "tumblr"]]) if true && true unless config.key?('provider')
 @configs[@current_recipe] = config
 
 # Application template recipe for the rails_apps_composer. Check for a newer version here:
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/omniauth.rb
 
 if config['omniauth']
-  gem 'omniauth', '>= 1.0.3'
+  gem 'omniauth', '>= 1.1.0'
   # for available gems, see https://github.com/intridea/omniauth/wiki/List-of-Strategies
   case config['provider']
     when 'twitter'
@@ -574,6 +574,8 @@ if config['omniauth']
       gem 'omniauth-linkedin'
     when 'google'
       gem 'omniauth-google'
+    when 'tumblr'
+      gem 'omniauth-tumblr'
   end
 else
   recipes.delete('omniauth')
@@ -732,6 +734,8 @@ after_bundler do
 %h3 Home
 HAML
     end
+  elsif recipes.include? 'slim'
+    # skip
   else
     remove_file 'app/views/home/index.html.erb'
     create_file 'app/views/home/index.html.erb' do 
@@ -851,9 +855,11 @@ after_bundler do
     if recipes.include? 'haml'
       # Haml version of a simple application layout
       get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/simple/views/layouts/application.html.haml', 'app/views/layouts/application.html.haml'
+      get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/simple/views/layouts/_messages.html.haml', 'app/views/layouts/_messages.html.haml'
     else
       # ERB version of a simple application layout
       get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/simple/views/layouts/application.html.erb', 'app/views/layouts/application.html.erb'
+      get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/simple/views/layouts/_messages.html.erb', 'app/views/layouts/_messages.html.erb'
     end
     # simple css styles
     get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/simple/assets/stylesheets/application.css.scss', 'app/assets/stylesheets/application.css.scss'  
@@ -861,9 +867,11 @@ after_bundler do
     if recipes.include? 'haml'
       # Haml version of a complex application layout using Twitter Bootstrap
       get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/twitter-bootstrap/views/layouts/application.html.haml', 'app/views/layouts/application.html.haml'
+      get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/twitter-bootstrap/views/layouts/_messages.html.haml', 'app/views/layouts/_messages.html.haml'
     else
       # ERB version of a complex application layout using Twitter Bootstrap
       get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/twitter-bootstrap/views/layouts/application.html.erb', 'app/views/layouts/application.html.erb'
+      get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/twitter-bootstrap/views/layouts/_messages.html.erb', 'app/views/layouts/_messages.html.erb'
     end
     # complex css styles using Twitter Bootstrap
     get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/twitter-bootstrap/assets/stylesheets/application.css.scss', 'app/assets/stylesheets/application.css.scss'
@@ -1324,7 +1332,11 @@ end
 
 if config['paginate']
   say_wizard "Adding 'will_paginate'"
-  gem 'will_paginate', '>= 3.0.3'
+  if recipes.include? 'mongoid'
+    gem 'will_paginate_mongoid'
+  else
+    gem 'will_paginate', '>= 3.0.3'
+  end
   recipes << 'paginate'
 end
 
