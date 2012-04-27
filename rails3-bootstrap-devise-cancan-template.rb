@@ -1108,8 +1108,10 @@ case config['css_option']
     # https://github.com/seyhunak/twitter-bootstrap-rails
     # http://railscasts.com/episodes/328-twitter-bootstrap-basics
     gem 'twitter-bootstrap-rails', '>= 2.0.3', :group => :assets
-    gem 'therubyracer', '>= 0.10.1', :group => :assets
+    # please install gem 'therubyracer' to use Less
+    gem 'therubyracer', :group => :assets, :platform => :ruby
     recipes << 'bootstrap'
+    recipes << 'jsruntime'
 
   when 'bootstrap_sass'
     # https://github.com/thomas-mcdonald/bootstrap-sass
@@ -1333,6 +1335,7 @@ config = {}
 config['footnotes'] = yes_wizard?("Would you like to use 'rails-footnotes' (it's SLOW!)?") if true && true unless config.key?('footnotes')
 config['ban_spiders'] = yes_wizard?("Would you like to set a robots.txt file to ban spiders?") if true && true unless config.key?('ban_spiders')
 config['paginate'] = yes_wizard?("Would you like to add 'will_paginate' for pagination?") if true && true unless config.key?('paginate')
+config['jsruntime'] = yes_wizard?("Add 'therubyracer' JavaScript runtime (for Linux users without node.js)?") if true && true unless config.key?('jsruntime')
 @configs[@current_recipe] = config
 
 # Application template recipe for the rails_apps_composer. Check for a newer version here:
@@ -1363,6 +1366,14 @@ if config['paginate']
     gem 'will_paginate', '>= 3.0.3'
   end
   recipes << 'paginate'
+end
+
+if config['jsruntime']
+  say_wizard "Adding 'therubyracer' JavaScript runtime gem"
+  # maybe it was already added by the html5 recipe for bootstrap_less?
+  unless recipes.include? 'jsruntime'
+    gem 'therubyracer', :group => :assets, :platform => :ruby
+  end
 end
 
 
