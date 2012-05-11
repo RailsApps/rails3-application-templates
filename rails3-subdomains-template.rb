@@ -36,6 +36,7 @@
 
 # >----------------------------[ Initial Setup ]------------------------------<
 
+
 initializer 'generators.rb', <<-RUBY
 Rails.application.config.generators do |g|
 end
@@ -136,7 +137,7 @@ config['haml'] = yes_wizard?("Would you like to use Haml instead of ERB?") if tr
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/haml.rb
 
 if config['haml']
-  gem 'haml', '>= 3.1.4'
+  gem 'haml', '>= 3.1.5'
   gem 'haml-rails', '>= 0.3.4', :group => :development
 else
   recipes.delete('haml')
@@ -159,7 +160,7 @@ config['machinist'] = yes_wizard?("Would you like to use machinist for test fixt
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/rspec.rb
 
 if config['rspec']
-  gem 'rspec-rails', '>= 2.9.0.rc2', :group => [:development, :test]
+  gem 'rspec-rails', '>= 2.10.1', :group => [:development, :test]
   if recipes.include? 'mongoid'
     # use the database_cleaner gem to reset the test database
     gem 'database_cleaner', '>= 0.7.2', :group => :test
@@ -282,7 +283,7 @@ config['cucumber'] = yes_wizard?("Would you like to use Cucumber for your BDD?")
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/cucumber.rb
 
 if config['cucumber']
-  gem 'cucumber-rails', '>= 1.3.0', :group => :test
+  gem 'cucumber-rails', '>= 1.3.0', :group => :test, :require => false
   gem 'capybara', '>= 1.1.2', :group => :test
   gem 'database_cleaner', '>= 0.7.2', :group => :test
   gem 'launchy', '>= 2.1.0', :group => :test
@@ -561,12 +562,12 @@ case config['devise']
     recipes.delete('devise')
     say_wizard "Devise recipe skipped."
   when 'standard'
-    gem 'devise', '>= 2.1.0.rc'
+    gem 'devise', '>= 2.1.0.rc2'
   when 'confirmable'
-    gem 'devise', '>= 2.1.0.rc'
+    gem 'devise', '>= 2.1.0.rc2'
     recipes << 'devise-confirmable'
   when 'invitable'
-    gem 'devise', '>= 2.1.0.rc'
+    gem 'devise', '>= 2.1.0.rc2'
     gem 'devise_invitable', '>= 1.0.1'
     recipes << 'devise-confirmable'
     recipes << 'devise-invitable'
@@ -701,9 +702,10 @@ RUBY
       # for mongoid
       gsub_file 'app/models/user.rb', /end/ do
   <<-RUBY
+  # run 'rake db:mongoid:create_indexes' to create indexes
+  index :email, :unique => true
   field :name
   validates_presence_of :name
-  validates_uniqueness_of :name, :email, :case_sensitive => false
   attr_accessible :name, :email, :password, :password_confirmation, :remember_me
 end
 RUBY
@@ -721,6 +723,7 @@ RUBY
         "validates_presence_of :name\n"
       end
       gsub_file 'app/models/user.rb', /validates_uniqueness_of :email/, 'validates_uniqueness_of :name, :email'
+      gsub_file 'app/models/user.rb', /# attr_accessible :title, :body/, ''
     end
 
     # needed for both mongoid and ActiveRecord
@@ -732,6 +735,22 @@ RUBY
         gsub_file 'app/models/user.rb', /# field :confirmed_at/, "field :confirmed_at"
         gsub_file 'app/models/user.rb', /# field :confirmation_sent_at/, "field :confirmation_sent_at"
         gsub_file 'app/models/user.rb', /# field :unconfirmed_email/, "field :unconfirmed_email"
+      end
+    end
+    if recipes.include? 'devise-invitable'
+      if recipes.include? 'mongoid'
+        gsub_file 'app/models/user.rb', /end/ do
+  <<-RUBY
+  #invitable
+  field :invitation_token, :type => String
+  field :invitation_sent_at, :type => Time
+  field :invitation_accepted_at, :type => Time
+  field :invitation_limit, :type => Integer
+  field :invited_by_id, :type => String
+  field :invited_by_type, :type => String
+end
+RUBY
+        end
       end
     end
 
@@ -955,7 +974,8 @@ after_everything do
   
   say_wizard "seeding the database"
   run 'bundle exec rake db:seed'
-
+  run 'rake db:mongoid:create_indexes' if recipes.include? 'mongoid'
+  
 end
 
 
@@ -1148,7 +1168,7 @@ if recipes.include? 'haml'
           say_wizard "Subdomains recipe skipped."
         when 'one-per-user'
           # user name as a subdomain
-          inject_into_file 'app/models/user.rb', :before => 'validates_uniqueness_of' do <<-RUBY
+          inject_into_file 'app/models/user.rb', :before => 'attr_accessible' do <<-RUBY
 validates_format_of :name, with: /^[a-z0-9_]+$/, message: 'must be lowercase alphanumerics only'
   validates_length_of :name, maximum: 32, message: 'exceeds maximum of 32 characters'
   validates_exclusion_of :name, in: ['www', 'mail', 'ftp'], message: 'is not available'
@@ -1360,8 +1380,8 @@ after_bundler do
       insert_into_file 'app/assets/javascripts/application.js', "//= require bootstrap\n", :after => "jquery_ujs\n"
       create_file 'app/assets/stylesheets/bootstrap_and_overrides.css.scss', <<-RUBY
 // Set the correct sprite paths
-$iconSpritePath: image-path('glyphicons-halflings.png');
-$iconWhiteSpritePath: image-path('glyphicons-halflings-white.png');
+$iconSpritePath: asset-url('glyphicons-halflings.png', image);
+$iconWhiteSpritePath: asset-url('glyphicons-halflings-white.png', image);
 @import "bootstrap";
 body { padding-top: 60px; }
 @import "bootstrap-responsive";

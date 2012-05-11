@@ -136,7 +136,7 @@ config['haml'] = yes_wizard?("Would you like to use Haml instead of ERB?") if tr
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/haml.rb
 
 if config['haml']
-  gem 'haml', '>= 3.1.4'
+  gem 'haml', '>= 3.1.5'
   gem 'haml-rails', '>= 0.3.4', :group => :development
 else
   recipes.delete('haml')
@@ -159,7 +159,7 @@ config['machinist'] = yes_wizard?("Would you like to use machinist for test fixt
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/rspec.rb
 
 if config['rspec']
-  gem 'rspec-rails', '>= 2.9.0.rc2', :group => [:development, :test]
+  gem 'rspec-rails', '>= 2.10.1', :group => [:development, :test]
   if recipes.include? 'mongoid'
     # use the database_cleaner gem to reset the test database
     gem 'database_cleaner', '>= 0.7.2', :group => :test
@@ -282,7 +282,7 @@ config['cucumber'] = yes_wizard?("Would you like to use Cucumber for your BDD?")
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/cucumber.rb
 
 if config['cucumber']
-  gem 'cucumber-rails', '>= 1.3.0', :group => :test
+  gem 'cucumber-rails', '>= 1.3.0', :group => :test, :require => false
   gem 'capybara', '>= 1.1.2', :group => :test
   gem 'database_cleaner', '>= 0.7.2', :group => :test
   gem 'launchy', '>= 2.1.0', :group => :test
@@ -542,7 +542,8 @@ after_everything do
   
   say_wizard "seeding the database"
   run 'bundle exec rake db:seed'
-
+  run 'rake db:mongoid:create_indexes' if recipes.include? 'mongoid'
+  
 end
 
 
@@ -929,8 +930,8 @@ after_bundler do
       insert_into_file 'app/assets/javascripts/application.js', "//= require bootstrap\n", :after => "jquery_ujs\n"
       create_file 'app/assets/stylesheets/bootstrap_and_overrides.css.scss', <<-RUBY
 // Set the correct sprite paths
-$iconSpritePath: image-path('glyphicons-halflings.png');
-$iconWhiteSpritePath: image-path('glyphicons-halflings-white.png');
+$iconSpritePath: asset-url('glyphicons-halflings.png', image);
+$iconWhiteSpritePath: asset-url('glyphicons-halflings-white.png', image);
 @import "bootstrap";
 body { padding-top: 60px; }
 @import "bootstrap-responsive";
