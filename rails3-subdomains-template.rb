@@ -170,7 +170,7 @@ if config['rspec']
     gem 'machinist', :group => :test
   end
   if config['factory_girl']
-    gem 'factory_girl_rails', '>= 3.2.0', :group => [:development, :test]
+    gem 'factory_girl_rails', '>= 3.3.0', :group => [:development, :test]
   end
   # add a collection of RSpec matchers and Cucumber steps to make testing email easy
   gem 'email_spec', '>= 1.2.1', :group => :test
@@ -452,7 +452,7 @@ if config['mongoid']
   say_wizard "REMINDER: When creating a Rails app using Mongoid..."
   say_wizard "you should add the '-O' flag to 'rails new'"
   gem 'bson_ext', '>= 1.6.2'
-  gem 'mongoid', '>= 2.4.9'
+  gem 'mongoid', '>= 2.4.10'
 else
   recipes.delete('mongoid')
 end
@@ -752,6 +752,9 @@ RUBY
         end
       end
     end
+
+    # patch for https://github.com/RailsApps/rails3-application-templates/issues/35
+    gsub_file 'app/models/user.rb', /:remember_meend/, ":remember_me\nend"
 
     unless recipes.include? 'haml'
 
