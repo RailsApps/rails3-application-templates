@@ -30,7 +30,10 @@ The application generator templates will ask you for various preferences:
 * Would you like to use "machinist":https://github.com/notahat/machinist for test fixtures with RSpec?
 * Would you like to use "Cucumber":http://cukes.info/ for your BDD?
 * Would you like to use "Guard":http://intridea.com/posts/hire-a-guard-for-your-project to automate your workflow?
-* Would you like the app to use a GMail account to send email?
+* How will you send email?
+## SMTP account
+## Gmail account
+## SendGrid account
 * Would you like to use "Mongoid":http://mongoid.org/ to connect to a "MongoDB":http://www.mongodb.org/ database?
 * Would you like to use "OmniAuth":https://github.com/intridea/omniauth for authentication?
 * Would you like to use "Devise":http://github.com/plataformatec/devise for authentication?
@@ -96,7 +99,7 @@ h4. Template for Rails 3 + Devise + RSpec + Cucumber
 To build the "rails3-devise-rspec-cucumber":http://github.com/RailsApps/rails3-devise-rspec-cucumber/  example application, run the command:
 
 <pre>
-$ rails new myapp -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-devise-rspec-cucumber-template.rb -T
+$ rails new rails3-devise-rspec-cucumber -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-devise-rspec-cucumber-template.rb -T
 </pre>
 
 Use the @-T@ flag to skip Test::Unit files.
@@ -106,7 +109,7 @@ h4. Template for Rails 3 + Twitter Bootstrap + Devise + CanCan
 To build the "rails3-bootstrap-devise-cancan":http://github.com/RailsApps/rails3-bootstrap-devise-cancan/  example application, run the command:
 
 <pre>
-$ rails new myapp -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-bootstrap-devise-cancan-template.rb -T
+$ rails new rails3-bootstrap-devise-cancan -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-bootstrap-devise-cancan-template.rb -T
 </pre>
 
 Use the @-T@ flag to skip Test::Unit files.
@@ -116,7 +119,7 @@ h4. Template for Rails 3 + Mongoid + Devise
 To build the "rails3-mongoid-devise":http://github.com/RailsApps/rails3-mongoid-devise/ example application, run the command:
 
 <pre>
-$ rails new myapp -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-mongoid-devise-template.rb -T -O
+$ rails new rails3-mongoid-devise -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-mongoid-devise-template.rb -T -O
 </pre>
 
 Use the @-T -O@ flags to skip Test::Unit files and Active Record files.
@@ -126,7 +129,7 @@ h4. Template for Rails 3 + Mongoid + OmniAuth
 To build the "rails3-mongoid-omniauth":http://github.com/RailsApps/rails3-mongoid-omniauth/ example application, run the command:
 
 <pre>
-$ rails new myapp -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-mongoid-omniauth-template.rb -T -O
+$ rails new rails3-mongoid-omniauth -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-mongoid-omniauth-template.rb -T -O
 </pre>
 
 Use the @-T -O@ flags to skip Test::Unit files and Active Record files.
@@ -136,7 +139,7 @@ h4. Template for Rails 3 + Subdomains
 To build the "rails3-subdomains":https://github.com/RailsApps/rails3-subdomains example application, run the command:
 
 <pre>
-$ rails new myapp -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-subdomains-template.rb -T -O
+$ rails new rails3-subdomains -m https://raw.github.com/RailsApps/rails3-application-templates/master/rails3-subdomains-template.rb -T -O
 </pre>
 
 Use the @-T -O@ flags to skip Test::Unit files and Active Record files.
