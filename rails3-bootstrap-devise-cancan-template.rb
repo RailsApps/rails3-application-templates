@@ -130,7 +130,7 @@ config['haml'] = yes_wizard?("Would you like to use Haml instead of ERB?") if tr
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/haml.rb
 
 if config['haml']
-  gem 'haml', '>= 3.1.5'
+  gem 'haml', '>= 3.1.6'
   gem 'haml-rails', '>= 0.3.4', :group => :development
 else
   recipes.delete('haml')
@@ -436,11 +436,21 @@ end
 say_recipe 'ActionMailer'
 
 config = {}
-config['gmail'] = yes_wizard?("Would you like the app to use a GMail account to send email?") if true && true unless config.key?('gmail')
+config['mailer'] = multiple_choice("How will you send email?", [["SMTP account", "smtp"], ["Gmail account", "gmail"], ["SendGrid account", "sendgrid"]]) if true && true unless config.key?('mailer')
 @configs[@current_recipe] = config
 
 # Application template recipe for the rails_apps_composer. Check for a newer version here:
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/action_mailer.rb
+
+case config['mailer']
+  when 'smtp'
+    recipes << 'smtp'
+  when 'gmail'
+    recipes << 'gmail'
+  when 'sendgrid'
+    gem 'sendgrid'
+    recipes << 'sendgrid'
+end
 
 after_bundler do
   ### modifying environment configuration files for ActionMailer
@@ -451,8 +461,8 @@ after_bundler do
   <<-RUBY
 config.action_mailer.default_url_options = { :host => 'localhost:3000' }
   config.action_mailer.delivery_method = :smtp
-  # change to false to prevent email from being sent during development
-  config.action_mailer.perform_deliveries = true
+  # change to true to allow email to be sent during development
+  config.action_mailer.perform_deliveries = false
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.default :charset => "utf-8"
 RUBY
@@ -481,7 +491,7 @@ RUBY
   end
 
   ### modifying environment configuration files to send email using a GMail account
-  if config['gmail']
+  if recipes.include? 'gmail'
     gmail_configuration_text = <<-TEXT
 \n
   config.action_mailer.smtp_settings = {
@@ -497,6 +507,24 @@ TEXT
     say_wizard gmail_configuration_text
     inject_into_file 'config/environments/development.rb', gmail_configuration_text, :after => 'config.action_mailer.default :charset => "utf-8"'
     inject_into_file 'config/environments/production.rb', gmail_configuration_text, :after => 'config.action_mailer.default :charset => "utf-8"'
+  end
+
+  ### modifying environment configuration files to send email using a SendGrid account
+  if recipes.include? 'sendgrid'
+    sendgrid_configuration_text = <<-TEXT
+\n
+  config.action_mailer.smtp_settings = {
+    address: "smtp.sendgrid.net",
+    port: 25,
+    domain: "example.com",
+    authentication: "plain",
+    user_name: ENV["SENDGRID_USERNAME"],
+    password: ENV["SENDGRID_PASSWORD"]
+  }
+TEXT
+    say_wizard gmail_configuration_text
+    inject_into_file 'config/environments/development.rb', sendgrid_configuration_text, :after => 'config.action_mailer.default :charset => "utf-8"'
+    inject_into_file 'config/environments/production.rb', sendgrid_configuration_text, :after => 'config.action_mailer.default :charset => "utf-8"'
   end
   
 end
@@ -521,12 +549,12 @@ case config['devise']
     recipes.delete('devise')
     say_wizard "Devise recipe skipped."
   when 'standard'
-    gem 'devise', '>= 2.1.0.rc2'
+    gem 'devise', '>= 2.1.0'
   when 'confirmable'
-    gem 'devise', '>= 2.1.0.rc2'
+    gem 'devise', '>= 2.1.0'
     recipes << 'devise-confirmable'
   when 'invitable'
-    gem 'devise', '>= 2.1.0.rc2'
+    gem 'devise', '>= 2.1.0'
     gem 'devise_invitable', '>= 1.0.1'
     recipes << 'devise-confirmable'
     recipes << 'devise-invitable'
@@ -712,9 +740,6 @@ RUBY
         end
       end
     end
-
-    # patch for https://github.com/RailsApps/rails3-application-templates/issues/35
-    gsub_file 'app/models/user.rb', /:remember_meend/, ":remember_me\nend"
 
     unless recipes.include? 'haml'
 
@@ -1138,7 +1163,7 @@ case config['css_option']
   when 'bootstrap_sass'
     # https://github.com/thomas-mcdonald/bootstrap-sass
     # http://rubysource.com/twitter-bootstrap-less-and-sass-understanding-your-options-for-rails-3-1/
-    gem 'bootstrap-sass', '>= 2.0.1'
+    gem 'bootstrap-sass', '>= 2.0.3'
     recipes << 'bootstrap'
 
 end
