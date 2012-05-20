@@ -476,7 +476,7 @@ end
 say_recipe 'ActionMailer'
 
 config = {}
-config['mailer'] = multiple_choice("How will you send email?", [["SMTP account", "smtp"], ["Gmail account", "gmail"], ["SendGrid account", "sendgrid"]]) if true && true unless config.key?('mailer')
+config['mailer'] = multiple_choice("How will you send email?", [["SMTP account", "smtp"], ["Gmail account", "gmail"], ["SendGrid account", "sendgrid"], ["Mandrill by MailChimp account", "mandrill"]]) if true && true unless config.key?('mailer')
 @configs[@current_recipe] = config
 
 # Application template recipe for the rails_apps_composer. Check for a newer version here:
@@ -490,6 +490,9 @@ case config['mailer']
   when 'sendgrid'
     gem 'sendgrid'
     recipes << 'sendgrid'
+  when 'mandrill'
+    gem 'hominid'
+    recipes << 'mandrill'
 end
 
 after_bundler do
@@ -567,6 +570,22 @@ TEXT
     inject_into_file 'config/environments/production.rb', sendgrid_configuration_text, :after => 'config.action_mailer.default :charset => "utf-8"'
   end
   
+    ### modifying environment configuration files to send email using a Mandrill account
+    if recipes.include? 'mandrill'
+      mandrill_configuration_text = <<-TEXT
+  \n
+    config.action_mailer.smtp_settings = {
+      :address   => "smtp.mandrillapp.com",
+      :port      => 25,
+      :user_name => ENV["MANDRILL_USERNAME"],
+      :password  => ENV["MANDRILL_API_KEY"]
+    }
+  TEXT
+      say_wizard gmail_configuration_text
+      inject_into_file 'config/environments/development.rb', mandrill_configuration_text, :after => 'config.action_mailer.default :charset => "utf-8"'
+      inject_into_file 'config/environments/production.rb', mandrill_configuration_text, :after => 'config.action_mailer.default :charset => "utf-8"'
+    end
+    
 end
 
 
@@ -782,10 +801,8 @@ RUBY
     end
 
     unless recipes.include? 'haml'
-
       # Generate Devise views (unless you are using Haml)
       run 'rails generate devise:views'
-      
       # Modify Devise views to add 'name'
       inject_into_file "app/views/devise/registrations/edit.html.erb", :after => "<%= devise_error_messages! %>\n" do
       <<-ERB
@@ -793,25 +810,17 @@ RUBY
 <%= f.text_field :name %></p>
 ERB
       end
-
       inject_into_file "app/views/devise/registrations/new.html.erb", :after => "<%= devise_error_messages! %>\n" do
       <<-ERB
 <p><%= f.label :name %><br />
 <%= f.text_field :name %></p>
 ERB
       end
-
     else
-
       # copy Haml versions of modified Devise views
-      inside 'app/views/devise' do
-        get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/rails3-mongoid-devise/app/views/devise/_links.erb', '_links.erb'
-      end
-      inside 'app/views/devise/registrations' do
-        get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/rails3-mongoid-devise/app/views/devise/registrations/edit.html.haml', 'edit.html.haml'
-        get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/rails3-mongoid-devise/app/views/devise/registrations/new.html.haml', 'new.html.haml'
-      end
-
+      get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/devise-views-haml/app/views/devise/shared/_links.html.haml', 'app/views/devise/shared/_links.html.haml'
+      get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/devise-views-haml/app/views/devise/registrations/edit.html.haml', 'app/views/devise/registrations/edit.html.haml'
+      get 'https://raw.github.com/RailsApps/rails3-application-templates/master/files/devise-views-haml/app/views/devise/registrations/new.html.haml', 'app/views/devise/registrations/new.html.haml'
     end
 
   end
