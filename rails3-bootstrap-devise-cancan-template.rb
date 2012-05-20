@@ -436,7 +436,7 @@ end
 say_recipe 'ActionMailer'
 
 config = {}
-config['mailer'] = multiple_choice("How will you send email?", [["SMTP account", "smtp"], ["Gmail account", "gmail"], ["SendGrid account", "sendgrid"]]) if true && true unless config.key?('mailer')
+config['mailer'] = multiple_choice("How will you send email?", [["SMTP account", "smtp"], ["Gmail account", "gmail"], ["SendGrid account", "sendgrid"], ["Mandrill by MailChimp account", "mandrill"]]) if true && true unless config.key?('mailer')
 @configs[@current_recipe] = config
 
 # Application template recipe for the rails_apps_composer. Check for a newer version here:
@@ -450,6 +450,9 @@ case config['mailer']
   when 'sendgrid'
     gem 'sendgrid'
     recipes << 'sendgrid'
+  when 'mandrill'
+    gem 'hominid'
+    recipes << 'mandrill'
 end
 
 after_bundler do
@@ -527,6 +530,22 @@ TEXT
     inject_into_file 'config/environments/production.rb', sendgrid_configuration_text, :after => 'config.action_mailer.default :charset => "utf-8"'
   end
   
+    ### modifying environment configuration files to send email using a Mandrill account
+    if recipes.include? 'mandrill'
+      mandrill_configuration_text = <<-TEXT
+  \n
+    config.action_mailer.smtp_settings = {
+      :address   => "smtp.mandrillapp.com",
+      :port      => 25,
+      :user_name => ENV["MANDRILL_USERNAME"],
+      :password  => ENV["MANDRILL_PASSWORD"]
+    }
+  TEXT
+      say_wizard gmail_configuration_text
+      inject_into_file 'config/environments/development.rb', mandrill_configuration_text, :after => 'config.action_mailer.default :charset => "utf-8"'
+      inject_into_file 'config/environments/production.rb', mandrill_configuration_text, :after => 'config.action_mailer.default :charset => "utf-8"'
+    end
+    
 end
 
 
