@@ -33,7 +33,8 @@ The application generator templates will ask you for various preferences:
 * How will you send email?
 ## SMTP account
 ## Gmail account
-## SendGrid account
+## "SendGrid":http://sendgrid.com/ account
+## "Mandrill by MailChimp":http://mandrill.com/ account
 * Would you like to use "Mongoid":http://mongoid.org/ to connect to a "MongoDB":http://www.mongodb.org/ database?
 * Would you like to use "OmniAuth":https://github.com/intridea/omniauth for authentication?
 * Would you like to use "Devise":http://github.com/plataformatec/devise for authentication?
