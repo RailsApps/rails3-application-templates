@@ -131,7 +131,7 @@ config['haml'] = yes_wizard?("Would you like to use Haml instead of ERB?") if tr
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/haml.rb
 
 if config['haml']
-  gem 'haml', '>= 3.1.5'
+  gem 'haml', '>= 3.1.6'
   gem 'haml-rails', '>= 0.3.4', :group => :development
 else
   recipes.delete('haml')
@@ -229,7 +229,7 @@ case config['css_option']
   when 'bootstrap_sass'
     # https://github.com/thomas-mcdonald/bootstrap-sass
     # http://rubysource.com/twitter-bootstrap-less-and-sass-understanding-your-options-for-rails-3-1/
-    gem 'bootstrap-sass', '>= 2.0.1'
+    gem 'bootstrap-sass', '>= 2.0.3'
     recipes << 'bootstrap'
 
 end

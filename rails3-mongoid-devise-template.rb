@@ -162,7 +162,7 @@ if config['rspec']
   gem 'rspec-rails', '>= 2.10.1', :group => [:development, :test]
   if recipes.include? 'mongoid'
     # use the database_cleaner gem to reset the test database
-    gem 'database_cleaner', '>= 0.7.2', :group => :test
+    gem 'database_cleaner', '>= 0.8.0', :group => :test
     # include RSpec matchers from the mongoid-rspec gem
     gem 'mongoid-rspec', '>= 1.4.4', :group => :test
   end
@@ -284,7 +284,7 @@ config['cucumber'] = yes_wizard?("Would you like to use Cucumber for your BDD?")
 if config['cucumber']
   gem 'cucumber-rails', '>= 1.3.0', :group => :test, :require => false
   gem 'capybara', '>= 1.1.2', :group => :test
-  gem 'database_cleaner', '>= 0.7.2', :group => :test
+  gem 'database_cleaner', '>= 0.8.0', :group => :test
   gem 'launchy', '>= 2.1.0', :group => :test
 else
   recipes.delete('cucumber')
@@ -451,8 +451,8 @@ config['mongoid'] = yes_wizard?("Would you like to use Mongoid to connect to a M
 if config['mongoid']
   say_wizard "REMINDER: When creating a Rails app using Mongoid..."
   say_wizard "you should add the '-O' flag to 'rails new'"
-  gem 'bson_ext', '>= 1.6.2'
-  gem 'mongoid', '>= 2.4.10'
+  gem 'bson_ext', '>= 1.6.4'
+  gem 'mongoid', '>= 2.4.11'
 else
   recipes.delete('mongoid')
 end
@@ -614,7 +614,7 @@ case config['devise']
     recipes << 'devise-confirmable'
   when 'invitable'
     gem 'devise', '>= 2.1.0'
-    gem 'devise_invitable', '>= 1.0.1'
+    gem 'devise_invitable', '>= 1.0.2'
     recipes << 'devise-confirmable'
     recipes << 'devise-invitable'
   else
@@ -716,7 +716,7 @@ after_bundler do
   
   if recipes.include? 'omniauth'
     generate(:model, "user provider:string uid:string name:string email:string")
-    gsub_file 'app/models/user.rb', /end/ do
+    gsub_file 'app/models/user.rb', /\bend\s*\Z/ do
 <<-RUBY
   attr_accessible :provider, :uid, :name, :email
 end
@@ -738,6 +738,13 @@ RUBY
       # insert 'rolify' method in 'app/models/users.rb'
       if recipes.include? 'mongoid'
         generate 'rolify:role Role User mongoid'
+      	# correct the generation of rolify 3.1 with mongoid
+      	# the call to `rolify` should be *after* the inclusion of mongoid
+      	# (see https://github.com/EppO/rolify/issues/61)
+      	# This isn't needed for rolify>=3.2.0.beta4, but should cause no harm
+      	gsub_file 'app/models/user.rb',
+      		  /^\s*(rolify.*?)$\s*(include Mongoid::Document.*?)$/,
+      		  "  \\2\n  extend Rolify\n  \\1\n"
       else
         generate 'rolify:role Role User'
       end
@@ -746,7 +753,7 @@ RUBY
     # Add a 'name' attribute to the User model
     if recipes.include? 'mongoid'
       # for mongoid
-      gsub_file 'app/models/user.rb', /end/ do
+      gsub_file 'app/models/user.rb', /\bend\s*\Z/ do
   <<-RUBY
   # run 'rake db:mongoid:create_indexes' to create indexes
   index :email, :unique => true
@@ -785,7 +792,7 @@ RUBY
     end
     if recipes.include? 'devise-invitable'
       if recipes.include? 'mongoid'
-        gsub_file 'app/models/user.rb', /end/ do
+        gsub_file 'app/models/user.rb', /\bend\s*\Z/ do
   <<-RUBY
   #invitable
   field :invitation_token, :type => String
@@ -949,23 +956,8 @@ say_recipe 'SeedDatabase'
 # Application template recipe for the rails_apps_composer. Check for a newer version here:
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/seed_database.rb
 
-
 after_bundler do
-
   say_wizard "SeedDatabase recipe running 'after bundler'"
-
-  run 'bundle exec rake db:migrate' unless recipes.include? 'mongoid'
-
-  if recipes.include? 'devise-invitable'
-    generate 'devise_invitable user'
-    unless recipes.include? 'mongoid'
-      run 'bundle exec rake db:migrate'
-    end
-  end
-  
-  # clone the schema changes to the test database
-  run 'bundle exec rake db:test:prepare' unless recipes.include? 'mongoid'
-  
   if recipes.include? 'mongoid'
     append_file 'db/seeds.rb' do <<-FILE
 puts 'EMPTY THE MONGODB DATABASE'
@@ -973,7 +965,6 @@ Mongoid.master.collections.reject { |c| c.name =~ /^system/}.each(&:drop)
 FILE
     end
   end
-
   if recipes.include? 'devise'
     if recipes.include? 'devise-confirmable'
       append_file 'db/seeds.rb' do <<-FILE
@@ -1001,17 +992,22 @@ FILE
       end
     end
   end
-  
-
-  
 end
 
 after_everything do
-  
-  say_wizard "seeding the database"
+  if recipes.include? 'devise-invitable'
+    run 'bundle exec rake db:migrate'
+    generate 'devise_invitable user'
+  end
+  unless recipes.include? 'mongoid'
+    say_wizard "applying migrations and seeding the database"
+    run 'bundle exec rake db:migrate'
+    run 'bundle exec rake db:test:prepare'
+  else
+    say_wizard "creating indexes and seeding the database"
+    run 'rake db:mongoid:create_indexes'
+  end
   run 'bundle exec rake db:seed'
-  run 'rake db:mongoid:create_indexes' if recipes.include? 'mongoid'
-  
 end
 
 
