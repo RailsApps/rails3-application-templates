@@ -136,6 +136,8 @@ $ rails new rails3-mongoid-devise -m https://raw.github.com/RailsApps/rails3-app
 
 Use the @-T -O@ flags to skip Test::Unit files and Active Record files.
 
+MongoDB must be installed and running on your computer before you use the application template to generate the app.
+
 h4. Template for Rails 3 + Mongoid + OmniAuth
 
 To build the "rails3-mongoid-omniauth":http://github.com/RailsApps/rails3-mongoid-omniauth/ example application, run the command:
@@ -145,6 +147,8 @@ $ rails new rails3-mongoid-omniauth -m https://raw.github.com/RailsApps/rails3-a
 </pre>
 
 Use the @-T -O@ flags to skip Test::Unit files and Active Record files.
+
+MongoDB must be installed and running on your computer before you use the application template to generate the app.
 
 h4. Template for Rails 3 + Subdomains
 
