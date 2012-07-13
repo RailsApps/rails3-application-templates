@@ -151,26 +151,25 @@ say_recipe 'RSpec'
 
 config = {}
 config['rspec'] = yes_wizard?("Would you like to use RSpec instead of TestUnit?") if true && true unless config.key?('rspec')
-config['factory_girl'] = yes_wizard?("Would you like to use factory_girl for test fixtures with RSpec?") if true && true unless config.key?('factory_girl')
-config['machinist'] = yes_wizard?("Would you like to use machinist for test fixtures with RSpec?") if true && true unless config.key?('machinist')
+config['fixtures'] = multiple_choice("Which library would you like to use for test fixtures with RSpec?", [["None", "none"], ["factory_girl", "factory_girl"], ["machinist", "machinist"]]) if true && true unless config.key?('fixtures')
 @configs[@current_recipe] = config
 
 # Application template recipe for the rails_apps_composer. Check for a newer version here:
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/rspec.rb
 
 if config['rspec']
-  gem 'rspec-rails', '>= 2.10.1', :group => [:development, :test]
+  gem 'rspec-rails', '>= 2.11.0', :group => [:development, :test]
   if recipes.include? 'mongoid'
     # use the database_cleaner gem to reset the test database
     gem 'database_cleaner', '>= 0.8.0', :group => :test
     # include RSpec matchers from the mongoid-rspec gem
-    gem 'mongoid-rspec', '>= 1.4.4', :group => :test
+    gem 'mongoid-rspec', '1.4.6', :group => :test
   end
-  if config['machinist']
-    gem 'machinist', :group => :test
-  end
-  if config['factory_girl']
-    gem 'factory_girl_rails', '>= 3.3.0', :group => [:development, :test]
+  case config['fixtures']
+    when 'machinist'
+      gem 'machinist', :group => :test
+    when 'factory_girl'
+      gem 'factory_girl_rails', '>= 3.5.0', :group => [:development, :test]
   end
   # add a collection of RSpec matchers and Cucumber steps to make testing email easy
   gem 'email_spec', '>= 1.2.1', :group => :test
@@ -195,7 +194,7 @@ if config['rspec']
   config.include(EmailSpec::Matchers)
 RUBY
     end
-    if config['machinist']
+    if config['fixtures'] === 'machinist'
       say_wizard "Generating blueprints file for Machinist"
       generate 'machinist:install'
     end
@@ -209,7 +208,7 @@ RUBY
     config.generators do |g|
       g.view_specs false
       g.helper_specs false
-      #{"g.fixture_replacement :machinist" if config['machinist']}
+      #{"g.fixture_replacement :machinist" if config['fixtures'] === 'machinist'}
     end
 
 RUBY
@@ -391,10 +390,6 @@ end
   RUBY
   end
 
-  def guards
-    @guards ||= []
-  end
-
   def guard(name, version = nil)
     args = []
     if version
@@ -402,14 +397,11 @@ end
     end
     args << { :group => :development }
     gem "guard-#{name}", *args
-    guards << name
   end
 
   guard 'bundler', '>= 0.1.3'
 
-  unless recipes.include? 'pow'
-    guard 'rails', '>= 0.0.3'
-  end
+  guard 'rails', '>= 0.0.3'
   
   if recipes.include? 'guard-LiveReload'
     guard 'livereload', '>= 0.3.0'
@@ -425,9 +417,6 @@ end
 
   after_bundler do
     run 'guard init'
-    guards.each do |name|
-      run "guard init #{name}"
-    end
   end
 
 else
@@ -451,8 +440,7 @@ config['mongoid'] = yes_wizard?("Would you like to use Mongoid to connect to a M
 if config['mongoid']
   say_wizard "REMINDER: When creating a Rails app using Mongoid..."
   say_wizard "you should add the '-O' flag to 'rails new'"
-  gem 'bson_ext', '>= 1.6.4'
-  gem 'mongoid', '>= 2.4.11'
+  gem 'mongoid', '>= 3.0.1'
 else
   recipes.delete('mongoid')
 end
@@ -608,12 +596,12 @@ case config['devise']
     recipes.delete('devise')
     say_wizard "Devise recipe skipped."
   when 'standard'
-    gem 'devise', '>= 2.1.0'
+    gem 'devise', '>= 2.1.2'
   when 'confirmable'
-    gem 'devise', '>= 2.1.0'
+    gem 'devise', '>= 2.1.2'
     recipes << 'devise-confirmable'
   when 'invitable'
-    gem 'devise', '>= 2.1.0'
+    gem 'devise', '>= 2.1.2'
     gem 'devise_invitable', '>= 1.0.2'
     recipes << 'devise-confirmable'
     recipes << 'devise-invitable'
@@ -623,7 +611,7 @@ case config['devise']
 end
 
 if config['authorization']
-  gem 'cancan', '>= 1.6.7'
+  gem 'cancan', '>= 1.6.8'
   gem 'rolify', '>= 3.1.0'
   recipes << 'authorization'
 end
@@ -752,14 +740,18 @@ RUBY
 
     # Add a 'name' attribute to the User model
     if recipes.include? 'mongoid'
+      # include timestamps to avoid special casing views for Mongoid
+      gsub_file 'app/models/user.rb',
+        /include Mongoid::Document$/,
+        "\\0\n  include Mongoid::Timestamps\n"
       # for mongoid
       gsub_file 'app/models/user.rb', /\bend\s*\Z/ do
   <<-RUBY
   # run 'rake db:mongoid:create_indexes' to create indexes
-  index :email, :unique => true
-  field :name
+  index({ email: 1 }, { unique: true, background: true })
+  field :name, :type => String
   validates_presence_of :name
-  attr_accessible :name, :email, :password, :password_confirmation, :remember_me
+  attr_accessible :name, :email, :password, :password_confirmation, :remember_me, :created_at, :updated_at
 end
 RUBY
       end
@@ -958,13 +950,6 @@ say_recipe 'SeedDatabase'
 
 after_bundler do
   say_wizard "SeedDatabase recipe running 'after bundler'"
-  if recipes.include? 'mongoid'
-    append_file 'db/seeds.rb' do <<-FILE
-puts 'EMPTY THE MONGODB DATABASE'
-Mongoid.master.collections.reject { |c| c.name =~ /^system/}.each(&:drop)
-FILE
-    end
-  end
   if recipes.include? 'devise'
     if recipes.include? 'devise-confirmable'
       append_file 'db/seeds.rb' do <<-FILE
@@ -1312,7 +1297,7 @@ case config['css_option']
 
   when 'foundation'
     # https://github.com/zurb/foundation-rails
-    gem 'zurb-foundation'
+    gem 'zurb-foundation', '>= 3.0.5'
 
   when 'bootstrap_less'
     # https://github.com/seyhunak/twitter-bootstrap-rails
@@ -1326,7 +1311,7 @@ case config['css_option']
   when 'bootstrap_sass'
     # https://github.com/thomas-mcdonald/bootstrap-sass
     # http://rubysource.com/twitter-bootstrap-less-and-sass-understanding-your-options-for-rails-3-1/
-    gem 'bootstrap-sass', '>= 2.0.3'
+    gem 'bootstrap-sass', '>= 2.0.4.0'
     recipes << 'bootstrap'
 
 end
@@ -1431,7 +1416,6 @@ RUBY
       get 'https://raw.github.com/dhgamache/Skeleton/master/stylesheets/base.css', 'app/assets/stylesheets/base.css.scss'
       get 'https://raw.github.com/dhgamache/Skeleton/master/stylesheets/layout.css', 'app/assets/stylesheets/layout.css.scss'
       get 'https://raw.github.com/dhgamache/Skeleton/master/stylesheets/skeleton.css', 'app/assets/stylesheets/skeleton.css.scss'
-      get 'https://raw.github.com/dhgamache/Skeleton/master/javascripts/tabs.js', 'app/assets/javascripts/tabs.js'
 
     when 'normalize'
       say_wizard 'normalizing CSS for consistent styling'

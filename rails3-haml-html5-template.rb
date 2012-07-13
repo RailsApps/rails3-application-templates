@@ -215,7 +215,7 @@ case config['css_option']
 
   when 'foundation'
     # https://github.com/zurb/foundation-rails
-    gem 'zurb-foundation'
+    gem 'zurb-foundation', '>= 3.0.5'
 
   when 'bootstrap_less'
     # https://github.com/seyhunak/twitter-bootstrap-rails
@@ -229,7 +229,7 @@ case config['css_option']
   when 'bootstrap_sass'
     # https://github.com/thomas-mcdonald/bootstrap-sass
     # http://rubysource.com/twitter-bootstrap-less-and-sass-understanding-your-options-for-rails-3-1/
-    gem 'bootstrap-sass', '>= 2.0.3'
+    gem 'bootstrap-sass', '>= 2.0.4.0'
     recipes << 'bootstrap'
 
 end
@@ -334,7 +334,6 @@ RUBY
       get 'https://raw.github.com/dhgamache/Skeleton/master/stylesheets/base.css', 'app/assets/stylesheets/base.css.scss'
       get 'https://raw.github.com/dhgamache/Skeleton/master/stylesheets/layout.css', 'app/assets/stylesheets/layout.css.scss'
       get 'https://raw.github.com/dhgamache/Skeleton/master/stylesheets/skeleton.css', 'app/assets/stylesheets/skeleton.css.scss'
-      get 'https://raw.github.com/dhgamache/Skeleton/master/javascripts/tabs.js', 'app/assets/javascripts/tabs.js'
 
     when 'normalize'
       say_wizard 'normalizing CSS for consistent styling'
