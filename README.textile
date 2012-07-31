@@ -1,4 +1,4 @@
-h1. Rails 3.2 Application Templates
+h1. !http://railsapps.github.com/images/rails-36x36.jpg(Rails 3.2 Application Templates)! Rails 3.2 Application Templates
 
 These application generator templates give you a Rails 3.2 starter app you can deploy in minutes.
 
@@ -247,8 +247,10 @@ h4. Contributors
 
 "Brook Riggio":http://twitter.com/brookr contributed the rails3-haml-html5 template.
 
-h2. License
+h2. MIT License
 
-h4. Public Domain Dedication
+"MIT License":http://www.opensource.org/licenses/mit-license
 
-This work is a compilation and derivation from other previously released works. With the exception of various included works, which may be restricted by other licenses, the author or authors of this code dedicate any and all copyright interest in this code to the public domain. We make this dedication for the benefit of the public at large and to the detriment of our heirs and successors. We intend this dedication to be an overt act of relinquishment in perpetuity of all present and future rights to this code under copyright law.
+Copyright © 2012 Daniel Kehoe
+
+!https://cruel-carlota.pagodabox.com/9a7ed11e8570e461c585a7afd3722d71(githalytics.com alpha)!
