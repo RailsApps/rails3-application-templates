@@ -10,8 +10,10 @@ This application was built with preferences that are known to work together.
 
 If the application doesn't work as expected, please "report an issue":https://github.com/RailsApps/rails_apps_composer/issues and include these diagnostics:
 
+Recipes:
 RECIPES
 
+Preferences:
 PREFERENCES
 
 h2. Ruby on Rails
