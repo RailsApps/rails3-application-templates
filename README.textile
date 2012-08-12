@@ -27,13 +27,19 @@ Before generating your application, you will need:
 
 See "Installing Rails 3.2":http://railsapps.github.com/installing-rails.html for detailed instructions and advice.
 
-h2. Generating the Application
+h2. Creating a Starter App
 
-Use the @"rails new myapp -m"@ command to generate a Rails web application.
+To build a Rails application, run the command (where @myapp@ is the name of your application):
 
-This creates a new Rails app (with the @myapp@ name you provide) on your computer.
+<pre>
+$ rails new myapp -m https://raw.github.com/RailsApps/rails-composer/master/composer.rb
+</pre>
 
-You can add the @-T -O@ flags to skip Test::Unit files and Active Record files.
+You can use the @-T@ flag to skip Test::Unit files or the @-O@ flag to skip Active Record files:
+
+<pre>
+$ rails new myapp -m https://raw.github.com/RailsApps/rails-composer/master/composer.rb -T -O
+</pre>
 
 h2. Application Template Default
 
