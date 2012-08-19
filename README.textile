@@ -4,10 +4,6 @@ h3. These application templates are deprecated (no longer maintained).
 
 h3. Use the "Rails Composer":http://railsapps.github.com/rails-composer/ tool instead. The Rails Composer tool creates the example applications for the RailsApps project. The tool gives you a Rails 3.2 starter app you can deploy in minutes.
 
-h2. !http://twitter-badges.s3.amazonaws.com/t_logo-a.png(Follow on Twitter)!:http://www.twitter.com/rails_apps Follow on Twitter
-
-Follow the project on Twitter: "@rails_apps":http://twitter.com/rails_apps. Please tweet some praise if you like what you've found.
-
 h2. Dependencies
 
 Before generating your application, you will need:
@@ -15,7 +11,7 @@ Before generating your application, you will need:
 * The Ruby language (version 1.9.3)
 * Rails 3.2
 
-See "Installing Rails 3.2":http://railsapps.github.com/installing-rails.html for detailed instructions and advice.
+See "Installing Rails":http://railsapps.github.com/installing-rails.html for detailed instructions and advice.
 
 h2. Creating a Starter App
 
