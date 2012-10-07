@@ -33,7 +33,7 @@ RUBY
 @prefs = {:railsapps=>"rails-prelaunch-signup"}
 @gems = []
 @diagnostics_recipes = [["example"], ["setup"], ["railsapps"], ["gems", "setup"], ["gems", "readme", "setup"], ["extras", "gems", "readme", "setup"], ["example", "git"], ["git", "setup"], ["git", "railsapps"], ["gems", "git", "setup"], ["gems", "git", "readme", "setup"], ["extras", "gems", "git", "readme", "setup"], ["controllers", "email", "extras", "frontend", "gems", "git", "init", "models", "railsapps", "readme", "routes", "setup", "testing", "views"], ["controllers", "core", "email", "extras", "frontend", "gems", "git", "init", "models", "railsapps", "readme", "routes", "setup", "testing", "views"], ["controllers", "core", "email", "extras", "frontend", "gems", "git", "init", "models", "prelaunch", "railsapps", "readme", "routes", "setup", "testing", "views"], ["controllers", "email", "example", "extras", "frontend", "gems", "git", "init", "models", "railsapps", "readme", "routes", "setup", "testing", "views"], ["controllers", "email", "example", "extras", "frontend", "gems", "git", "init", "models", "prelaunch", "railsapps", "readme", "routes", "setup", "testing", "views"]]
-@diagnostics_prefs = [{:railsapps=>"rails-prelaunch-signup", :database=>"sqlite", :unit_test=>"rspec", :integration=>"cucumber", :fixtures=>"factory_girl", :frontend=>"bootstrap", :bootstrap=>"sass", :email=>"mandrill", :authentication=>"devise", :devise_modules=>"confirmable", :authorization=>"cancan", :starter_app=>"admin_app", :form_builder=>"simple_form"}, {:railsapps=>"rails3-bootstrap-devise-cancan", :database=>"sqlite", :unit_test=>"rspec", :integration=>"cucumber", :fixtures=>"factory_girl", :frontend=>"bootstrap", :bootstrap=>"sass", :email=>"gmail", :authentication=>"devise", :devise_modules=>"default", :authorization=>"cancan", :starter_app=>"admin_app", :form_builder=>"none"}, {:railsapps=>"rails3-devise-rspec-cucumber", :database=>"sqlite", :unit_test=>"rspec", :integration=>"cucumber", :fixtures=>"factory_girl", :frontend=>"none", :email=>"gmail", :authentication=>"devise", :devise_modules=>"default", :authorization=>"none", :starter_app=>"users_app", :form_builder=>"none"}, {:railsapps=>"rails3-mongoid-devise", :database=>"mongodb", :orm=>"mongoid", :templates=>"erb", :unit_test=>"rspec", :integration=>"cucumber", :fixtures=>"factory_girl", :frontend=>"none", :email=>"gmail", :authentication=>"devise", :devise_modules=>"default", :authorization=>"none", :starter_app=>"users_app", :form_builder=>"none"}, {:railsapps=>"rails3-mongoid-omniauth", :database=>"mongodb", :orm=>"mongoid", :templates=>"erb", :unit_test=>"rspec", :integration=>"cucumber", :fixtures=>"factory_girl", :frontend=>"none", :email=>"none", :authentication=>"omniauth", :omniauth_provider=>"twitter", :authorization=>"none", :starter_app=>"users_app", :form_builder=>"none"}, {:railsapps=>"rails3-subdomains", :database=>"mongodb", :orm=>"mongoid", :templates=>"haml", :unit_test=>"rspec", :integration=>"cucumber", :fixtures=>"factory_girl", :frontend=>"none", :email=>"gmail", :authentication=>"devise", :devise_modules=>"default", :authorization=>"none", :starter_app=>"subdomains_app", :form_builder=>"none"}, {:railsapps=>"none", :database=>"sqlite", :unit_test=>"rspec", :integration=>"capybara", :fixtures=>"factory_girl", :frontend=>"bootstrap", :bootstrap=>"sass", :email=>"none", :authentication=>"omniauth", :omniauth_provider=>"twitter", :authorization=>"cancan", :form_builder=>"none", :starter_app=>"admin_app"}, {:railsapps=>"none", :database=>"sqlite", :unit_test=>"rspec", :integration=>"cucumber", :fixtures=>"none", :frontend=>"bootstrap", :bootstrap=>"sass", :email=>"gmail", :authentication=>"devise", :devise_modules=>"invitable", :authorization=>"cancan", :form_builder=>"simple_form", :starter_app=>"admin_app"}, {:railsapps=>"none", :database=>"sqlite", :unit_test=>"rspec", :integration=>"cucumber", :fixtures=>"factory_girl", :frontend=>"bootstrap", :bootstrap=>"sass", :email=>"gmail", :authentication=>"devise", :devise_modules=>"default", :authorization=>"cancan", :form_builder=>"none", :starter_app=>"admin_app"}, {:railsapps=>"none", :database=>"sqlite", :unit_test=>"test_unit", :integration=>"none", :fixtures=>"none", :frontend=>"bootstrap", :bootstrap=>"less", :email=>"sendgrid", :authentication=>"devise", :devise_modules=>"confirmable", :authorization=>"cancan", :form_builder=>"none", :starter_app=>"admin_app"}]
+@diagnostics_prefs = [{:railsapps=>"rails-prelaunch-signup", :database=>"sqlite", :unit_test=>"rspec", :integration=>"cucumber", :fixtures=>"factory_girl", :frontend=>"bootstrap", :bootstrap=>"sass", :email=>"mandrill", :authentication=>"devise", :devise_modules=>"confirmable", :authorization=>"cancan", :starter_app=>"admin_app", :form_builder=>"simple_form"}, {:railsapps=>"rails3-bootstrap-devise-cancan", :database=>"sqlite", :unit_test=>"rspec", :integration=>"cucumber", :fixtures=>"factory_girl", :frontend=>"bootstrap", :bootstrap=>"sass", :email=>"gmail", :authentication=>"devise", :devise_modules=>"default", :authorization=>"cancan", :starter_app=>"admin_app", :form_builder=>"none"}, {:railsapps=>"rails3-devise-rspec-cucumber", :database=>"sqlite", :unit_test=>"rspec", :integration=>"cucumber", :fixtures=>"factory_girl", :frontend=>"none", :email=>"gmail", :authentication=>"devise", :devise_modules=>"default", :authorization=>"none", :starter_app=>"users_app", :form_builder=>"none"}, {:railsapps=>"rails3-mongoid-devise", :database=>"mongodb", :orm=>"mongoid", :templates=>"erb", :unit_test=>"rspec", :integration=>"cucumber", :fixtures=>"factory_girl", :frontend=>"none", :email=>"gmail", :authentication=>"devise", :devise_modules=>"default", :authorization=>"none", :starter_app=>"users_app", :form_builder=>"none"}, {:railsapps=>"rails3-mongoid-omniauth", :database=>"mongodb", :orm=>"mongoid", :templates=>"erb", :unit_test=>"rspec", :integration=>"cucumber", :fixtures=>"factory_girl", :frontend=>"none", :email=>"none", :authentication=>"omniauth", :omniauth_provider=>"twitter", :authorization=>"none", :starter_app=>"users_app", :form_builder=>"none"}, {:railsapps=>"rails3-subdomains", :database=>"mongodb", :orm=>"mongoid", :templates=>"haml", :unit_test=>"rspec", :integration=>"cucumber", :fixtures=>"factory_girl", :frontend=>"none", :email=>"gmail", :authentication=>"devise", :devise_modules=>"default", :authorization=>"none", :starter_app=>"subdomains_app", :form_builder=>"none"}, {:railsapps=>"none", :database=>"sqlite", :unit_test=>"rspec", :integration=>"rspec-capybara", :fixtures=>"factory_girl", :frontend=>"bootstrap", :bootstrap=>"sass", :email=>"none", :authentication=>"omniauth", :omniauth_provider=>"twitter", :authorization=>"cancan", :form_builder=>"none", :starter_app=>"admin_app"}, {:railsapps=>"none", :database=>"sqlite", :unit_test=>"rspec", :integration=>"cucumber", :fixtures=>"none", :frontend=>"bootstrap", :bootstrap=>"sass", :email=>"gmail", :authentication=>"devise", :devise_modules=>"invitable", :authorization=>"cancan", :form_builder=>"simple_form", :starter_app=>"admin_app"}, {:railsapps=>"none", :database=>"sqlite", :unit_test=>"rspec", :integration=>"cucumber", :fixtures=>"factory_girl", :frontend=>"bootstrap", :bootstrap=>"sass", :email=>"gmail", :authentication=>"devise", :devise_modules=>"default", :authorization=>"cancan", :form_builder=>"none", :starter_app=>"admin_app"}, {:railsapps=>"none", :database=>"sqlite", :unit_test=>"test_unit", :integration=>"none", :fixtures=>"none", :frontend=>"bootstrap", :bootstrap=>"less", :email=>"sendgrid", :authentication=>"devise", :devise_modules=>"confirmable", :authorization=>"cancan", :form_builder=>"none", :starter_app=>"admin_app"}]
 diagnostics = {}
 
 def recipes; @recipes end
@@ -69,9 +69,9 @@ def no_wizard?(question); !yes_wizard?(question) end
 def multiple_choice(question, choices)
   say_custom('question', question)
   values = {}
-  choices.each_with_index do |choice,i| 
+  choices.each_with_index do |choice,i|
     values[(i + 1).to_s] = choice[1]
-    say_custom (i + 1).to_s + ')', choice[0]
+    say_custom( (i + 1).to_s + ')', choice[0] )
   end
   answer = ask_wizard("Enter your selection:") while !values.keys.include?(answer)
   values[answer]
@@ -216,7 +216,7 @@ if prefer :git, true
   copy_from 'https://raw.github.com/RailsApps/rails-composer/master/files/gitignore.txt', '.gitignore'
   git :init
   git :add => '-A'
-  git :commit => "-qm 'rails_apps_composer: initial commit'"
+  git :commit => '-qm "rails_apps_composer: initial commit"'
 end
 
 
@@ -399,10 +399,10 @@ prefs[:templates] = multiple_choice "Template engine?", [["ERB", "erb"], ["Haml"
 
 ## Testing Framework
 if recipes.include? 'testing'
-  prefs[:unit_test] = multiple_choice "Unit testing?", [["Test::Unit", "test_unit"], ["RSpec", "rspec"]] unless prefs.has_key? :unit_test
-  prefs[:integration] = multiple_choice "Integration testing?", [["None", "none"], ["RSpec with Capybara", "capybara"], 
-    ["Cucumber with Capybara", "cucumber"], ["Turnip with Capybara", "turnip"]] unless prefs.has_key? :integration
-  prefs[:fixtures] = multiple_choice "Fixture replacement?", [["None","none"], ["Factory Girl","factory_girl"], ["Machinist","machinist"]] unless prefs.has_key? :fixtures
+  prefs[:unit_test] = multiple_choice "Unit testing?", [["Test::Unit", "test_unit"], ["RSpec", "rspec"], ["MiniTest", "minitest"]] unless prefs.has_key? :unit_test
+  prefs[:integration] = multiple_choice "Integration testing?", [["None", "none"], ["RSpec with Capybara", "rspec-capybara"], 
+    ["Cucumber with Capybara", "cucumber"], ["Turnip with Capybara", "turnip"], ["MiniTest with Capybara", "minitest-capybara"]] unless prefs.has_key? :integration
+  prefs[:fixtures] = multiple_choice "Fixture replacement?", [["None","none"], ["Factory Girl","factory_girl"], ["Machinist","machinist"], ["Fabrication","fabrication"]] unless prefs.has_key? :fixtures
 end
 
 ## Front-end Framework
@@ -558,7 +558,7 @@ after_everything do
   gsub_file "README.textile", /Authorization: None/, "Authorization: CanCan" if prefer :authorization, 'cancan'
 
   git :add => '-A' if prefer :git, true
-  git :commit => "-qm 'rails_apps_composer: add README files'" if prefer :git, true
+  git :commit => '-qm "rails_apps_composer: add README files"' if prefer :git, true
   
 end # after_everything
 
@@ -621,7 +621,7 @@ end
 ## Testing Framework
 if prefer :unit_test, 'rspec'
   gem 'rspec-rails', '>= 2.11.0', :group => [:development, :test]
-  gem 'capybara', '>= 1.1.2', :group => :test
+  gem 'capybara', '>= 1.1.2', :group => :test if prefer :integration, 'rspec-capybara'
   if prefer :orm, 'mongoid'
     # use the database_cleaner gem to reset the test database
     gem 'database_cleaner', '>= 0.8.0', :group => :test
@@ -630,13 +630,20 @@ if prefer :unit_test, 'rspec'
   end
   gem 'email_spec', '>= 1.2.1', :group => :test
 end
+if prefer :unit_test, 'minitest'
+  gem 'minitest-spec-rails', '>= 3.0.7', :group => :test
+  gem 'minitest-wscolor', '>= 0.0.3', :group => :test
+  gem 'capybara', '>= 1.1.2', :group => :test if prefer :integration, 'minitest-capybara'
+end
 if prefer :integration, 'cucumber'
   gem 'cucumber-rails', '>= 1.3.0', :group => :test, :require => false
   gem 'database_cleaner', '>= 0.8.0', :group => :test unless prefer :orm, 'mongoid'
   gem 'launchy', '>= 2.1.2', :group => :test
+  gem 'capybara', '>= 1.1.2', :group => :test
 end
 gem 'turnip', '>= 1.0.0', :group => :test if prefer :integration, 'turnip'
 gem 'factory_girl_rails', '>= 4.1.0', :group => [:development, :test] if prefer :fixtures, 'factory_girl'
+gem 'fabrication', '>= 2.3.0', :group => [:development, :test] if prefer :fixtures, 'fabrication'
 gem 'machinist', '>= 2.0', :group => :test if prefer :fixtures, 'machinist'
 
 ## Front-end Framework
@@ -688,7 +695,7 @@ end
 
 ## Git
 git :add => '-A' if prefer :git, true
-git :commit => "-qm 'rails_apps_composer: Gemfile'" if prefer :git, true
+git :commit => '-qm "rails_apps_composer: Gemfile"' if prefer :git, true
 
 ### CREATE DATABASE ###
 after_bundler do
@@ -712,6 +719,9 @@ after_bundler do
     rescue StandardError => e
       raise "unable to create a user for PostgreSQL, reason: #{e}"
     end
+    gsub_file "config/database.yml", /database: myapp_development/, "database: #{app_name}_development"
+    gsub_file "config/database.yml", /database: myapp_test/,        "database: #{app_name}_test"
+    gsub_file "config/database.yml", /database: myapp_production/,  "database: #{app_name}_production"
   end
   if prefer :database, 'mysql'
     mysql_username = ask_wizard("Username for MySQL? (leave blank to use the app name)")
@@ -740,7 +750,7 @@ after_bundler do
   run 'bundle exec rake db:create' if prefer :orm, 'mongoid'
   ## Git
   git :add => '-A' if prefer :git, true
-  git :commit => "-qm 'rails_apps_composer: create database'" if prefer :git, true
+  git :commit => '-qm "rails_apps_composer: create database"' if prefer :git, true
 end # after_bundler
 
 ### GENERATORS ###
@@ -759,7 +769,7 @@ after_bundler do
   end
   ## Git
   git :add => '-A' if prefer :git, true
-  git :commit => "-qm 'rails_apps_composer: generators'" if prefer :git, true
+  git :commit => '-qm "rails_apps_composer: generators"' if prefer :git, true
 end # after_bundler
 
 
@@ -777,6 +787,18 @@ say_recipe 'testing'
 
 after_bundler do
   say_wizard "recipe running after 'bundle install'"
+  ### TEST/UNIT ###
+  if prefer :unit_test, 'test_unit'
+    inject_into_file 'config/application.rb', :after => "Rails::Application\n" do <<-RUBY
+
+    config.generators do |g|
+      #{"g.test_framework :test_unit, fixture_replacement: :fabrication" if prefer :fixtures, 'fabrication'}
+      #{"g.fixture_replacement :fabrication, dir: 'test/fabricators'" if prefer :fixtures, 'fabrication'}
+    end
+
+RUBY
+    end  
+  end
   ### RSPEC ###
   if prefer :unit_test, 'rspec'
     say_wizard "recipe installing RSpec"
@@ -794,9 +816,13 @@ RUBY
 
     # don't generate RSpec tests for views and helpers
     config.generators do |g|
+      #{"g.test_framework :rspec" if prefer :fixtures, 'none'}
+      #{"g.test_framework :rspec, fixture: true" unless prefer :fixtures, 'none'}
+      #{"g.fixture_replacement :factory_girl" if prefer :fixtures, 'factory_girl'}
+      #{"g.fixture_replacement :machinist" if prefer :fixtures, 'machinist'}
+      #{"g.fixture_replacement :fabrication" if prefer :fixtures, 'fabrication'}
       g.view_specs false
       g.helper_specs false
-      #{"g.fixture_replacement :machinist" if prefer :fixtures, 'machinist'}
     end
 
 RUBY
@@ -847,6 +873,7 @@ RUBY
         "\n  DatabaseCleaner.orm = 'mongoid'"
       end
     end
+    generate 'fabrication:cucumber_steps' if prefer :fixtures, 'fabrication'
   end
   ## TURNIP
   if prefer :integration, 'turnip'
@@ -861,7 +888,7 @@ RUBY
   end
   ### GIT ###
   git :add => '-A' if prefer :git, true
-  git :commit => "-qm 'rails_apps_composer: testing framework'" if prefer :git, true
+  git :commit => '-qm "rails_apps_composer: testing framework"' if prefer :git, true
 end # after_bundler
 
 after_everything do
@@ -919,7 +946,7 @@ after_everything do
     end
     ## GIT
     git :add => '-A' if prefer :git, true
-    git :commit => "-qm 'rails_apps_composer: rspec files'" if prefer :git, true
+    git :commit => '-qm "rails_apps_composer: rspec files"' if prefer :git, true
   end
   ### CUCUMBER ###
   if prefer :integration, 'cucumber'
@@ -989,7 +1016,7 @@ RUBY
     end
     ## GIT
     git :add => '-A' if prefer :git, true
-    git :commit => "-qm 'rails_apps_composer: cucumber files'" if prefer :git, true
+    git :commit => '-qm "rails_apps_composer: cucumber files"' if prefer :git, true
   end
 end # after_everything
 
@@ -1093,7 +1120,7 @@ TEXT
     end
     ### GIT
     git :add => '-A' if prefer :git, true
-    git :commit => "-qm 'rails_apps_composer: set email accounts'" if prefer :git, true
+    git :commit => '-qm "rails_apps_composer: set email accounts"' if prefer :git, true
 end # after_bundler
 
 
@@ -1198,7 +1225,7 @@ RUBY
   end
   ### GIT ###
   git :add => '-A' if prefer :git, true
-  git :commit => "-qm 'rails_apps_composer: models'" if prefer :git, true
+  git :commit => '-qm "rails_apps_composer: models"' if prefer :git, true
 end # after_bundler
 
 
@@ -1261,7 +1288,7 @@ RUBY
   copy_from_repo 'app/controllers/profiles_controller.rb', :repo => 'https://raw.github.com/RailsApps/rails3-subdomains/master/' if prefer :starter_app, 'subdomains_app'
   ### GIT ###
   git :add => '-A' if prefer :git, true
-  git :commit => "-qm 'rails_apps_composer: controllers'" if prefer :git, true
+  git :commit => '-qm "rails_apps_composer: controllers"' if prefer :git, true
 end # after_bundler
 
 
@@ -1301,7 +1328,7 @@ after_bundler do
   copy_from_repo 'app/views/profiles/show-subdomains_app.html.erb', :prefs => 'subdomains_app'
   ### GIT ###
   git :add => '-A' if prefer :git, true
-  git :commit => "-qm 'rails_apps_composer: views'" if prefer :git, true
+  git :commit => '-qm "rails_apps_composer: views"' if prefer :git, true
 end # after_bundler
 
 
@@ -1338,7 +1365,7 @@ after_bundler do
   gsub_file 'config/routes.rb', /^.*.routes.draw do/, "#{app_const}.routes.draw do"
   ### GIT ###
   git :add => '-A' if prefer :git, true
-  git :commit => "-qm 'rails_apps_composer: routes'" if prefer :git, true
+  git :commit => '-qm "rails_apps_composer: routes"' if prefer :git, true
 end # after_bundler
 
 
@@ -1405,7 +1432,7 @@ RUBY
   remove_file 'app/assets/stylesheets/application.css'
   ### GIT ###
   git :add => '-A' if prefer :git, true
-  git :commit => "-qm 'rails_apps_composer: front-end framework'" if prefer :git, true
+  git :commit => '-qm "rails_apps_composer: front-end framework"' if prefer :git, true
 end # after_bundler
 
 
@@ -1479,7 +1506,7 @@ FILE
   run 'bundle exec rake db:seed'
   ### GIT ###
   git :add => '-A' if prefer :git, true
-  git :commit => "-qm 'rails_apps_composer: set up database'" if prefer :git, true
+  git :commit => '-qm "rails_apps_composer: set up database"' if prefer :git, true
 end # after_everything
 
 
@@ -1516,7 +1543,7 @@ if prefer :railsapps, 'rails-prelaunch-signup'
     gsub_file 'config/routes.rb', /\n^\s*\n/, "\n"
     # GIT
     git :add => '-A' if prefer :git, true
-    git :commit => "-qm 'rails_apps_composer: clean up starter app'" if prefer :git, true
+    git :commit => '-qm "rails_apps_composer: clean up starter app"' if prefer :git, true
 
     # >-------------------------------[ Create a git branch ]--------------------------------<
     if prefer :git, true
@@ -1599,7 +1626,7 @@ if prefer :railsapps, 'rails-prelaunch-signup'
     
     ### GIT ###
     git :add => '-A' if prefer :git, true
-    git :commit => "-qm 'rails_apps_composer: prelaunch app'" if prefer :git, true
+    git :commit => '-qm "rails_apps_composer: prelaunch app"' if prefer :git, true
   end # after_bundler
 end # rails-prelaunch-signup
 
@@ -1611,6 +1638,7 @@ end # rails-prelaunch-signup
 say_recipe 'extras'
 
 config = {}
+config['quiet_assets'] = yes_wizard?("Reduce assets logger noise during development?") if true && true unless config.key?('quiet_assets') || prefs.has_key?(:quiet_assets)
 config['ban_spiders'] = yes_wizard?("Set a robots.txt file to ban spiders?") if true && true unless config.key?('ban_spiders') || prefs.has_key?(:ban_spiders)
 config['rvmrc'] = yes_wizard?("Create a project-specific rvm gemset and .rvmrc?") if true && true unless config.key?('rvmrc') || prefs.has_key?(:rvmrc)
 config['github'] = yes_wizard?("Create a GitHub repository?") if true && true unless config.key?('github') || prefs.has_key?(:github)
@@ -1618,6 +1646,15 @@ config['github'] = yes_wizard?("Create a GitHub repository?") if true && true un
 
 # Application template recipe for the rails_apps_composer. Change the recipe here:
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/extras.rb
+
+## QUIET ASSETS
+if config['quiet_assets']
+  prefs[:quiet_assets] = true
+end
+if prefs[:quiet_assets]
+  say_wizard "recipe setting quiet_assets for reduced asset pipeline logging"
+  gem 'quiet_assets', '>= 1.0.1', :group => :development
+end
 
 ## BAN SPIDERS
 if config['ban_spiders']
@@ -1705,11 +1742,14 @@ after_everything do
   gsub_file 'config/routes.rb', /\n^\s*\n/, "\n"
   # GIT
   git :add => '-A' if prefer :git, true
-  git :commit => "-qm 'rails_apps_composer: extras'" if prefer :git, true
+  git :commit => '-qm "rails_apps_composer: extras"' if prefer :git, true
 end
 
 ## GITHUB
 if config['github']
+  prefs[:github] = true
+end
+if prefs[:github]
   gem 'hub', '>= 1.10.2', :require => nil, :group => [:development]
   after_everything do
     say_wizard "recipe creating GitHub repository"
